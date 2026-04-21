@@ -4,1127 +4,469 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>GreenTechno — ეკო ენერგია ტექნოლოგიაში</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@300;400;600;700&family=Nunito:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
+<script src="three.min.js"></script>
+<script src="GLTFLoader.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
 <style>
   *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-
   :root {
-    --green-deep: #0a2a0a;
-    --green-mid: #1a5c1a;
-    --green-bright: #2ecc40;
-    --green-neon: #39ff14;
-    --lime: #a8e63d;
-    --teal: #5de0c5;
-    --yellow: #f0e040;
-    --gold: #d4a017;
-    --glass: rgba(255,255,255,0.08);
-    --glass-border: rgba(255,255,255,0.15);
-    --text: #f0fff0;
-    --text-muted: rgba(240,255,240,0.6);
+    --gn: #39ff14; --gb: #2ecc40; --lime: #a8e63d;
+    --teal: #5de0c5; --gold: #d4a017;
+    --glass: rgba(255,255,255,0.07);
+    --gb2: rgba(255,255,255,0.13);
+    --text: #f0fff0; --muted: rgba(240,255,240,0.6);
   }
-
   html { scroll-behavior: smooth; overflow-x: hidden; }
+  body { background:#040f04; color:var(--text); font-family:'Nunito',sans-serif; overflow-x:hidden; cursor:none; }
 
-  body {
-    background: #040f04;
-    color: var(--text);
-    font-family: 'Nunito', sans-serif;
-    overflow-x: hidden;
-    cursor: none;
-  }
+  #cur { position:fixed;width:10px;height:10px;background:var(--gn);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);mix-blend-mode:screen;transition:width .2s,height .2s; }
+  #cur2 { position:fixed;width:34px;height:34px;border:1.5px solid rgba(57,255,20,.45);border-radius:50%;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:width .25s,height .25s; }
 
-  /* CUSTOM CURSOR */
-  .cursor {
-    position: fixed; width: 12px; height: 12px;
-    background: var(--green-neon); border-radius: 50%;
-    pointer-events: none; z-index: 9999;
-    transform: translate(-50%, -50%);
-    transition: transform 0.1s, width 0.2s, height 0.2s, background 0.2s;
-    mix-blend-mode: screen;
-  }
-  .cursor-ring {
-    position: fixed; width: 36px; height: 36px;
-    border: 1.5px solid rgba(57,255,20,0.5); border-radius: 50%;
-    pointer-events: none; z-index: 9998;
-    transform: translate(-50%, -50%);
-    transition: transform 0.15s ease-out, width 0.3s, height 0.3s;
-  }
-  body:hover .cursor { opacity: 1; }
+  #sndBtn { position:fixed;top:20px;right:20px;z-index:600;width:44px;height:44px;border-radius:50%;background:var(--glass);border:1px solid var(--gb2);backdrop-filter:blur(20px);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:1.2rem;transition:all .3s; }
+  #sndBtn:hover { background:rgba(57,255,20,.18);border-color:var(--gn); }
 
-  /* INTRO SCREEN */
-  #intro {
-    position: fixed; inset: 0; z-index: 1000;
-    background: radial-gradient(ellipse at center, #0d2e0d 0%, #040f04 70%);
-    display: flex; flex-direction: column;
-    align-items: center; justify-content: center;
-    overflow: hidden;
-  }
-  #intro-canvas { position: absolute; inset: 0; }
-
-  .intro-content {
-    position: relative; z-index: 10;
-    display: flex; flex-direction: column;
-    align-items: center; gap: 0;
-    opacity: 0; animation: introFadeIn 0.8s 0.5s forwards;
-  }
-  @keyframes introFadeIn { to { opacity: 1; } }
-
-  .phone-wrapper {
-    position: relative; width: 280px; height: 580px;
-    display: flex; align-items: center; justify-content: center;
-  }
-  #phone-canvas { width: 100%; height: 100%; }
-
-  .app-launch-ring {
-    position: absolute; width: 120px; height: 120px;
-    border-radius: 32px;
-    background: radial-gradient(135deg, rgba(46,204,64,0.2), rgba(57,255,20,0.05));
-    border: 1px solid rgba(57,255,20,0.3);
-    display: flex; align-items: center; justify-content: center;
-    animation: ringPulse 2s ease-in-out infinite;
-    backdrop-filter: blur(10px);
-    opacity: 0;
-    transition: opacity 0.5s;
-  }
-  @keyframes ringPulse {
-    0%, 100% { transform: scale(1); box-shadow: 0 0 20px rgba(57,255,20,0.2); }
-    50% { transform: scale(1.05); box-shadow: 0 0 40px rgba(57,255,20,0.4); }
-  }
-  .app-icon-intro {
-    width: 90px; height: 90px;
-    border-radius: 24px;
-    box-shadow: 0 0 40px rgba(57,255,20,0.5);
-  }
-
-  .brand-intro {
-    text-align: center; margin-top: 28px;
-  }
-  .brand-intro h1 {
-    font-size: 3.2rem; font-weight: 800; letter-spacing: -1px;
-    background: linear-gradient(135deg, #2ecc40, #39ff14, #a8e63d);
-    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
-  .brand-intro p {
-    font-size: 1rem; color: var(--text-muted); margin-top: 6px;
-    letter-spacing: 3px; text-transform: uppercase; font-weight: 300;
-  }
-
-  .intro-tap {
-    margin-top: 40px; font-size: 0.85rem; color: var(--text-muted);
-    letter-spacing: 2px; text-transform: uppercase;
-    animation: tapBlink 1.5s ease-in-out infinite;
-    cursor: pointer;
-  }
-  @keyframes tapBlink { 0%,100%{opacity:0.4;} 50%{opacity:1;} }
-
-  .intro-exit { animation: introExit 0.8s ease-in forwards; }
-  @keyframes introExit {
-    to { opacity: 0; transform: scale(1.05); pointer-events: none; }
-  }
-
-  /* SOUND TOGGLE */
-  .sound-btn {
-    position: fixed; top: 20px; right: 20px; z-index: 500;
-    width: 44px; height: 44px; border-radius: 50%;
-    background: var(--glass); border: 1px solid var(--glass-border);
-    backdrop-filter: blur(20px); display: flex; align-items: center;
-    justify-content: center; cursor: pointer; transition: all 0.3s;
-    font-size: 1.2rem;
-  }
-  .sound-btn:hover { background: rgba(57,255,20,0.2); border-color: var(--green-neon); }
+  /* INTRO */
+  #intro { position:fixed;inset:0;z-index:1000;background:radial-gradient(ellipse at 50% 40%,#0d2e0d,#040f04 70%);display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden; }
+  #bgC { position:absolute;inset:0; }
+  .iWrap { position:relative;z-index:10;display:flex;flex-direction:column;align-items:center;opacity:0;animation:fUp .8s .4s forwards; }
+  @keyframes fUp { from{opacity:0;transform:translateY(18px)} to{opacity:1;transform:translateY(0)} }
+  .phoneWrap { position:relative;width:280px;height:560px;display:flex;align-items:center;justify-content:center; }
+  #iPhC { width:100%;height:100%; }
+  .appOv { position:absolute;display:flex;flex-direction:column;align-items:center;gap:12px;pointer-events:none; }
+  .appRing { width:108px;height:108px;border-radius:27px;background:rgba(46,204,64,.12);border:1px solid rgba(57,255,20,.35);backdrop-filter:blur(12px);display:flex;align-items:center;justify-content:center;animation:rGlow 2s ease-in-out infinite;opacity:0;transition:opacity .6s; }
+  @keyframes rGlow { 0%,100%{box-shadow:0 0 20px rgba(57,255,20,.2);transform:scale(1)} 50%{box-shadow:0 0 50px rgba(57,255,20,.5);transform:scale(1.04)} }
+  .appRing img { width:82px;height:82px;border-radius:20px; }
+  .appSt { font-size:.7rem;letter-spacing:3px;text-transform:uppercase;color:var(--gn);opacity:0;transition:opacity .6s;animation:bl 1.4s ease-in-out infinite; }
+  @keyframes bl { 0%,100%{opacity:.4} 50%{opacity:1} }
+  .iBrand { text-align:center;margin-top:22px; }
+  .iBrand h1 { font-size:3rem;font-weight:900;letter-spacing:-1px;background:linear-gradient(135deg,#2ecc40,#39ff14,#a8e63d);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text; }
+  .iBrand p { font-size:.8rem;color:var(--muted);margin-top:5px;letter-spacing:3.5px;text-transform:uppercase;font-weight:300; }
+  .iTap { margin-top:34px;font-size:.78rem;color:var(--muted);letter-spacing:2.5px;text-transform:uppercase;cursor:pointer;animation:bl 1.5s infinite; }
+  .iExit { animation:iEx .75s ease-in forwards; }
+  @keyframes iEx { to{opacity:0;transform:scale(1.04);pointer-events:none} }
 
   /* NAV */
-  nav {
-    position: fixed; top: 0; left: 0; right: 0; z-index: 400;
-    padding: 16px 40px;
-    display: flex; align-items: center; justify-content: space-between;
-    backdrop-filter: blur(30px) saturate(1.5);
-    background: rgba(4, 15, 4, 0.6);
-    border-bottom: 1px solid rgba(57,255,20,0.1);
-    transform: translateY(-100%); transition: transform 0.6s ease;
-  }
-  nav.visible { transform: translateY(0); }
-  .nav-logo { display: flex; align-items: center; gap: 10px; }
-  .nav-logo img { width: 36px; height: 36px; border-radius: 10px; }
-  .nav-logo span { font-size: 1.1rem; font-weight: 800; color: var(--green-bright); }
-  .nav-links { display: flex; gap: 32px; }
-  .nav-links a {
-    font-size: 0.85rem; color: var(--text-muted); text-decoration: none;
-    letter-spacing: 1px; text-transform: uppercase; font-weight: 600;
-    transition: color 0.3s; position: relative;
-  }
-  .nav-links a::after {
-    content:''; position: absolute; bottom: -4px; left: 0; width: 0; height: 1px;
-    background: var(--green-neon); transition: width 0.3s;
-  }
-  .nav-links a:hover { color: var(--green-neon); }
-  .nav-links a:hover::after { width: 100%; }
+  nav { position:fixed;top:0;left:0;right:0;z-index:500;padding:15px 48px;display:flex;align-items:center;justify-content:space-between;backdrop-filter:blur(30px) saturate(1.5);background:rgba(4,15,4,.65);border-bottom:1px solid rgba(57,255,20,.1);transform:translateY(-100%);transition:transform .6s ease; }
+  nav.show { transform:translateY(0); }
+  .nLogo { display:flex;align-items:center;gap:10px; }
+  .nLogo img { width:33px;border-radius:9px; }
+  .nLogo span { font-size:1.05rem;font-weight:900;color:var(--gb); }
+  .nLinks { display:flex;gap:28px; }
+  .nLinks a { font-size:.8rem;color:var(--muted);text-decoration:none;letter-spacing:1px;text-transform:uppercase;font-weight:700;transition:color .3s;position:relative; }
+  .nLinks a::after { content:'';position:absolute;bottom:-3px;left:0;width:0;height:1px;background:var(--gn);transition:width .3s; }
+  .nLinks a:hover { color:var(--gn); }
+  .nLinks a:hover::after { width:100%; }
 
-  /* MAIN SITE */
-  #main-site { opacity: 0; transition: opacity 0.8s; }
-  #main-site.visible { opacity: 1; }
+  /* MAIN */
+  #site { opacity:0;transition:opacity .8s; }
+  #site.show { opacity:1; }
 
   /* HERO */
-  #hero {
-    min-height: 100vh; position: relative;
-    display: flex; align-items: center; justify-content: center;
-    overflow: hidden;
-  }
-  #hero-bg {
-    position: absolute; inset: 0; z-index: 0;
-    background: 
-      radial-gradient(ellipse 80% 60% at 50% 0%, rgba(46,204,64,0.15) 0%, transparent 60%),
-      radial-gradient(ellipse 60% 80% at 80% 50%, rgba(57,255,20,0.08) 0%, transparent 50%),
-      radial-gradient(ellipse 50% 50% at 20% 80%, rgba(93,224,197,0.06) 0%, transparent 50%),
-      #040f04;
-  }
-  .hero-particles { position: absolute; inset: 0; z-index: 1; overflow: hidden; }
-  .particle {
-    position: absolute; border-radius: 50%;
-    background: var(--green-neon); opacity: 0;
-    animation: float linear infinite;
-  }
-  @keyframes float {
-    0% { opacity: 0; transform: translateY(100vh) scale(0); }
-    10% { opacity: 0.6; }
-    90% { opacity: 0.3; }
-    100% { opacity: 0; transform: translateY(-100px) scale(1); }
-  }
+  #hero { min-height:100vh;position:relative;display:flex;align-items:center;overflow:hidden; }
+  .hBg { position:absolute;inset:0;background:radial-gradient(ellipse 80% 70% at 60% 0%,rgba(46,204,64,.13),transparent 55%),radial-gradient(ellipse 50% 60% at 10% 80%,rgba(93,224,197,.07),transparent 50%),#040f04; }
+  #ptcl { position:absolute;inset:0;overflow:hidden; }
+  .pt { position:absolute;border-radius:50%;background:var(--gn);opacity:0;animation:fltUp linear infinite; }
+  @keyframes fltUp { 0%{opacity:0;transform:translateY(100vh) scale(0)} 10%{opacity:.5} 90%{opacity:.2} 100%{opacity:0;transform:translateY(-80px) scale(1)} }
+  .hIn { position:relative;z-index:5;display:grid;grid-template-columns:1fr 1fr;gap:50px;align-items:center;max-width:1200px;margin:0 auto;padding:120px 60px 80px; }
+  .hTxt { opacity:0;transform:translateX(-40px);transition:all .8s .2s; }
+  .hTxt.go { opacity:1;transform:translateX(0); }
+  .badge { display:inline-flex;align-items:center;gap:8px;background:rgba(57,255,20,.1);border:1px solid rgba(57,255,20,.3);border-radius:100px;padding:6px 16px;margin-bottom:22px;font-size:.72rem;letter-spacing:2px;text-transform:uppercase;color:var(--gn);font-weight:700; }
+  .bdot { width:6px;height:6px;background:var(--gn);border-radius:50%;animation:bl 1.5s infinite; }
+  .hH { font-size:clamp(2.6rem,5vw,4.8rem);font-weight:900;line-height:1.05;letter-spacing:-2px; }
+  .hH .l1 { display:block;color:var(--text); }
+  .hH .l2 { display:block;background:linear-gradient(135deg,#2ecc40,#39ff14,#a8e63d);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text; }
+  .hSub { margin-top:18px;font-size:1rem;line-height:1.75;color:var(--muted);max-width:440px; }
+  .hCTA { margin-top:30px;display:flex;gap:14px;flex-wrap:wrap; }
+  .btnP { padding:13px 30px;border-radius:100px;background:linear-gradient(135deg,#2ecc40,#39ff14);color:#040f04;font-weight:900;font-size:.9rem;border:none;cursor:pointer;transition:all .3s;box-shadow:0 0 30px rgba(57,255,20,.3);font-family:inherit; }
+  .btnP:hover { transform:scale(1.04);box-shadow:0 0 55px rgba(57,255,20,.5); }
+  .btnS { padding:13px 30px;border-radius:100px;background:transparent;border:1px solid rgba(57,255,20,.4);color:var(--gn);font-weight:700;font-size:.9rem;cursor:pointer;transition:all .3s;font-family:inherit; }
+  .btnS:hover { background:rgba(57,255,20,.1);border-color:var(--gn); }
+  .h3D { display:flex;flex-direction:column;align-items:center;opacity:0;transform:translateX(40px);transition:all .8s .4s; }
+  .h3D.go { opacity:1;transform:translateX(0); }
+  #hPhC { width:300px;height:600px;cursor:grab;filter:drop-shadow(0 0 50px rgba(57,255,20,.35)); }
+  #hPhC:active { cursor:grabbing; }
+  .mLbl { font-size:.64rem;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-top:8px; }
 
-  .hero-inner {
-    position: relative; z-index: 10;
-    display: grid; grid-template-columns: 1fr 1fr;
-    gap: 60px; align-items: center;
-    max-width: 1200px; margin: 0 auto; padding: 120px 60px 80px;
-  }
-  .hero-text { opacity: 0; transform: translateX(-40px); transition: all 0.8s 0.3s; }
-  .hero-text.animate { opacity: 1; transform: translateX(0); }
+  .gl { height:1px;background:linear-gradient(90deg,transparent,rgba(57,255,20,.35),transparent);margin:0 60px; }
 
-  .hero-badge {
-    display: inline-flex; align-items: center; gap: 8px;
-    background: rgba(57,255,20,0.1); border: 1px solid rgba(57,255,20,0.3);
-    border-radius: 100px; padding: 6px 16px; margin-bottom: 24px;
-    font-size: 0.75rem; letter-spacing: 2px; text-transform: uppercase;
-    color: var(--green-neon); font-weight: 700;
-  }
-  .badge-dot { width: 6px; height: 6px; background: var(--green-neon); border-radius: 50%; animation: badgePulse 1.5s infinite; }
-  @keyframes badgePulse { 0%,100%{opacity:1;transform:scale(1);} 50%{opacity:0.5;transform:scale(1.5);} }
+  /* ABOUT */
+  #about { padding:110px 60px;max-width:1200px;margin:0 auto; }
+  .sLbl { font-size:.7rem;letter-spacing:4px;text-transform:uppercase;color:var(--gn);font-weight:700;margin-bottom:14px; }
+  .sT { font-size:clamp(2rem,4vw,3.4rem);font-weight:900;letter-spacing:-1.5px;line-height:1.1;margin-bottom:34px; }
+  .aGrid { display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:start; }
+  .aTxt p { font-size:1rem;line-height:1.85;color:rgba(240,255,240,.72);margin-bottom:18px; }
+  .aTxt p strong { color:var(--gb); }
+  .stGrid { display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:30px; }
+  .stC { background:var(--glass);border:1px solid var(--gb2);border-radius:20px;padding:22px;backdrop-filter:blur(20px);transition:all .3s; }
+  .stC:hover { background:rgba(57,255,20,.07);border-color:rgba(57,255,20,.28);transform:translateY(-4px); }
+  .stN { font-size:2rem;font-weight:900;color:var(--gn); }
+  .stU { font-size:.9rem;color:var(--lime);font-weight:600; }
+  .stL { font-size:.76rem;color:var(--muted);margin-top:4px; }
 
-  .hero-title {
-    font-size: clamp(2.8rem, 5vw, 5rem);
-    font-weight: 900; line-height: 1.05;
-    letter-spacing: -2px;
-  }
-  .hero-title .line1 { display: block; color: var(--text); }
-  .hero-title .line2 {
-    display: block;
-    background: linear-gradient(135deg, #2ecc40 0%, #39ff14 40%, #a8e63d 100%);
-    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
-  .hero-subtitle {
-    margin-top: 20px; font-size: 1.1rem; line-height: 1.7;
-    color: var(--text-muted); max-width: 460px; font-weight: 400;
-  }
-  .hero-cta { margin-top: 36px; display: flex; gap: 16px; flex-wrap: wrap; }
-  .btn-primary {
-    padding: 14px 32px; border-radius: 100px;
-    background: linear-gradient(135deg, #2ecc40, #39ff14);
-    color: #040f04; font-weight: 800; font-size: 0.95rem;
-    border: none; cursor: pointer; transition: all 0.3s;
-    letter-spacing: 0.5px;
-    box-shadow: 0 0 30px rgba(57,255,20,0.3);
-  }
-  .btn-primary:hover { transform: scale(1.04); box-shadow: 0 0 50px rgba(57,255,20,0.5); }
-  .btn-secondary {
-    padding: 14px 32px; border-radius: 100px;
-    background: transparent; border: 1px solid rgba(57,255,20,0.4);
-    color: var(--green-neon); font-weight: 700; font-size: 0.95rem;
-    cursor: pointer; transition: all 0.3s;
-  }
-  .btn-secondary:hover { background: rgba(57,255,20,0.1); border-color: var(--green-neon); }
+  /* MACBOOK */
+  #macbook { padding:80px 60px 110px;background:linear-gradient(180deg,transparent,rgba(10,42,10,.25) 50%,transparent); }
+  .mIn { max-width:1200px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:70px;align-items:center; }
+  #macC { width:100%;height:430px;cursor:grab;filter:drop-shadow(0 0 60px rgba(57,255,20,.2)); }
+  #macC:active { cursor:grabbing; }
+  .fList { margin-top:28px;display:flex;flex-direction:column;gap:14px; }
+  .fItem { display:flex;align-items:flex-start;gap:14px;padding:16px 20px;border-radius:16px;background:var(--glass);border:1px solid var(--gb2);backdrop-filter:blur(20px);transition:all .3s; }
+  .fItem:hover { background:rgba(57,255,20,.06);border-color:rgba(57,255,20,.25);transform:translateX(6px); }
+  .fIco { font-size:1.5rem;flex-shrink:0;margin-top:2px; }
+  .fT { font-size:.9rem;font-weight:800; }
+  .fD { font-size:.78rem;color:var(--muted);margin-top:3px;line-height:1.5; }
 
-  .hero-3d {
-    display: flex; justify-content: center; align-items: center;
-    opacity: 0; transform: translateX(40px); transition: all 0.8s 0.5s;
-    position: relative;
-  }
-  .hero-3d.animate { opacity: 1; transform: translateX(0); }
-  #hero-phone-canvas {
-    width: 320px; height: 620px; cursor: grab;
-    filter: drop-shadow(0 0 40px rgba(57,255,20,0.3));
-  }
-  #hero-phone-canvas:active { cursor: grabbing; }
-  .model-label {
-    position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%);
-    font-size: 0.7rem; color: var(--text-muted); letter-spacing: 2px;
-    text-transform: uppercase;
-  }
+  /* INFO */
+  #info { padding:80px 60px 110px;max-width:1200px;margin:0 auto; }
+  .iIntro { max-width:680px;font-size:1rem;line-height:1.82;color:rgba(240,255,240,.68);margin-bottom:50px; }
+  .iCards { display:grid;grid-template-columns:repeat(3,1fr);gap:22px; }
+  .iC { background:var(--glass);border:1px solid var(--gb2);border-radius:24px;padding:28px;backdrop-filter:blur(20px);transition:all .4s;position:relative;overflow:hidden; }
+  .iC::before { content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--gn),transparent);opacity:0;transition:opacity .3s; }
+  .iC:hover::before { opacity:1; }
+  .iC:hover { transform:translateY(-8px);border-color:rgba(57,255,20,.3);box-shadow:0 30px 60px rgba(0,0,0,.4); }
+  .iIco { font-size:2.1rem;margin-bottom:13px; }
+  .iC h3 { font-size:1rem;font-weight:800;margin-bottom:10px; }
+  .iC p { font-size:.83rem;line-height:1.7;color:var(--muted); }
 
-  /* ABOUT SECTION */
-  #about {
-    padding: 120px 60px;
-    max-width: 1200px; margin: 0 auto;
-    position: relative;
-  }
-  .section-label {
-    font-size: 0.72rem; letter-spacing: 4px; text-transform: uppercase;
-    color: var(--green-neon); font-weight: 700; margin-bottom: 16px;
-  }
-  .section-title {
-    font-size: clamp(2rem, 4vw, 3.5rem); font-weight: 900;
-    letter-spacing: -1.5px; line-height: 1.1; margin-bottom: 40px;
-  }
-  .about-grid {
-    display: grid; grid-template-columns: 1fr 1fr; gap: 60px;
-    align-items: start;
-  }
-  .about-text p {
-    font-size: 1.05rem; line-height: 1.85;
-    color: rgba(240,255,240,0.75); margin-bottom: 20px;
-  }
-  .about-text p strong { color: var(--green-bright); }
-  .stats-grid {
-    display: grid; grid-template-columns: 1fr 1fr; gap: 20px;
-    margin-top: 36px;
-  }
-  .stat-card {
-    background: var(--glass); border: 1px solid var(--glass-border);
-    border-radius: 20px; padding: 24px;
-    backdrop-filter: blur(20px);
-    transition: all 0.3s;
-  }
-  .stat-card:hover {
-    background: rgba(57,255,20,0.08);
-    border-color: rgba(57,255,20,0.3);
-    transform: translateY(-4px);
-    box-shadow: 0 20px 40px rgba(0,0,0,0.3);
-  }
-  .stat-num { font-size: 2.2rem; font-weight: 900; color: var(--green-neon); }
-  .stat-unit { font-size: 1rem; color: var(--lime); font-weight: 600; }
-  .stat-label { font-size: 0.82rem; color: var(--text-muted); margin-top: 4px; }
+  /* IDEAS */
+  #ideas { padding:80px 60px 110px;background:linear-gradient(180deg,transparent,rgba(10,42,10,.35),transparent); }
+  .idIn { max-width:1200px;margin:0 auto; }
+  .idGrid { display:grid;grid-template-columns:repeat(5,1fr);gap:18px;margin-top:42px; }
+  .idC { background:var(--glass);border:1px solid var(--gb2);border-radius:24px;padding:24px 18px;backdrop-filter:blur(20px);text-align:center;transition:all .4s; }
+  .idC:hover { transform:translateY(-10px) scale(1.02);background:rgba(57,255,20,.07);border-color:rgba(57,255,20,.33);box-shadow:0 30px 60px rgba(0,0,0,.4); }
+  .idN { font-size:2.6rem;font-weight:900;line-height:1;color:rgba(57,255,20,.1);margin-bottom:5px; }
+  .idC span { font-size:1.8rem;display:block;margin-bottom:9px; }
+  .idC h3 { font-size:.84rem;font-weight:900;color:var(--gb);margin-bottom:8px; }
+  .idC p { font-size:.74rem;line-height:1.6;color:var(--muted); }
 
-  /* MACBOOK SECTION */
-  #macbook {
-    padding: 80px 60px 120px;
-    position: relative; overflow: hidden;
-    background: linear-gradient(180deg, transparent, rgba(10,42,10,0.3) 50%, transparent);
-  }
-  .macbook-inner {
-    max-width: 1200px; margin: 0 auto;
-    display: grid; grid-template-columns: 1fr 1fr;
-    gap: 80px; align-items: center;
-  }
-  #mac-canvas {
-    width: 100%; height: 440px; cursor: grab;
-    filter: drop-shadow(0 0 60px rgba(57,255,20,0.2));
-  }
-  .macbook-info { }
-  .feature-list { margin-top: 32px; display: flex; flex-direction: column; gap: 16px; }
-  .feature-item {
-    display: flex; align-items: flex-start; gap: 16px;
-    padding: 18px 22px; border-radius: 16px;
-    background: var(--glass); border: 1px solid var(--glass-border);
-    backdrop-filter: blur(20px); transition: all 0.3s;
-  }
-  .feature-item:hover {
-    background: rgba(57,255,20,0.06);
-    border-color: rgba(57,255,20,0.25);
-    transform: translateX(6px);
-  }
-  .feature-icon { font-size: 1.6rem; flex-shrink: 0; margin-top: 2px; }
-  .feature-title { font-size: 0.95rem; font-weight: 700; color: var(--text); }
-  .feature-desc { font-size: 0.82rem; color: var(--text-muted); margin-top: 3px; line-height: 1.5; }
+  /* GALLERY */
+  #gallery { padding:80px 60px 110px;max-width:1200px;margin:0 auto; }
+  .gGrid { display:grid;grid-template-columns:2fr 1fr 1fr;gap:18px;margin-top:42px; }
+  .gC { border-radius:22px;overflow:hidden;position:relative;cursor:pointer;transition:transform .4s; }
+  .gC:hover { transform:scale(1.02); }
+  .gC img { width:100%;height:100%;object-fit:cover;display:block; }
+  .gOv { position:absolute;inset:0;background:linear-gradient(180deg,transparent 50%,rgba(0,0,0,.7));display:flex;align-items:flex-end;padding:18px;opacity:0;transition:opacity .3s; }
+  .gC:hover .gOv { opacity:1; }
+  .gL { font-size:.74rem;color:#fff;font-weight:700;letter-spacing:1px; }
 
-  /* INFO CARDS */
-  #info {
-    padding: 80px 60px 120px;
-    max-width: 1200px; margin: 0 auto;
-  }
-  .info-intro {
-    max-width: 700px; font-size: 1.1rem; line-height: 1.8;
-    color: rgba(240,255,240,0.7); margin-bottom: 60px;
-  }
-  .info-cards {
-    display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px;
-  }
-  .info-card {
-    background: var(--glass); border: 1px solid var(--glass-border);
-    border-radius: 24px; padding: 32px; backdrop-filter: blur(20px);
-    transition: all 0.4s; position: relative; overflow: hidden;
-  }
-  .info-card::before {
-    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
-    background: linear-gradient(90deg, transparent, var(--green-neon), transparent);
-    opacity: 0; transition: opacity 0.3s;
-  }
-  .info-card:hover::before { opacity: 1; }
-  .info-card:hover {
-    transform: translateY(-8px);
-    border-color: rgba(57,255,20,0.3);
-    box-shadow: 0 30px 60px rgba(0,0,0,0.4), 0 0 40px rgba(57,255,20,0.05);
-  }
-  .info-icon { font-size: 2.4rem; margin-bottom: 16px; }
-  .info-card h3 { font-size: 1.1rem; font-weight: 800; margin-bottom: 12px; color: var(--text); }
-  .info-card p { font-size: 0.88rem; line-height: 1.7; color: var(--text-muted); }
+  footer { border-top:1px solid rgba(57,255,20,.1);padding:50px 60px;max-width:1200px;margin:0 auto;display:flex;align-items:center;justify-content:space-between; }
+  .fLog { display:flex;align-items:center;gap:10px; }
+  .fLog img { width:40px;border-radius:11px; }
+  .fLog span { font-size:1.2rem;font-weight:900;color:var(--gb); }
+  .fM { font-size:.76rem;color:var(--muted); }
+  .fCp { font-size:.72rem;color:rgba(240,255,240,.28);text-align:right; }
 
-  /* UNIQUE IDEAS */
-  #ideas {
-    padding: 80px 60px 120px;
-    background: linear-gradient(180deg, transparent, rgba(10,42,10,0.4), transparent);
-  }
-  .ideas-inner { max-width: 1200px; margin: 0 auto; }
-  .ideas-grid {
-    display: grid; grid-template-columns: repeat(5, 1fr);
-    gap: 20px; margin-top: 48px;
-  }
-  .idea-card {
-    background: var(--glass); border: 1px solid var(--glass-border);
-    border-radius: 24px; padding: 28px 22px; backdrop-filter: blur(20px);
-    text-align: center; transition: all 0.4s; position: relative;
-    overflow: hidden;
-  }
-  .idea-num {
-    font-size: 3rem; font-weight: 900; line-height: 1;
-    background: linear-gradient(135deg, rgba(57,255,20,0.15), rgba(57,255,20,0.05));
-    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-    background-clip: text; margin-bottom: 8px;
-  }
-  .idea-card:hover {
-    transform: translateY(-10px) scale(1.02);
-    background: rgba(57,255,20,0.07);
-    border-color: rgba(57,255,20,0.35);
-    box-shadow: 0 30px 60px rgba(0,0,0,0.4), 0 0 50px rgba(57,255,20,0.07);
-  }
-  .idea-icon { font-size: 2rem; margin-bottom: 12px; display: block; }
-  .idea-card h3 { font-size: 0.9rem; font-weight: 800; color: var(--green-bright); margin-bottom: 10px; }
-  .idea-card p { font-size: 0.78rem; line-height: 1.6; color: var(--text-muted); }
+  #dots { position:fixed;right:24px;top:50%;transform:translateY(-50%);z-index:400;display:flex;flex-direction:column;gap:8px; }
+  .dot { width:5px;height:5px;border-radius:50%;background:rgba(57,255,20,.28);cursor:pointer;transition:all .3s; }
+  .dot.on { background:var(--gn);height:18px;border-radius:3px; }
 
-  /* WALLPAPER SECTION */
-  #wallpapers {
-    padding: 80px 60px 120px;
-    max-width: 1200px; margin: 0 auto;
-  }
-  .wallpaper-showcase {
-    display: grid; grid-template-columns: 2fr 1fr 1fr;
-    gap: 20px; margin-top: 48px;
-  }
-  .wp-card {
-    border-radius: 24px; overflow: hidden; position: relative;
-    aspect-ratio: auto; cursor: pointer; transition: all 0.4s;
-  }
-  .wp-card:hover { transform: scale(1.02); }
-  .wp-card img { width: 100%; height: 100%; object-fit: cover; display: block; }
-  .wp-overlay {
-    position: absolute; inset: 0;
-    background: linear-gradient(180deg, transparent 50%, rgba(0,0,0,0.7));
-    display: flex; align-items: flex-end; padding: 20px;
-    opacity: 0; transition: opacity 0.3s;
-  }
-  .wp-card:hover .wp-overlay { opacity: 1; }
-  .wp-label { font-size: 0.8rem; color: white; font-weight: 700; letter-spacing: 1px; }
+  .rv { opacity:0;transform:translateY(26px);transition:all .65s ease; }
+  .rv.go { opacity:1;transform:translateY(0); }
 
-  /* FOOTER */
-  footer {
-    border-top: 1px solid rgba(57,255,20,0.1);
-    padding: 60px;
-    max-width: 1200px; margin: 0 auto;
-    display: flex; align-items: center; justify-content: space-between;
-  }
-  .footer-logo { display: flex; align-items: center; gap: 12px; }
-  .footer-logo img { width: 44px; border-radius: 12px; }
-  .footer-logo span { font-size: 1.3rem; font-weight: 900; color: var(--green-bright); }
-  .footer-text { font-size: 0.8rem; color: var(--text-muted); }
-  .footer-copy { font-size: 0.78rem; color: rgba(240,255,240,0.3); text-align: right; }
-
-  /* SCROLL INDICATOR */
-  .scroll-indicator {
-    position: fixed; right: 30px; top: 50%;
-    transform: translateY(-50%); z-index: 300;
-    display: flex; flex-direction: column; gap: 8px;
-  }
-  .scroll-dot {
-    width: 6px; height: 6px; border-radius: 50%;
-    background: rgba(57,255,20,0.3); transition: all 0.3s;
-    cursor: pointer;
-  }
-  .scroll-dot.active { background: var(--green-neon); height: 20px; border-radius: 3px; }
-
-  /* REVEAL ANIMATION */
-  .reveal { opacity: 0; transform: translateY(30px); transition: all 0.7s ease; }
-  .reveal.visible { opacity: 1; transform: translateY(0); }
-
-  /* GLOWING LINE */
-  .glow-line {
-    height: 1px;
-    background: linear-gradient(90deg, transparent, rgba(57,255,20,0.4), transparent);
-    margin: 0 60px;
-  }
-
-  @media (max-width: 900px) {
-    .hero-inner, .about-grid, .macbook-inner { grid-template-columns: 1fr; }
-    .info-cards { grid-template-columns: 1fr 1fr; }
-    .ideas-grid { grid-template-columns: 1fr 1fr; }
-    nav { padding: 14px 24px; }
-    .nav-links { display: none; }
-    #about, #info, #ideas, #macbook, #wallpapers, footer { padding: 60px 24px; }
-    .hero-inner { padding: 100px 24px 60px; }
+  @media(max-width:900px){
+    .hIn,.aGrid,.mIn { grid-template-columns:1fr; }
+    .iCards { grid-template-columns:1fr 1fr; }
+    .idGrid { grid-template-columns:1fr 1fr; }
+    nav { padding:14px 22px; } .nLinks { display:none; }
+    #about,#info,#ideas,#macbook,#gallery,footer { padding:60px 22px; }
+    .hIn { padding:90px 22px 60px; }
+    .gGrid { grid-template-columns:1fr 1fr; }
   }
 </style>
 </head>
 <body>
 
-<div class="cursor" id="cursor"></div>
-<div class="cursor-ring" id="cursorRing"></div>
-
-<!-- SOUND TOGGLE -->
-<button class="sound-btn" id="soundBtn" title="Toggle Sound">🔊</button>
+<div id="cur"></div>
+<div id="cur2"></div>
+<button id="sndBtn">🔊</button>
 
 <!-- INTRO -->
 <div id="intro">
-  <canvas id="intro-canvas"></canvas>
-  <div class="intro-content" id="introContent">
-    <div class="phone-wrapper">
-      <canvas id="phone-canvas"></canvas>
-      <div class="app-launch-ring" id="appRing">
-        <img src="GreenTecho.png" class="app-icon-intro" alt="GreenTechno">
+  <canvas id="bgC"></canvas>
+  <div class="iWrap">
+    <div class="phoneWrap">
+      <canvas id="iPhC"></canvas>
+      <div class="appOv">
+        <div class="appRing" id="appRing"><img src="GreenTecho.png" alt="GT"></div>
+        <div class="appSt" id="appSt">GreenTechno გაეშვა</div>
       </div>
     </div>
-    <div class="brand-intro">
+    <div class="iBrand">
       <h1>GreenTechno</h1>
       <p>ეკო ენერგია · ციფრული მომავალი</p>
     </div>
-    <div class="intro-tap" id="introTap">✦ შეეხე გასაგრძელებლად ✦</div>
+    <div class="iTap" id="iTap">✦ შეეხე გასაგრძელებლად ✦</div>
   </div>
 </div>
 
-<!-- MAIN SITE -->
-<div id="main-site">
-  <nav id="navbar">
-    <div class="nav-logo">
-      <img src="GreenTecho.png" alt="GreenTechno">
-      <span>GreenTechno</span>
-    </div>
-    <div class="nav-links">
+<!-- SITE -->
+<div id="site">
+  <nav id="nav">
+    <div class="nLogo"><img src="GreenTecho.png" alt="GT"><span>GreenTechno</span></div>
+    <div class="nLinks">
       <a href="#hero">მთავარი</a>
       <a href="#about">შესახებ</a>
       <a href="#macbook">მოწყობილობები</a>
-      <a href="#info">ინფორმაცია</a>
+      <a href="#info">ინფო</a>
       <a href="#ideas">იდეები</a>
     </div>
   </nav>
-
-  <div class="scroll-indicator" id="scrollDots">
-    <div class="scroll-dot active" data-section="hero"></div>
-    <div class="scroll-dot" data-section="about"></div>
-    <div class="scroll-dot" data-section="macbook"></div>
-    <div class="scroll-dot" data-section="info"></div>
-    <div class="scroll-dot" data-section="ideas"></div>
+  <div id="dots">
+    <div class="dot on" data-s="hero"></div>
+    <div class="dot" data-s="about"></div>
+    <div class="dot" data-s="macbook"></div>
+    <div class="dot" data-s="info"></div>
+    <div class="dot" data-s="ideas"></div>
   </div>
 
-  <!-- HERO -->
   <section id="hero">
-    <div id="hero-bg"></div>
-    <div class="hero-particles" id="heroParticles"></div>
-    <div class="hero-inner">
-      <div class="hero-text" id="heroText">
-        <div class="hero-badge">
-          <div class="badge-dot"></div>
-          მომავლის ტექნოლოგია
-        </div>
-        <h1 class="hero-title">
-          <span class="line1">სუფთა ენერგია.</span>
-          <span class="line2">ჭკვიანი ტექნო.</span>
-        </h1>
-        <p class="hero-subtitle">GreenTechno გააერთიანებს ეკოლოგიურ ენერგიას და თანამედროვე ტექნოლოგიებს — მობილური მოწყობილობებიდან დაწყებული ლეპტოპებამდე, ყველა მდგრადი განვითარების პრინციპებზე.</p>
-        <div class="hero-cta">
-          <button class="btn-primary" onclick="playClick()">აღმოაჩინე →</button>
-          <button class="btn-secondary" onclick="scrollToSection('about')">გაიგე მეტი</button>
+    <div class="hBg"></div>
+    <div id="ptcl"></div>
+    <div class="hIn">
+      <div class="hTxt" id="hTxt">
+        <div class="badge"><div class="bdot"></div>მომავლის ტექნოლოგია</div>
+        <h1 class="hH"><span class="l1">სუფთა ენერგია.</span><span class="l2">ჭკვიანი ტექნო.</span></h1>
+        <p class="hSub">GreenTechno აერთიანებს ეკოლოგიურ ენერგიას და თანამედროვე ტექნოლოგიებს — სმარტფონებიდან ლეპტოპებამდე, ყველა მდგრადი განვითარების პრინციპებზე.</p>
+        <div class="hCTA">
+          <button class="btnP" onclick="pClick()">აღმოაჩინე →</button>
+          <button class="btnS" onclick="sScroll('about')">გაიგე მეტი</button>
         </div>
       </div>
-      <div class="hero-3d" id="hero3d">
-        <canvas id="hero-phone-canvas"></canvas>
-        <div class="model-label">iPhone 16 Plus · ეკო ვარიანტი</div>
+      <div class="h3D" id="h3d">
+        <canvas id="hPhC"></canvas>
+        <div class="mLbl">iPhone 16 Plus Green · გადაათრიე</div>
       </div>
     </div>
   </section>
 
-  <div class="glow-line"></div>
+  <div class="gl"></div>
 
-  <!-- ABOUT -->
   <section id="about">
-    <div class="about-grid">
-      <div class="reveal">
-        <div class="section-label">ჩვენ შესახებ</div>
-        <h2 class="section-title">ეკო ენერგია<br><span style="color:var(--green-neon)">ტექ სამყაროში</span></h2>
-        <div class="about-text">
-          <p><strong>ეკო ენერგია ტექნოლოგიებში</strong> — ეს არის გლობალური მოძრაობა, რომელიც მიზნად ისახავს ციფრული სამყაროს ნახშირბადის კვალის შემცირებას და განახლებადი ენერგიის ინტეგრაციას ელექტრონულ მოწყობილობებში.</p>
-          <p>დღეს <strong>მსოფლიო მონაცემთა ცენტრები</strong> მოიხმარენ გლობალური ელექტრობის 1-2%-ს. სმარტფონები, ლეპტოპები და სხვა მოწყობილობები ერთობლივად ქმნიან დიდ გარემოზე ზეგავლენას — მაგრამ ეს იცვლება.</p>
-          <p>GreenTechno-ს ვიზია: <strong>ყოველი ჩვენი მოწყობილობა</strong> მუშაობს განახლებადი ენერგიით, შეიცავს გადამუშავებულ მასალებს და ტოვებს მინიმალურ ეკოლოგიურ კვალს.</p>
+    <div class="aGrid">
+      <div class="rv">
+        <div class="sLbl">ჩვენ შესახებ</div>
+        <h2 class="sT">ეკო ენერგია<br><span style="color:var(--gn)">ტექ სამყაროში</span></h2>
+        <div class="aTxt">
+          <p><strong>ეკო ენერგია ტექნოლოგიებში</strong> — ეს არის გლობალური მოძრაობა, რომელიც მიზნად ისახავს ციფრული სამყაროს ნახშირბადის კვალის შემცირებას. ყოველ წამს, სადმე მსოფლიოში, ინტერნეტი და ჩვენი მოწყობილობები მოიხმარენ ენერგიას — კითხვა მხოლოდ ის არის, საიდან მოდის ეს ენერგია.</p>
+          <p>დღეს <strong>მსოფლიო მონაცემთა ცენტრები</strong> გლობალური ელექტრობის 1–2%-ს მოიხმარენ — 200 მილიარდ კილოვატ-საათს წელიწადში. სმარტფონები, ლეპტოპები, ტაბლეტები — ერთობლივად კოლოსალურ გარემოზე ზეგავლენას ქმნიან. მაგრამ ეს სწრაფად იცვლება.</p>
+          <p>GreenTechno-ს ვიზია: <strong>ყოველი ჩვენი მოწყობილობა</strong> მუშაობდეს განახლებადი ენერგიით, შეიცავდეს გადამუშავებულ მასალებს და ტოვებდეს მინიმალურ ეკოლოგიურ კვალს მომავალი თაობებისთვის.</p>
         </div>
       </div>
-      <div class="reveal" style="transition-delay:0.2s">
-        <div class="stats-grid">
-          <div class="stat-card">
-            <div class="stat-num">78<span class="stat-unit">%</span></div>
-            <div class="stat-label">ნახშირბადის შემცირება Apple-ის ახალ მოდელებში</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-num">100<span class="stat-unit">%</span></div>
-            <div class="stat-label">განახლებადი ენერგია Apple-ის ოფისებში</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-num">20<span class="stat-unit">+</span></div>
-            <div class="stat-label">წელი ვადა ახალ ბატარეის ტექნოლოგიებში</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-num">2030</div>
-            <div class="stat-label">ნეიტრალური CO₂ მიზნის წელი ტექ კომპანიებისთვის</div>
-          </div>
+      <div class="rv" style="transition-delay:.2s">
+        <div class="stGrid">
+          <div class="stC"><div class="stN">78<span class="stU">%</span></div><div class="stL">ნახშირბადის შემცირება Apple-ის ახალ მოდელებში</div></div>
+          <div class="stC"><div class="stN">100<span class="stU">%</span></div><div class="stL">განახლებადი ენერგია Apple-ის ოფისებში</div></div>
+          <div class="stC"><div class="stN">20<span class="stU">+</span></div><div class="stL">წელი ვადა ახალ ბატარეის ტექნოლოგიებში</div></div>
+          <div class="stC"><div class="stN">2030</div><div class="stL">ნეიტრალური CO₂ მიზანი ტექ ინდუსტრიისთვის</div></div>
         </div>
       </div>
     </div>
   </section>
 
-  <div class="glow-line"></div>
+  <div class="gl"></div>
 
-  <!-- MACBOOK 3D -->
   <section id="macbook">
-    <div class="macbook-inner">
-      <div class="reveal">
-        <canvas id="mac-canvas"></canvas>
-        <div class="model-label" style="text-align:center;margin-top:8px;">MacBook Neo · გადაიარაღე მდგრადად</div>
+    <div class="mIn">
+      <div class="rv">
+        <canvas id="macC"></canvas>
+        <div class="mLbl" style="text-align:center;margin-top:10px;">MacBook Neo · გადაათრიე</div>
       </div>
-      <div class="reveal" style="transition-delay:0.2s">
-        <div class="section-label">MacBook Neo</div>
-        <h2 class="section-title">ლეპტოპი,<br><span style="color:var(--lime)">რომელიც ზრუნავს</span></h2>
-        <div class="feature-list">
-          <div class="feature-item">
-            <div class="feature-icon">☀️</div>
-            <div>
-              <div class="feature-title">სოლარული დამტენი</div>
-              <div class="feature-desc">ინტეგრირებული მიკრო-პანელები კრავს მზის ენერგიას ნებისმიერ პირობებში</div>
-            </div>
-          </div>
-          <div class="feature-item">
-            <div class="feature-icon">♻️</div>
-            <div>
-              <div class="feature-title">100% გადამუშავებული ალუმინი</div>
-              <div class="feature-desc">კორპუსი მთლიანად დამზადებულია ვторsordan განახლებული მასალებით</div>
-            </div>
-          </div>
-          <div class="feature-item">
-            <div class="feature-icon">⚡</div>
-            <div>
-              <div class="feature-title">ენერგოეფექტური ჩიპი</div>
-              <div class="feature-desc">ახალი ARM არქიტექტურა 60%-ით ნაკლებ ენერგიას მოიხმარს x86-თან შედარებით</div>
-            </div>
-          </div>
-          <div class="feature-item">
-            <div class="feature-icon">🌿</div>
-            <div>
-              <div class="feature-title">ნულოვანი ემისია შეფუთვა</div>
-              <div class="feature-desc">ბიო-დეგრადირებადი, ბამბუკის ბოჭკოს შეფუთვა ყოველ მოდელზე</div>
-            </div>
-          </div>
+      <div class="rv" style="transition-delay:.2s">
+        <div class="sLbl">MacBook Neo</div>
+        <h2 class="sT">ლეპტოპი,<br><span style="color:var(--lime)">რომელიც ზრუნავს</span></h2>
+        <div class="fList">
+          <div class="fItem"><div class="fIco">☀️</div><div><div class="fT">სოლარული დამტენი</div><div class="fD">ინტეგრირებული მიკრო-პანელები კრავს მზის ენერგიას ნებისმიერ პირობებში</div></div></div>
+          <div class="fItem"><div class="fIco">♻️</div><div><div class="fT">100% გადამუშავებული ალუმინი</div><div class="fD">კორპუსი მთლიანად განახლებული მასალებით, ნულოვანი ნარჩენებით</div></div></div>
+          <div class="fItem"><div class="fIco">⚡</div><div><div class="fT">ენერგოეფექტური ჩიპი</div><div class="fD">ARM არქიტექტურა 60%-ით ნაკლებ ენერგიას მოიხმარს x86-თან შედარებით</div></div></div>
+          <div class="fItem"><div class="fIco">🌿</div><div><div class="fT">ნულოვანი ემისია შეფუთვა</div><div class="fD">ბიო-დეგრადირებადი, ბამბუკის ბოჭკოს შეფუთვა ყოველ მოდელზე</div></div></div>
         </div>
       </div>
     </div>
   </section>
 
-  <div class="glow-line"></div>
+  <div class="gl"></div>
 
-  <!-- INFO CARDS -->
   <section id="info">
-    <div class="section-label reveal">ეკო ტექნოლოგია</div>
-    <h2 class="section-title reveal">გაიგე მეტი<br><span style="color:var(--teal)">ჩვენი სამყაროს შესახებ</span></h2>
-    <p class="info-intro reveal">ეკო ენერგია ტექნოლოგიებში — ეს სცდება მხოლოდ "მწვანე" ლეიბლს. ეს არის ფუნდამენტური გადასვლა იმაზე, თუ როგორ ვქმნით, ვიყენებთ და ვუბრუნებთ ტექნოლოგიებს ბუნებას.</p>
-    <div class="info-cards">
-      <div class="info-card reveal">
-        <div class="info-icon">🔋</div>
-        <h3>ახალი თაობის ბატარეები</h3>
-        <p>მყარ მდგომარეობაში ბატარეები (Solid-State) ნარჩენებისა და სახიფათო სითხეების გარეშე — 3-ჯერ მეტი მოცულობა ნახევარ ზომაში. ლითიუმ-სერა და ნატრიუმ-იონური ტექნოლოგიები ახლოვდება კომერციულ გამოყენებასთან.</p>
-      </div>
-      <div class="info-card reveal" style="transition-delay:0.1s">
-        <div class="info-icon">🌞</div>
-        <h3>ფოტოვოლტური ინტეგრაცია</h3>
-        <p>პერსკიტის სოლარული უჯრედები — მოქნილი, გამჭვირვალე — ინტეგრირდება ტელეფონის ეკრანებსა და ლეპტოპის სახურავებში. 2027 წლისთვის ყოველდღიური გამოყენებისთვის საჭირო ენერგიის 30% საკუთარი მოწყობილობით გამომუშავება შეიძლება.</p>
-      </div>
-      <div class="info-card reveal" style="transition-delay:0.2s">
-        <div class="info-icon">🧠</div>
-        <h3>AI ენერგო-მენეჯმენტი</h3>
-        <p>ჩაშენებული ნეირო-ჩიპები მართავენ ენერგიის ნაკადს სწავლის საფუძველზე — ისწავლიან მომხმარებლის რუტინას, ამცირებენ განაბარ ელექტრომოხმარებას 40%-მდე. ეს არ არის "ეკო-რეჟიმი" — ეს ინტელექტია.</p>
-      </div>
-      <div class="info-card reveal" style="transition-delay:0.3s">
-        <div class="info-icon">🌐</div>
-        <h3>მწვანე მონაცემთა ცენტრები</h3>
-        <p>Google, Microsoft, Apple — ყველა გადადის 24/7 განახლებად ენერგიაზე. ოკეანის სიღრმეში განთავსებული ცენტრები (Microsoft Natick), ბუნებრივი გაგრილება — ენერგიის PUE კოეფიციენტი 1.06-მდე ეცემა.</p>
-      </div>
-      <div class="info-card reveal" style="transition-delay:0.4s">
-        <div class="info-icon">🔄</div>
-        <h3>სრული ციკლი — ნარჩენების გარეშე</h3>
-        <p>Fairphone-ის მოდული, Apple-ის Daisy რობოტი — მოწყობილობა დაიბადება, გამოიყენება, "მოკვდება" და 100%-ით იქნება ხელახლა გამოყენებული. 2035 წლისთვის ე-ნარჩენების 80%-ის გადამუშავება ხდება სამიზნე.</p>
-      </div>
-      <div class="info-card reveal" style="transition-delay:0.5s">
-        <div class="info-icon">📡</div>
-        <h3>Wi-Fi ენერგიის მოპოვება</h3>
-        <p>რადიოსიხშირის ენერგიის მოსაგროვებელი ნანო-ანტენები მოწყობილობებში — 5G, Wi-Fi 7-ის სიგნალები გარდაიქმნება ელექტრო ენერგიად. IoT სენსორები შეიძლება მუდმივად ქსელიდან მუშაობდეს ბატარეის გარეშე.</p>
-      </div>
+    <div class="sLbl rv">ეკო ტექნოლოგია</div>
+    <h2 class="sT rv">გაიგე მეტი<br><span style="color:var(--teal)">ჩვენი სამყაროს შესახებ</span></h2>
+    <p class="iIntro rv">ეკო ენერგია ტექნოლოგიებში სცდება მხოლოდ "მწვანე" ლეიბლს. ეს ფუნდამენტური გადასვლაა — როგორ ვქმნით, ვიყენებთ და ვუბრუნებთ ტექნოლოგიებს ბუნებას. ყოველი ბიტი, ყოველი ჩართული ეკრანი — ეს ყველაფერი უკავშირდება ჩვენი პლანეტის ჯანმრთელობას.</p>
+    <div class="iCards">
+      <div class="iC rv"><div class="iIco">🔋</div><h3>ახალი თაობის ბატარეები</h3><p>მყარ მდგომარეობაში ბატარეები (Solid-State) ნარჩენებისა და სახიფათო სითხეების გარეშე — 3-ჯერ მეტი მოცულობა ნახევარ ზომაში. ლითიუმ-სერა და ნატრიუმ-იონური ტექნოლოგიები 2026–2028 წლებში კომერციულ გამოყენებასთან ახლოვდება.</p></div>
+      <div class="iC rv" style="transition-delay:.1s"><div class="iIco">🌞</div><h3>ფოტოვოლტური ინტეგრაცია</h3><p>პერსკიტის სოლარული უჯრედები — მოქნილი, გამჭვირვალე — ინტეგრირდება ტელეფონის ეკრანებსა და ლეპტოპის სახურავებში. 2027 წლისთვის ყოველდღიური ენერგიის 30%-ის საკუთარი მოწყობილობით გამომუშავება გახდება შესაძლებელი.</p></div>
+      <div class="iC rv" style="transition-delay:.2s"><div class="iIco">🧠</div><h3>AI ენერგო-მენეჯმენტი</h3><p>ჩაშენებული ნეირო-ჩიპები მართავენ ენერგიის ნაკადს სწავლის საფუძველზე — ისწავლიან მომხმარებლის რუტინას, ამცირებენ განაბარ ელექტრომოხმარებას 40%-მდე. ეს არ არის "ეკო-რეჟიმი" — ეს ნამდვილი AI-ია.</p></div>
+      <div class="iC rv" style="transition-delay:.3s"><div class="iIco">🌐</div><h3>მწვანე მონაცემთა ცენტრები</h3><p>Google, Microsoft, Apple — ყველა გადადის 24/7 განახლებად ენერგიაზე. ოკეანის სიღრმეში ცენტრები, ბუნებრივი გაგრილება — PUE კოეფიციენტი 1.06-მდე ეცემა, ისტორიული მიღწევა ინდუსტრიისთვის.</p></div>
+      <div class="iC rv" style="transition-delay:.4s"><div class="iIco">🔄</div><h3>სრული ციკლი — ნარჩენების გარეშე</h3><p>Fairphone-ის მოდული, Apple-ის Daisy რობოტი — მოწყობილობა დაიბადება, გამოიყენება, "მოკვდება" და 100%-ით ხელახლა გამოიყენება. 2035 წლისთვის ე-ნარჩენების 80%-ის გადამუშავება — გლობალური სამიზნე.</p></div>
+      <div class="iC rv" style="transition-delay:.5s"><div class="iIco">📡</div><h3>Wi-Fi ენერგიის მოპოვება</h3><p>რადიოსიხშირის ენერგიის ნანო-ანტენები — 5G და Wi-Fi 7-ის სიგნალები ელექტრო ენერგიად გარდაიქმნება. IoT სენსორები მუდმივად ქსელიდან იკვებება ბატარეის გარეშე — მომავლის ტექნოლოგია უკვე ახლოს არის.</p></div>
     </div>
   </section>
 
-  <div class="glow-line"></div>
+  <div class="gl"></div>
 
-  <!-- UNIQUE IDEAS -->
   <section id="ideas">
-    <div class="ideas-inner">
-      <div class="section-label reveal">5 უნიკალური იდეა</div>
-      <h2 class="section-title reveal">ჩემი ვიზია<br><span style="color:var(--gold)">მომავლისთვის ✦</span></h2>
-      <div class="ideas-grid">
-        <div class="idea-card reveal">
-          <div class="idea-num">01</div>
-          <span class="idea-icon">🌿</span>
-          <h3>Bio-Phone</h3>
-          <p>ბიო-დეგრადირებადი სმარტფონი ბამბუკის კომპოზიტის კორპუსით და სოიოს ლაქის ეკრანით — 5 წლის შემდეგ ბუნებაში სრულად დაიშლება, ნიადაგს გამდიდრებს.</p>
-        </div>
-        <div class="idea-card reveal" style="transition-delay:0.1s">
-          <div class="idea-num">02</div>
-          <span class="idea-icon">🧬</span>
-          <h3>ბიო-ბატარეა</h3>
-          <p>ბაქტერიებზე დაფუძნებული მიკრობიოლოგიური საწვავის უჯრედები — ტელეფონი იკვებება ორგანული ნარჩენებით (შაქარი, ორგ. მჟავები). საოჯახო ნარჩენი = ენერგია.</p>
-        </div>
-        <div class="idea-card reveal" style="transition-delay:0.2s">
-          <div class="idea-num">03</div>
-          <span class="idea-icon">🏙️</span>
-          <h3>ქალაქ-ქსელი</h3>
-          <p>ქუჩის ასფალტში ჩაშენებული პიეზოელექტრული სენსორები — ფეხის ნაბიჯი გამოიმუშავებს ენერგიას. ქალაქის ბეჭდვით ელ-ქსელი 1 მლნ ქვეითთან = 500 kWh/დღეში.</p>
-        </div>
-        <div class="idea-card reveal" style="transition-delay:0.3s">
-          <div class="idea-num">04</div>
-          <span class="idea-icon">🧊</span>
-          <h3>კრიო-სერვერი</h3>
-          <p>მონაცემთა ცენტრები მთის მყინვარების გვერდით — ბუნებრივი გაგრილება ნულოვანი ხარჯით. ციფრული სიმძლავრე + ბუნების შენარჩუნება — ერთ სისტემაში.</p>
-        </div>
-        <div class="idea-card reveal" style="transition-delay:0.4s">
-          <div class="idea-num">05</div>
-          <span class="idea-icon">🌊</span>
-          <h3>ოკეანეს ენერგია</h3>
-          <p>ტალღების კინეტიკური ენერგიის კონვერტერები ტელეფონის დამტენებისთვის სანაპიროებზე — ოკეანური პლატფორმები, რომლებიც ერთდროულად კვებავენ ათასობით მოწყობილობას.</p>
-        </div>
+    <div class="idIn">
+      <div class="sLbl rv">5 უნიკალური იდეა</div>
+      <h2 class="sT rv">ჩემი ვიზია<br><span style="color:var(--gold)">მომავლისთვის ✦</span></h2>
+      <div class="idGrid">
+        <div class="idC rv"><div class="idN">01</div><span>🌿</span><h3>Bio-Phone</h3><p>ბიო-დეგრადირებადი სმარტფონი ბამბუკის კომპოზიტის კორპუსით — 5 წლის შემდეგ ბუნებაში სრულად დაიშლება, ნიადაგს გამდიდრებს.</p></div>
+        <div class="idC rv" style="transition-delay:.1s"><div class="idN">02</div><span>🧬</span><h3>ბიო-ბატარეა</h3><p>ბაქტერიებზე დაფუძნებული მიკრობიოლოგიური საწვავის უჯრედები — ტელეფონი ორგანული ნარჩენებით (შაქარი, მჟავები) იკვებება.</p></div>
+        <div class="idC rv" style="transition-delay:.2s"><div class="idN">03</div><span>🏙️</span><h3>ქალაქ-ქსელი</h3><p>ასფალტში ჩაშენებული პიეზო-სენსორები — ფეხის ნაბიჯი გამოიმუშავებს ენერგიას. 1 მლნ ქვეითთან = 500 kWh/დღეში.</p></div>
+        <div class="idC rv" style="transition-delay:.3s"><div class="idN">04</div><span>🧊</span><h3>კრიო-სერვერი</h3><p>მონაცემთა ცენტრები მთის მყინვარების გვერდით — ბუნებრივი გაგრილება ნულოვანი ხარჯით. ციფრული + ბუნების შენარჩუნება.</p></div>
+        <div class="idC rv" style="transition-delay:.4s"><div class="idN">05</div><span>🌊</span><h3>ოკეანეს ენერგია</h3><p>ტალღების კინეტიკური ენერგიის კონვერტერები სანაპიროებზე — ოკეანური პლატფორმები ათასობით მოწყობილობას ერთდროულად კვებავს.</p></div>
       </div>
     </div>
   </section>
 
-  <div class="glow-line"></div>
+  <div class="gl"></div>
 
-  <!-- WALLPAPERS -->
-  <section id="wallpapers">
-    <div class="section-label reveal">ვიზუალი</div>
-    <h2 class="section-title reveal">GreenTechno<br><span style="color:var(--teal)">ესთეტიკა</span></h2>
-    <div class="wallpaper-showcase reveal">
-      <div class="wp-card" style="height:400px;">
-        <img src="474350.jpg" alt="Wallpaper 1">
-        <div class="wp-overlay"><span class="wp-label">iOS ვოლპეიფერი · ბიო-სერია</span></div>
-      </div>
-      <div class="wp-card" style="height:400px;">
-        <img src="wallpaper_abstract.png" alt="Wallpaper 2">
-        <div class="wp-overlay"><span class="wp-label">მოდული · ეკო</span></div>
-      </div>
-      <div class="wp-card" style="height:400px;">
-        <img src="macbook_hero.webp" alt="MacBook">
-        <div class="wp-overlay"><span class="wp-label">MacBook · Citrus</span></div>
-      </div>
+  <section id="gallery">
+    <div class="sLbl rv">ვიზუალი</div>
+    <h2 class="sT rv">GreenTechno<br><span style="color:var(--teal)">ესთეტიკა</span></h2>
+    <div class="gGrid rv">
+      <div class="gC" style="height:360px;"><img src="474350.jpg" alt="iOS WP"><div class="gOv"><span class="gL">iOS ვოლპეიფერი · ბიო-სერია</span></div></div>
+      <div class="gC" style="height:360px;"><img src="wallpaper_abstract.png" alt="Abstract"><div class="gOv"><span class="gL">მოდული · ეკო სერია</span></div></div>
+      <div class="gC" style="height:360px;"><img src="macbook_hero.webp" alt="MacBook"><div class="gOv"><span class="gL">MacBook · Citrus ედიცია</span></div></div>
     </div>
   </section>
 
-  <div class="glow-line"></div>
+  <div class="gl"></div>
 
   <footer>
-    <div class="footer-logo">
-      <img src="GreenTecho.png" alt="GreenTechno">
-      <span>GreenTechno</span>
-    </div>
-    <div class="footer-text">
-      ეკო ენერგია · ციფრული მომავალი · 2025
-    </div>
-    <div class="footer-copy">© GreenTechno<br>ყველა უფლება დაცულია</div>
+    <div class="fLog"><img src="GreenTecho.png" alt="GT"><span>GreenTechno</span></div>
+    <div class="fM">ეკო ენერგია · ციფრული მომავალი · 2025</div>
+    <div class="fCp">© GreenTechno<br>ყველა უფლება დაცულია</div>
   </footer>
 </div>
 
 <script>
-// ===== AUDIO ENGINE =====
-const AudioCtx = window.AudioContext || window.webkitAudioContext;
-let audioCtx = null;
-let soundEnabled = true;
+// === AUDIO ===
+let AC=null, sOn=true;
+function iAC(){ if(!AC) AC=new(window.AudioContext||window.webkitAudioContext)(); }
+function tone(f,d,t='sine',v=.12){ if(!sOn||!AC)return; const o=AC.createOscillator(),g=AC.createGain(); o.connect(g);g.connect(AC.destination); o.type=t;o.frequency.value=f; g.gain.setValueAtTime(v,AC.currentTime); g.gain.exponentialRampToValueAtTime(.001,AC.currentTime+d); o.start();o.stop(AC.currentTime+d); }
+function chord(fs,d=.4){ fs.forEach((f,i)=>setTimeout(()=>tone(f,d,'sine',.07),i*55)); }
+function whoosh(){ if(!sOn||!AC)return; const b=AC.createBuffer(1,AC.sampleRate*.3,AC.sampleRate),d=b.getChannelData(0); for(let i=0;i<d.length;i++) d[i]=(Math.random()*2-1)*Math.pow(1-i/d.length,2); const s=AC.createBufferSource(),f=AC.createBiquadFilter(),g=AC.createGain(); f.type='bandpass';f.frequency.setValueAtTime(900,AC.currentTime);f.frequency.exponentialRampToValueAtTime(180,AC.currentTime+.3);g.gain.value=.18; s.buffer=b;s.connect(f);f.connect(g);g.connect(AC.destination);s.start(); }
+function pClick(){ iAC();tone(800,.05,'square',.04);setTimeout(()=>tone(600,.05,'square',.03),40); }
+function launchSnd(){ chord([261,329,392,523],.5);setTimeout(()=>chord([392,494,587,784],.5),280);setTimeout(()=>tone(1047,1,'sine',.09),560); }
+document.getElementById('sndBtn').addEventListener('click',()=>{ sOn=!sOn;document.getElementById('sndBtn').textContent=sOn?'🔊':'🔇';iAC();if(sOn)tone(440,.2); });
+document.addEventListener('click',()=>iAC(),{once:true});
 
-function initAudio() {
-  if (!audioCtx) audioCtx = new AudioCtx();
-}
-
-function playTone(freq, dur, type='sine', vol=0.15) {
-  if (!soundEnabled || !audioCtx) return;
-  const osc = audioCtx.createOscillator();
-  const gain = audioCtx.createGain();
-  osc.connect(gain); gain.connect(audioCtx.destination);
-  osc.type = type; osc.frequency.value = freq;
-  gain.gain.setValueAtTime(vol, audioCtx.currentTime);
-  gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + dur);
-  osc.start(); osc.stop(audioCtx.currentTime + dur);
-}
-
-function playChord(freqs, dur=0.4) {
-  freqs.forEach((f,i) => setTimeout(() => playTone(f, dur, 'sine', 0.08), i*60));
-}
-
-function playWhoosh() {
-  if (!soundEnabled || !audioCtx) return;
-  const buf = audioCtx.createBuffer(1, audioCtx.sampleRate*0.3, audioCtx.sampleRate);
-  const d = buf.getChannelData(0);
-  for (let i=0;i<d.length;i++) d[i]=(Math.random()*2-1)*Math.pow(1-i/d.length,2);
-  const src = audioCtx.createBufferSource();
-  const flt = audioCtx.createBiquadFilter();
-  const gain = audioCtx.createGain();
-  flt.type='bandpass'; flt.frequency.setValueAtTime(800,audioCtx.currentTime);
-  flt.frequency.exponentialRampToValueAtTime(200,audioCtx.currentTime+0.3);
-  flt.Q.value=0.5;
-  src.buffer=buf; gain.gain.value=0.2;
-  src.connect(flt); flt.connect(gain); gain.connect(audioCtx.destination);
-  src.start();
-}
-
-function playClick() {
-  if(!soundEnabled||!audioCtx)return;
-  playTone(800,0.05,'square',0.05);
-  setTimeout(()=>playTone(600,0.05,'square',0.03),40);
-}
-
-function playLaunch() {
-  playChord([261,329,392,523],0.5);
-  setTimeout(()=>playChord([392,494,587,784],0.5),300);
-  setTimeout(()=>playTone(1047,1,'sine',0.1),600);
-}
-
-document.getElementById('soundBtn').addEventListener('click', () => {
-  soundEnabled = !soundEnabled;
-  document.getElementById('soundBtn').textContent = soundEnabled ? '🔊' : '🔇';
-  initAudio();
-  if(soundEnabled) playTone(440,0.2);
-});
-
-// ===== CURSOR =====
-const cursor=document.getElementById('cursor');
-const ring=document.getElementById('cursorRing');
+// === CURSOR ===
+const cur=document.getElementById('cur'),cur2=document.getElementById('cur2');
 let mx=0,my=0,rx=0,ry=0;
-document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cursor.style.left=mx+'px';cursor.style.top=my+'px';});
-(function animRing(){rx+=(mx-rx)*0.12;ry+=(my-ry)*0.12;ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(animRing);})();
-document.querySelectorAll('button,a,.idea-card,.info-card,.stat-card').forEach(el=>{
-  el.addEventListener('mouseenter',()=>{cursor.style.width='20px';cursor.style.height='20px';ring.style.width='50px';ring.style.height='50px';});
-  el.addEventListener('mouseleave',()=>{cursor.style.width='12px';cursor.style.height='12px';ring.style.width='36px';ring.style.height='36px';});
-});
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cur.style.left=mx+'px';cur.style.top=my+'px';});
+(function cl(){ rx+=(mx-rx)*.12;ry+=(my-ry)*.12;cur2.style.left=rx+'px';cur2.style.top=ry+'px';requestAnimationFrame(cl); })();
+document.querySelectorAll('button,a,.idC,.iC,.stC,.fItem').forEach(el=>{ el.addEventListener('mouseenter',()=>{cur.style.width='18px';cur.style.height='18px';cur2.style.width='48px';cur2.style.height='48px';}); el.addEventListener('mouseleave',()=>{cur.style.width='10px';cur.style.height='10px';cur2.style.width='34px';cur2.style.height='34px';}); });
 
-// ===== INTRO CANVAS (particles bg) =====
-const introCanvas = document.getElementById('intro-canvas');
-const ictx = introCanvas.getContext('2d');
-introCanvas.width = window.innerWidth; introCanvas.height = window.innerHeight;
-const pts = Array.from({length:80},()=>({x:Math.random()*introCanvas.width,y:Math.random()*introCanvas.height,vx:(Math.random()-0.5)*0.4,vy:(Math.random()-0.5)*0.4,r:Math.random()*2+0.5,a:Math.random()}));
-function animIntro(){
-  ictx.clearRect(0,0,introCanvas.width,introCanvas.height);
-  pts.forEach(p=>{
-    p.x+=p.vx;p.y+=p.vy;
-    if(p.x<0||p.x>introCanvas.width)p.vx*=-1;
-    if(p.y<0||p.y>introCanvas.height)p.vy*=-1;
-    ictx.beginPath();ictx.arc(p.x,p.y,p.r,0,Math.PI*2);
-    ictx.fillStyle=`rgba(57,255,20,${p.a*0.6})`;ictx.fill();
+// === INTRO BG ===
+const bgCv=document.getElementById('bgC'),bx=bgCv.getContext('2d');
+bgCv.width=innerWidth;bgCv.height=innerHeight;
+const pts=Array.from({length:70},()=>({x:Math.random()*bgCv.width,y:Math.random()*bgCv.height,vx:(Math.random()-.5)*.4,vy:(Math.random()-.5)*.4,r:Math.random()*2+.5,a:Math.random()}));
+(function bg(){ bx.clearRect(0,0,bgCv.width,bgCv.height); pts.forEach(p=>{ p.x+=p.vx;p.y+=p.vy; if(p.x<0||p.x>bgCv.width)p.vx*=-1; if(p.y<0||p.y>bgCv.height)p.vy*=-1; bx.beginPath();bx.arc(p.x,p.y,p.r,0,Math.PI*2);bx.fillStyle=`rgba(57,255,20,${p.a*.55})`;bx.fill(); }); pts.forEach((a,i)=>pts.forEach((b,j)=>{ if(i>=j)return; const d=Math.hypot(a.x-b.x,a.y-b.y); if(d<110){bx.beginPath();bx.moveTo(a.x,a.y);bx.lineTo(b.x,b.y);bx.strokeStyle=`rgba(57,255,20,${(1-d/110)*.12})`;bx.stroke();} })); requestAnimationFrame(bg); })();
+
+// === THREE.JS GLTF LOADER ===
+const gLoader=new THREE.GLTFLoader();
+
+function mkScene(canvas,w,h,cz=4){
+  const s=new THREE.Scene(),cam=new THREE.PerspectiveCamera(42,w/h,.1,200);
+  cam.position.set(0,0,cz);
+  const r=new THREE.WebGLRenderer({canvas,alpha:true,antialias:true});
+  r.setSize(w,h);r.setPixelRatio(Math.min(devicePixelRatio,2));
+  r.outputEncoding=THREE.sRGBEncoding;r.toneMapping=THREE.ACESFilmicToneMapping;r.toneMappingExposure=1.2;
+  return{s,cam,r};
+}
+function addLts(scene,c1=0x2ecc40,c2=0x39ff14){
+  scene.add(new THREE.AmbientLight(0xffffff,.7));
+  const d1=new THREE.DirectionalLight(c1,2.5);d1.position.set(3,5,5);scene.add(d1);
+  const d2=new THREE.DirectionalLight(c2,1.2);d2.position.set(-3,-2,3);scene.add(d2);
+  const p=new THREE.PointLight(c2,2,20);p.position.set(0,3,4);scene.add(p);
+}
+function fitM(gltf,tH=2){
+  const box=new THREE.Box3().setFromObject(gltf.scene);
+  const sz=box.getSize(new THREE.Vector3());
+  const ctr=box.getCenter(new THREE.Vector3());
+  const sc=tH/Math.max(sz.x,sz.y,sz.z);
+  gltf.scene.scale.setScalar(sc);
+  gltf.scene.position.sub(ctr.multiplyScalar(sc));
+  return gltf.scene;
+}
+function fallPh(scene){
+  const g=new THREE.Group();
+  g.add(new THREE.Mesh(new THREE.BoxGeometry(.85,1.75,.1),new THREE.MeshStandardMaterial({color:0x0d3b0d,metalness:.95,roughness:.05})));
+  const sc=new THREE.Mesh(new THREE.BoxGeometry(.74,1.58,.01),new THREE.MeshStandardMaterial({color:0x061206,emissive:0x0a2e0a,emissiveIntensity:.9}));
+  sc.position.z=.055;g.add(sc);scene.add(g);return g;
+}
+
+// INTRO PHONE
+let iPM=null;
+const iS=mkScene(document.getElementById('iPhC'),280,560,3.8);
+addLts(iS.s);
+gLoader.load('iphone_16_plus_green.glb',gltf=>{ iPM=fitM(gltf,2.6);iS.s.add(iPM);document.getElementById('appRing').style.opacity='1';document.getElementById('appSt').style.opacity='1'; },undefined,()=>{ iPM=fallPh(iS.s);document.getElementById('appRing').style.opacity='1'; });
+let iA=0;
+(function iL(){ requestAnimationFrame(iL);iA+=.007; if(iPM){iPM.rotation.y=Math.sin(iA)*.25;iPM.position.y=Math.sin(iA*1.2)*.04;} iS.r.render(iS.s,iS.cam); })();
+
+// INTRO LOGIC
+let exited=false;
+function doExit(){ if(exited)return;exited=true; iAC();launchSnd();whoosh(); document.getElementById('intro').classList.add('iExit'); setTimeout(()=>{ document.getElementById('intro').style.display='none'; document.getElementById('site').classList.add('show'); document.getElementById('nav').classList.add('show'); setTimeout(()=>{document.getElementById('hTxt').classList.add('go');document.getElementById('h3d').classList.add('go');},200); initHP();initMac();mkPtcl();obsRv(); },750); }
+document.getElementById('intro').addEventListener('click',doExit);
+document.getElementById('iTap').addEventListener('click',doExit);
+
+// HERO PHONE
+let hM=null,hDr=false,hLX=0,hLY=0,hRX=0,hRY=0,hVX=0,hVY=0;
+function initHP(){
+  const cv=document.getElementById('hPhC');
+  const {s,cam,r}=mkScene(cv,300,600,4.2);
+  addLts(s);
+  gLoader.load('iphone_16_plus_green.glb',g=>{hM=fitM(g,2.8);s.add(hM);},undefined,()=>{hM=fallPh(s);});
+  cv.addEventListener('mousedown',e=>{hDr=true;hLX=e.clientX;hLY=e.clientY;cv.style.cursor='grabbing';});
+  cv.addEventListener('touchstart',e=>{hDr=true;hLX=e.touches[0].clientX;hLY=e.touches[0].clientY;},{passive:true});
+  window.addEventListener('mousemove',e=>{ if(!hDr)return; hVX=(e.clientX-hLX)*.012;hVY=(e.clientY-hLY)*.009;hRY+=hVX;hRX+=hVY;hLX=e.clientX;hLY=e.clientY; if(sOn&&AC)tone(200+Math.abs(hVX)*400,.02,'sine',.015); });
+  window.addEventListener('touchmove',e=>{ if(!hDr)return; hVX=(e.touches[0].clientX-hLX)*.012;hVY=(e.touches[0].clientY-hLY)*.009;hRY+=hVX;hRX+=hVY;hLX=e.touches[0].clientX;hLY=e.touches[0].clientY; },{passive:true});
+  window.addEventListener('mouseup',()=>{hDr=false;cv.style.cursor='grab';});
+  window.addEventListener('touchend',()=>hDr=false);
+  let ha=0;
+  (function hl(){ requestAnimationFrame(hl); if(!hDr){hVX*=.94;hVY*=.94;hRY+=hVX;hRX+=hVY;ha+=.004;hRY+=Math.sin(ha)*.002;} hRX=Math.max(-.55,Math.min(.55,hRX)); if(hM){hM.rotation.y=hRY;hM.rotation.x=hRX;} r.render(s,cam); })();
+}
+
+// MACBOOK
+let mM=null,mDr=false,mLX=0,mLY=0,mRX=0,mRY=.3,mVX=0,mVY=0;
+function initMac(){
+  const cv=document.getElementById('macC');
+  const w=cv.parentElement.clientWidth||550;
+  const {s,cam,r}=mkScene(cv,w,430,5.5);
+  cam.position.set(0,.3,5.5);r.setSize(w,430);
+  addLts(s,0xa8e63d,0x2ecc40);
+  gLoader.load('macbook_neo.glb',g=>{ mM=fitM(g,3.2);s.add(mM); },undefined,()=>{
+    const g=new THREE.Group();
+    const mat=new THREE.MeshStandardMaterial({color:0x1a3a1a,metalness:.9,roughness:.1});
+    const base=new THREE.Mesh(new THREE.BoxGeometry(2.8,.08,2),mat);g.add(base);
+    const lid=new THREE.Mesh(new THREE.BoxGeometry(2.8,1.8,.06),mat);lid.position.set(0,.94,-.97);lid.rotation.x=-.3;g.add(lid);
+    const sm=new THREE.MeshStandardMaterial({color:0x040f04,emissive:0x0a2e0a,emissiveIntensity:.7});
+    const sc=new THREE.Mesh(new THREE.BoxGeometry(2.55,1.55,.01),sm);sc.position.set(0,.94,-.94);sc.rotation.x=-.3;g.add(sc);
+    mM=g;s.add(g);
   });
-  pts.forEach((a,i)=>pts.forEach((b,j)=>{if(i>=j)return;const d=Math.hypot(a.x-b.x,a.y-b.y);if(d<120){ictx.beginPath();ictx.moveTo(a.x,a.y);ictx.lineTo(b.x,b.y);ictx.strokeStyle=`rgba(57,255,20,${(1-d/120)*0.15})`;ictx.stroke();}}));
-  requestAnimationFrame(animIntro);
-}
-animIntro();
-
-// ===== THREE.JS PHONE IN INTRO =====
-let phoneScene, phoneCamera, phoneRenderer, phoneMesh;
-function initIntroPhone() {
-  phoneScene = new THREE.Scene();
-  phoneCamera = new THREE.PerspectiveCamera(45, 280/580, 0.1, 100);
-  phoneCamera.position.set(0, 0, 3.5);
-  phoneRenderer = new THREE.WebGLRenderer({canvas:document.getElementById('phone-canvas'),alpha:true,antialias:true});
-  phoneRenderer.setSize(280,580);
-  phoneRenderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
-
-  // Lighting
-  phoneScene.add(new THREE.AmbientLight(0xffffff,0.6));
-  const d1=new THREE.DirectionalLight(0x2ecc40,2);d1.position.set(2,3,4);phoneScene.add(d1);
-  const d2=new THREE.DirectionalLight(0x39ff14,0.8);d2.position.set(-2,-1,2);phoneScene.add(d2);
-  const pt=new THREE.PointLight(0x39ff14,1.5,10);pt.position.set(0,2,3);phoneScene.add(pt);
-
-  // Try loading GLB
-  loadGLBPhone();
+  cv.addEventListener('mousedown',e=>{mDr=true;mLX=e.clientX;mLY=e.clientY;cv.style.cursor='grabbing';});
+  cv.addEventListener('touchstart',e=>{mDr=true;mLX=e.touches[0].clientX;mLY=e.touches[0].clientY;},{passive:true});
+  window.addEventListener('mousemove',e=>{ if(!mDr)return; mVX=(e.clientX-mLX)*.01;mVY=(e.clientY-mLY)*.007;mRY+=mVX;mRX+=mVY;mLX=e.clientX;mLY=e.clientY; });
+  window.addEventListener('touchmove',e=>{ if(!mDr)return; mVX=(e.touches[0].clientX-mLX)*.01;mVY=(e.touches[0].clientY-mLY)*.007;mRY+=mVX;mRX+=mVY;mLX=e.touches[0].clientX;mLY=e.touches[0].clientY; },{passive:true});
+  window.addEventListener('mouseup',()=>{mDr=false;cv.style.cursor='grab';});
+  window.addEventListener('touchend',()=>mDr=false);
+  let ma=0;
+  (function ml(){ requestAnimationFrame(ml); if(!mDr){mVX*=.94;mVY*=.94;mRY+=mVX;mRX+=mVY;ma+=.004;mRY+=Math.sin(ma)*.001;} mRX=Math.max(-.3,Math.min(.3,mRX)); if(mM){mM.rotation.y=mRY;mM.rotation.x=mRX;} r.render(s,cam); })();
 }
 
-function loadGLBPhone() {
-  // Load via fetch + parse since we don't have GLTFLoader from CDN
-  const loader = createGLTFLoader();
-  if(loader) {
-    loader.load('iphone_16_plus_green.glb', (gltf) => {
-      phoneMesh = gltf.scene;
-      phoneMesh.scale.set(1.4,1.4,1.4);
-      phoneMesh.position.set(0,-0.2,0);
-      phoneScene.add(phoneMesh);
-      document.getElementById('appRing').style.opacity='1';
-    }, undefined, () => createFallbackPhone());
-  } else createFallbackPhone();
-}
+// PARTICLES
+function mkPtcl(){ const c=document.getElementById('ptcl'); for(let i=0;i<28;i++){ const p=document.createElement('div');p.className='pt';const sz=Math.random()*3+1;p.style.cssText=`width:${sz}px;height:${sz}px;left:${Math.random()*100}%;animation-duration:${Math.random()*16+10}s;animation-delay:${Math.random()*16}s;`;c.appendChild(p); } }
 
-function createFallbackPhone() {
-  const g = new THREE.Group();
-  // Phone body
-  const bodyGeo = new THREE.BoxGeometry(0.75,1.55,0.09,1,1,1);
-  const bodyMat = new THREE.MeshStandardMaterial({color:0x1a3a1a,metalness:0.9,roughness:0.1});
-  const body = new THREE.Mesh(bodyGeo,bodyMat); g.add(body);
-  // Screen
-  const screenGeo = new THREE.BoxGeometry(0.66,1.4,0.01);
-  const screenMat = new THREE.MeshStandardMaterial({color:0x0a180a,metalness:0,roughness:0.3,emissive:0x0d2e0d,emissiveIntensity:0.5});
-  const screen = new THREE.Mesh(screenGeo,screenMat); screen.position.z=0.05; g.add(screen);
-  // Dynamic island
-  const diGeo = new THREE.CylinderGeometry(0.06,0.06,0.02,32);
-  const diMat = new THREE.MeshStandardMaterial({color:0x000000}); 
-  const di = new THREE.Mesh(diGeo,diMat); di.rotation.x=Math.PI/2; di.position.set(0,0.58,0.06); g.add(di);
-  phoneMesh = g; phoneScene.add(g);
-  document.getElementById('appRing').style.opacity='1';
-}
+// REVEAL
+function obsRv(){ const o=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('go');if(sOn&&AC)tone(300+Math.random()*180,.1,'sine',.03);}});},{threshold:.15}); document.querySelectorAll('.rv').forEach(el=>o.observe(el)); }
 
-function createGLTFLoader() {
-  // Simple GLB loader check
-  if(typeof THREE.GLTFLoader !== 'undefined') return new THREE.GLTFLoader();
-  return null;
-}
+// SCROLL DOTS
+const secs=['hero','about','macbook','info','ideas'];
+window.addEventListener('scroll',()=>{ const sy=scrollY; secs.forEach((id,i)=>{ const el=document.getElementById(id);if(!el)return; const t=el.offsetTop-250,b=t+el.offsetHeight; document.querySelectorAll('.dot')[i].classList.toggle('on',sy>=t&&sy<b); }); });
+document.querySelectorAll('.dot').forEach((d,i)=>{ d.addEventListener('click',()=>{document.getElementById(secs[i])?.scrollIntoView({behavior:'smooth'});pClick();}); });
+function sScroll(id){document.getElementById(id)?.scrollIntoView({behavior:'smooth'});pClick();}
 
-let introAngle = 0;
-function animIntroPhone() {
-  requestAnimationFrame(animIntroPhone);
-  introAngle += 0.008;
-  if(phoneMesh) {
-    phoneMesh.rotation.y = Math.sin(introAngle)*0.3;
-    phoneMesh.rotation.x = Math.sin(introAngle*0.7)*0.05;
-    phoneMesh.position.y = Math.sin(introAngle*1.2)*0.05 - 0.2;
-  }
-  phoneRenderer.render(phoneScene,phoneCamera);
-}
-initIntroPhone();
-animIntroPhone();
-
-// ===== INTRO CLICK =====
-let introExited = false;
-function exitIntro() {
-  if(introExited) return;
-  introExited = true;
-  initAudio();
-  playLaunch();
-  playWhoosh();
-  const intro = document.getElementById('intro');
-  intro.classList.add('intro-exit');
-  setTimeout(() => {
-    intro.style.display='none';
-    document.getElementById('main-site').classList.add('visible');
-    document.getElementById('navbar').classList.add('visible');
-    setTimeout(()=>{
-      document.getElementById('heroText').classList.add('animate');
-      document.getElementById('hero3d').classList.add('animate');
-    },200);
-    initHeroPhone();
-    initMacBook();
-    createParticles();
-    observeReveal();
-  }, 800);
-}
-document.getElementById('intro').addEventListener('click', exitIntro);
-document.getElementById('introTap').addEventListener('click', exitIntro);
-
-// ===== HERO PHONE (interactive) =====
-let heroPhoneScene, heroPhoneCamera, heroPhoneRenderer, heroPhoneMesh;
-let isDragging=false, lastX=0, lastY=0, rotX=0, rotY=0, velX=0, velY=0;
-
-function initHeroPhone() {
-  const canvas = document.getElementById('hero-phone-canvas');
-  heroPhoneScene = new THREE.Scene();
-  heroPhoneCamera = new THREE.PerspectiveCamera(40, 320/620, 0.1, 100);
-  heroPhoneCamera.position.set(0,0,4);
-  heroPhoneRenderer = new THREE.WebGLRenderer({canvas,alpha:true,antialias:true});
-  heroPhoneRenderer.setSize(320,620);
-  heroPhoneRenderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
-
-  heroPhoneScene.add(new THREE.AmbientLight(0xffffff,0.5));
-  const dl=new THREE.DirectionalLight(0x2ecc40,2.5);dl.position.set(3,5,5);heroPhoneScene.add(dl);
-  const dl2=new THREE.DirectionalLight(0x39ff14,1);dl2.position.set(-3,-2,3);heroPhoneScene.add(dl2);
-  const pl=new THREE.PointLight(0xa8e63d,2,15);pl.position.set(0,3,4);heroPhoneScene.add(pl);
-
-  const loader = createGLTFLoader();
-  if(loader) {
-    loader.load('iphone_16_plus_green.glb',(gltf)=>{
-      heroPhoneMesh=gltf.scene; heroPhoneMesh.scale.set(1.5,1.5,1.5);
-      heroPhoneScene.add(heroPhoneMesh);
-    },undefined,()=>createFallbackHeroPhone());
-  } else createFallbackHeroPhone();
-
-  canvas.addEventListener('mousedown',e=>{isDragging=true;lastX=e.clientX;lastY=e.clientY;});
-  canvas.addEventListener('mousemove',e=>{
-    if(!isDragging)return;
-    velX=(e.clientX-lastX)*0.01; velY=(e.clientY-lastY)*0.008;
-    rotY+=velX; rotX+=velY;
-    lastX=e.clientX;lastY=e.clientY;
-    playTone(200+Math.abs(velX)*500,0.02,'sine',0.02);
-  });
-  canvas.addEventListener('mouseup',()=>isDragging=false);
-  canvas.addEventListener('mouseleave',()=>isDragging=false);
-
-  animHeroPhone();
-}
-
-function createFallbackHeroPhone() {
-  const g = new THREE.Group();
-  const bodyMat = new THREE.MeshStandardMaterial({color:0x0d3b0d,metalness:0.95,roughness:0.05,envMapIntensity:1});
-  const body = new THREE.Mesh(new THREE.BoxGeometry(0.85,1.75,0.1),bodyMat); g.add(body);
-  const screenMat = new THREE.MeshStandardMaterial({color:0x061206,emissive:0x0a2e0a,emissiveIntensity:0.8,roughness:0.2});
-  const screen = new THREE.Mesh(new THREE.BoxGeometry(0.74,1.58,0.01),screenMat); screen.position.z=0.055; g.add(screen);
-  heroPhoneMesh=g; heroPhoneScene.add(g);
-}
-
-let heroAngle=0;
-function animHeroPhone() {
-  requestAnimationFrame(animHeroPhone);
-  if(!isDragging){
-    velX*=0.95; velY*=0.95;
-    rotY+=velX; rotX+=velY;
-    heroAngle+=0.005; rotY+=Math.sin(heroAngle)*0.002;
-  }
-  rotX=Math.max(-0.5,Math.min(0.5,rotX));
-  if(heroPhoneMesh){heroPhoneMesh.rotation.y=rotY;heroPhoneMesh.rotation.x=rotX;}
-  heroPhoneRenderer.render(heroPhoneScene,heroPhoneCamera);
-}
-
-// ===== MACBOOK 3D =====
-let macScene, macCamera, macRenderer, macMesh;
-let macDrag=false, macLX=0, macLY=0, macRotX=0, macRotY=0.3, macVX=0, macVY=0;
-
-function initMacBook() {
-  const canvas = document.getElementById('mac-canvas');
-  macScene = new THREE.Scene();
-  macCamera = new THREE.PerspectiveCamera(40, canvas.clientWidth/440, 0.1, 100);
-  macCamera.position.set(0,0.5,5);
-  macRenderer = new THREE.WebGLRenderer({canvas,alpha:true,antialias:true});
-  macRenderer.setSize(canvas.clientWidth,440);
-  macRenderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
-
-  macScene.add(new THREE.AmbientLight(0xffffff,0.6));
-  const dl=new THREE.DirectionalLight(0xa8e63d,2);dl.position.set(5,5,5);macScene.add(dl);
-  const dl2=new THREE.DirectionalLight(0x2ecc40,1);dl2.position.set(-3,-1,3);macScene.add(dl2);
-  const pl=new THREE.PointLight(0x39ff14,1.5,20);pl.position.set(0,4,5);macScene.add(pl);
-
-  const loader=createGLTFLoader();
-  if(loader){
-    loader.load('macbook_neo.glb',(gltf)=>{
-      macMesh=gltf.scene; macMesh.scale.set(2,2,2);
-      macScene.add(macMesh);
-    },undefined,()=>createFallbackMac());
-  } else createFallbackMac();
-
-  canvas.addEventListener('mousedown',e=>{macDrag=true;macLX=e.clientX;macLY=e.clientY;});
-  canvas.addEventListener('mousemove',e=>{
-    if(!macDrag)return;
-    macVX=(e.clientX-macLX)*0.01;macVY=(e.clientY-macLY)*0.006;
-    macRotY+=macVX;macRotX+=macVY;macLX=e.clientX;macLY=e.clientY;
-  });
-  canvas.addEventListener('mouseup',()=>macDrag=false);
-  canvas.addEventListener('mouseleave',()=>macDrag=false);
-
-  animMac();
-}
-
-function createFallbackMac() {
-  const g = new THREE.Group();
-  const mat = new THREE.MeshStandardMaterial({color:0x1a3a1a,metalness:0.9,roughness:0.1});
-  // Base
-  const base = new THREE.Mesh(new THREE.BoxGeometry(2.8,0.08,2),mat); g.add(base);
-  // Screen lid
-  const lid = new THREE.Mesh(new THREE.BoxGeometry(2.8,1.8,0.06),mat);
-  lid.position.set(0,0.94,-0.97); lid.rotation.x=-0.3; g.add(lid);
-  // Screen display
-  const scrMat=new THREE.MeshStandardMaterial({color:0x040f04,emissive:0x0a2e0a,emissiveIntensity:0.7});
-  const scr=new THREE.Mesh(new THREE.BoxGeometry(2.55,1.55,0.01),scrMat);
-  scr.position.set(0,0.94,-0.94);scr.rotation.x=-0.3;g.add(scr);
-  macMesh=g;macScene.add(g);
-}
-
-let macAngle=0;
-function animMac(){
-  requestAnimationFrame(animMac);
-  if(!macDrag){macVX*=0.95;macVY*=0.95;macRotY+=macVX;macRotX+=macVY;macAngle+=0.004;macRotY+=Math.sin(macAngle)*0.001;}
-  macRotX=Math.max(-0.3,Math.min(0.3,macRotX));
-  if(macMesh){macMesh.rotation.y=macRotY;macMesh.rotation.x=macRotX;}
-  macRenderer.render(macScene,macCamera);
-}
-
-// ===== PARTICLES =====
-function createParticles(){
-  const cont=document.getElementById('heroParticles');
-  for(let i=0;i<30;i++){
-    const p=document.createElement('div');p.className='particle';
-    const size=Math.random()*3+1;
-    p.style.cssText=`width:${size}px;height:${size}px;left:${Math.random()*100}%;animation-duration:${Math.random()*15+10}s;animation-delay:${Math.random()*15}s;`;
-    cont.appendChild(p);
-  }
-}
-
-// ===== SCROLL REVEAL =====
-function observeReveal(){
-  const obs=new IntersectionObserver(entries=>{
-    entries.forEach(e=>{
-      if(e.isIntersecting){
-        e.target.classList.add('visible');
-        playTone(300+Math.random()*200,0.1,'sine',0.03);
-      }
-    });
-  },{threshold:0.15});
-  document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
-}
-
-// ===== SCROLL DOTS =====
-const sections=['hero','about','macbook','info','ideas'];
-window.addEventListener('scroll',()=>{
-  const sy=window.scrollY;
-  sections.forEach((id,i)=>{
-    const el=document.getElementById(id);
-    if(!el)return;
-    const top=el.offsetTop-200;
-    const bot=top+el.offsetHeight;
-    const dot=document.querySelectorAll('.scroll-dot')[i];
-    if(sy>=top&&sy<bot) dot.classList.add('active');
-    else dot.classList.remove('active');
-  });
-});
-document.querySelectorAll('.scroll-dot').forEach((dot,i)=>{
-  dot.addEventListener('click',()=>{
-    document.getElementById(sections[i])?.scrollIntoView({behavior:'smooth'});
-    playClick();
-  });
-});
-function scrollToSection(id){document.getElementById(id)?.scrollIntoView({behavior:'smooth'});playClick();}
-
-// ===== HOVER SOUNDS =====
-document.querySelectorAll('.info-card,.idea-card,.stat-card,.feature-item').forEach(el=>{
-  el.addEventListener('mouseenter',()=>{initAudio();playTone(440+Math.random()*200,0.08,'sine',0.04);});
-});
-document.querySelectorAll('.btn-primary,.btn-secondary').forEach(el=>{
-  el.addEventListener('mouseenter',()=>{initAudio();playTone(600,0.05,'square',0.04);});
-  el.addEventListener('click',()=>{initAudio();playClick();});
-});
-
-// Init audio on first interaction
-document.addEventListener('click',()=>initAudio(),{once:true});
-document.addEventListener('touchstart',()=>initAudio(),{once:true});
+// HOVER SOUNDS
+document.querySelectorAll('.iC,.idC,.stC,.fItem').forEach(el=>{ el.addEventListener('mouseenter',()=>{iAC();tone(440+Math.random()*180,.07,'sine',.03);}); });
+document.querySelectorAll('.btnP,.btnS').forEach(el=>{ el.addEventListener('mouseenter',()=>{iAC();tone(580,.05,'square',.03);}); el.addEventListener('click',()=>{iAC();pClick();}); });
 </script>
 </body>
 </html>
