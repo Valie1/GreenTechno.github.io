@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>GreenTechno — ეკო ენერგია ტექნოლოგიაში</title>
+<title>GreenTechno — ენერგოეფექტირობა</title>
 <script src="three.min.js"></script>
 <script src="GLTFLoader.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
@@ -11,331 +11,449 @@
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
 :root{
   --gn:#39ff14;--gb:#2ecc40;--lime:#a8e63d;
-  --teal:#5de0c5;--gold:#d4a017;
-  --glass:rgba(255,255,255,0.07);
-  --gb2:rgba(255,255,255,0.13);
-  --text:#f0fff0;--muted:rgba(240,255,240,0.6);
+  --teal:#5de0c5;--gold:#d4a017;--red:#ff453a;--orange:#ff9f0a;--blue:#0a84ff;--purple:#bf5af2;
+  --bg:#000;--bg2:#0a0f0a;--bg3:#0d160d;
+  --glass:rgba(255,255,255,0.06);--glass2:rgba(255,255,255,0.1);
+  --border:rgba(255,255,255,0.1);--borderG:rgba(57,255,20,0.2);
+  --text:#f0fff0;--muted:rgba(240,255,240,0.55);
+  --radius:22px;--radiusS:14px;
 }
 html{scroll-behavior:smooth;overflow-x:hidden;}
-body{background:#000;color:var(--text);font-family:'Nunito',sans-serif;overflow-x:hidden;cursor:none;}
+body{background:var(--bg);color:var(--text);font-family:'Nunito',sans-serif;overflow-x:hidden;cursor:none;-webkit-font-smoothing:antialiased;}
 
-/* CURSOR */
-#cur{position:fixed;width:10px;height:10px;background:var(--gn);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);mix-blend-mode:screen;transition:width .2s,height .2s;}
-#cur2{position:fixed;width:34px;height:34px;border:1.5px solid rgba(57,255,20,.45);border-radius:50%;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:width .25s,height .25s;}
+/* ─── CURSOR ─── */
+#cur{position:fixed;width:8px;height:8px;background:var(--gn);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);mix-blend-mode:screen;transition:width .15s,height .15s,background .2s;}
+#cur2{position:fixed;width:32px;height:32px;border:1px solid rgba(57,255,20,.4);border-radius:50%;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:width .2s,height .2s;}
+body.hovering #cur{width:16px;height:16px;background:#fff;}
+body.hovering #cur2{width:50px;height:50px;border-color:rgba(57,255,20,.6);}
 
-/* SOUND BTN */
-#sndBtn{position:fixed;top:20px;right:20px;z-index:600;width:44px;height:44px;border-radius:50%;background:var(--glass);border:1px solid var(--gb2);backdrop-filter:blur(20px);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:1.2rem;transition:all .3s;opacity:0;}
-#sndBtn:hover{background:rgba(57,255,20,.18);border-color:var(--gn);}
-#sndBtn.show{opacity:1;}
-
-/* ============================================================
-   INTRO — FULLSCREEN 3D PHONE ZOOM
-   ============================================================ */
+/* ─── INTRO ─── */
 #intro{
-  position:fixed;inset:0;z-index:1000;
-  background:#000;
+  position:fixed;inset:0;z-index:2000;background:#000;
   display:flex;align-items:center;justify-content:center;
-  overflow:hidden;
-  cursor:pointer;
+  flex-direction:column;overflow:hidden;cursor:pointer;
 }
-
-/* Dark particle field behind phone */
-#introStars{position:absolute;inset:0;z-index:0;}
-
-/* The big phone canvas — starts huge (zoomed in) animates to normal */
-#introPhC{
-  position:relative;z-index:2;
-  display:block;
-  width:420px;height:840px;
-  transform:scale(3.5) translateY(8%);
-  opacity:0;
-  animation:phoneZoomOut 2.2s cubic-bezier(.16,1,.3,1) .3s forwards;
-  filter:drop-shadow(0 0 80px rgba(57,255,20,.6)) drop-shadow(0 0 160px rgba(57,255,20,.3));
-  cursor:pointer;
+#introStarCanvas{position:absolute;inset:0;z-index:0;}
+.introPhone{
+  position:relative;z-index:3;
+  width:340px;height:680px;
+  transform:scale(3.2) translateY(5%);opacity:0;
+  animation:zoomOutPhone 2.4s cubic-bezier(.16,1,.3,1) .2s forwards;
+  filter:drop-shadow(0 0 60px rgba(57,255,20,.7)) drop-shadow(0 0 120px rgba(57,255,20,.3));
 }
-@keyframes phoneZoomOut{
-  0%{transform:scale(3.5) translateY(8%);opacity:0;}
-  20%{opacity:1;}
+@keyframes zoomOutPhone{
+  0%{transform:scale(3.2) translateY(5%);opacity:0;}
+  15%{opacity:1;}
   100%{transform:scale(1) translateY(0);opacity:1;}
 }
-
-/* Glow ring that pulses around the phone */
-.introGlowRing{
-  position:absolute;z-index:1;
-  width:440px;height:860px;
-  border-radius:52px;
-  border:1px solid rgba(57,255,20,.15);
-  box-shadow:0 0 60px rgba(57,255,20,.2), inset 0 0 60px rgba(57,255,20,.05);
-  opacity:0;
-  animation:ringAppear 1s ease 2s forwards, ringPulse 3s ease-in-out 3s infinite;
-  pointer-events:none;
+#iPhCIntro{width:100%;height:100%;display:block;}
+.introPhoneGlow{
+  position:absolute;inset:-20px;border-radius:60px;
+  border:1px solid rgba(57,255,20,.0);
+  box-shadow:0 0 0 rgba(57,255,20,0);
+  animation:glowPulse 2.8s ease-in-out 2.4s infinite;
+  pointer-events:none;z-index:2;
 }
-@keyframes ringAppear{to{opacity:1;}}
-@keyframes ringPulse{
-  0%,100%{box-shadow:0 0 40px rgba(57,255,20,.2),inset 0 0 40px rgba(57,255,20,.05);}
-  50%{box-shadow:0 0 100px rgba(57,255,20,.5),inset 0 0 80px rgba(57,255,20,.1);}
+@keyframes glowPulse{
+  0%,100%{box-shadow:0 0 40px rgba(57,255,20,.2),0 0 80px rgba(57,255,20,.1);border-color:rgba(57,255,20,.15);}
+  50%{box-shadow:0 0 100px rgba(57,255,20,.5),0 0 200px rgba(57,255,20,.2);border-color:rgba(57,255,20,.35);}
 }
-
-/* Click to enter text */
+.introBrand{
+  position:absolute;top:44px;z-index:5;text-align:center;
+  opacity:0;animation:fadeSlideUp .8s ease 2.6s forwards;
+}
+@keyframes fadeSlideUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.introBrand .logo-wrap{display:flex;align-items:center;gap:12px;justify-content:center;margin-bottom:6px;}
+.introBrand .logo-wrap img{width:40px;height:40px;border-radius:12px;box-shadow:0 0 20px rgba(57,255,20,.4);}
+.introBrand h1{font-size:1.7rem;font-weight:900;background:linear-gradient(135deg,#2ecc40,#39ff14,#a8e63d);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;letter-spacing:-0.5px;}
+.introBrand p{font-size:.65rem;color:var(--muted);letter-spacing:4px;text-transform:uppercase;margin-top:3px;}
 .introHint{
-  position:absolute;bottom:60px;z-index:10;
-  font-size:.75rem;letter-spacing:4px;text-transform:uppercase;
-  color:rgba(57,255,20,.6);font-weight:700;
-  opacity:0;animation:hintFade 1s ease 2.5s forwards;
-  text-align:center;
+  position:absolute;bottom:52px;z-index:5;
+  font-size:.72rem;letter-spacing:3px;text-transform:uppercase;
+  color:rgba(57,255,20,.55);font-weight:700;text-align:center;
+  opacity:0;animation:fadeSlideUp .8s ease 3s forwards;
 }
-@keyframes hintFade{to{opacity:1;}}
-.introHint span{animation:blinkHint 1.8s ease-in-out infinite;}
-@keyframes blinkHint{0%,100%{opacity:.4;}50%{opacity:1;}}
+.introHint span{display:inline-block;animation:breathe 2s ease-in-out infinite;}
+@keyframes breathe{0%,100%{opacity:.4;}50%{opacity:1;}}
+.introExit{animation:exitBlast .6s cubic-bezier(.7,0,.9,1) forwards!important;}
+@keyframes exitBlast{0%{opacity:1;filter:brightness(1);}40%{opacity:1;filter:brightness(3);}100%{opacity:0;filter:brightness(0.5);transform:scale(1.1);}}
 
-/* Brand name above phone */
-.introBrandTop{
-  position:absolute;top:50px;z-index:10;
-  text-align:center;
-  opacity:0;animation:hintFade 1s ease 2s forwards;
+/* ─── LOCK SCREEN STYLE TRANSITION ─── */
+#lockOverlay{
+  position:fixed;inset:0;z-index:1500;
+  background:radial-gradient(ellipse at 50% 40%,#0d2e0d 0%,#000 70%);
+  opacity:0;pointer-events:none;
+  display:flex;align-items:center;justify-content:center;
+  flex-direction:column;gap:16px;
 }
-.introBrandTop h1{
-  font-size:1.8rem;font-weight:900;letter-spacing:2px;
-  background:linear-gradient(135deg,#2ecc40,#39ff14,#a8e63d);
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
-}
-.introBrandTop p{font-size:.65rem;color:var(--muted);letter-spacing:5px;text-transform:uppercase;margin-top:4px;}
+#lockOverlay.active{pointer-events:all;animation:lockIn .4s ease forwards;}
+#lockOverlay.release{animation:lockOut .6s cubic-bezier(.16,1,.3,1) forwards;}
+@keyframes lockIn{to{opacity:1;}}
+@keyframes lockOut{from{opacity:1;}to{opacity:0;}}
+.lockIcon{font-size:3rem;animation:lockBounce .5s ease;}
+@keyframes lockBounce{0%{transform:scale(0.5);}60%{transform:scale(1.1);}100%{transform:scale(1);}}
+.lockText{font-size:.75rem;letter-spacing:3px;text-transform:uppercase;color:var(--gn);font-weight:700;}
 
-/* EXIT ANIMATION */
-.introExitAnim{animation:introSplit .9s cubic-bezier(.7,0,1,1) forwards!important;}
-@keyframes introSplit{
-  0%{opacity:1;transform:scale(1);}
-  30%{transform:scale(1.06);}
-  100%{opacity:0;transform:scale(0.85);}
-}
-
-/* ============================================================
-   MAIN SITE
-   ============================================================ */
-#site{opacity:0;transition:opacity 1s;}
+/* ─── MAIN SITE ─── */
+#site{opacity:0;transition:opacity .8s ease;}
 #site.show{opacity:1;}
 
-/* NAV */
-nav{position:fixed;top:0;left:0;right:0;z-index:500;padding:15px 48px;display:flex;align-items:center;justify-content:space-between;backdrop-filter:blur(30px) saturate(1.5);background:rgba(4,15,4,.7);border-bottom:1px solid rgba(57,255,20,.12);transform:translateY(-100%);transition:transform .7s cubic-bezier(.16,1,.3,1);}
-nav.show{transform:translateY(0);}
-.nLogo{display:flex;align-items:center;gap:10px;}
-.nLogo img{width:33px;border-radius:9px;}
-.nLogo span{font-size:1.05rem;font-weight:900;color:var(--gb);}
-.nLinks{display:flex;gap:28px;}
-.nLinks a{font-size:.8rem;color:var(--muted);text-decoration:none;letter-spacing:1px;text-transform:uppercase;font-weight:700;transition:color .3s;position:relative;}
-.nLinks a::after{content:'';position:absolute;bottom:-3px;left:0;width:0;height:1px;background:var(--gn);transition:width .3s;}
-.nLinks a:hover{color:var(--gn);}
-.nLinks a:hover::after{width:100%;}
+/* ─── iOS/macOS TOP STATUS BAR ─── */
+.statusBar{
+  position:fixed;top:0;left:0;right:0;z-index:900;
+  height:52px;display:flex;align-items:center;justify-content:space-between;
+  padding:0 28px;
+  background:rgba(0,0,0,.55);backdrop-filter:blur(40px) saturate(1.8);
+  -webkit-backdrop-filter:blur(40px) saturate(1.8);
+  border-bottom:0.5px solid rgba(255,255,255,.08);
+  transform:translateY(-100%);transition:transform .6s cubic-bezier(.16,1,.3,1);
+}
+.statusBar.show{transform:translateY(0);}
+.sbLeft{display:flex;align-items:center;gap:10px;}
+.sbLogo{width:28px;height:28px;border-radius:8px;object-fit:cover;}
+.sbTitle{font-size:.9rem;font-weight:800;color:var(--gb);}
+.sbCenter{display:flex;align-items:center;gap:6px;}
+.sbTab{padding:5px 14px;border-radius:100px;font-size:.7rem;font-weight:700;letter-spacing:.5px;cursor:pointer;transition:all .25s;color:var(--muted);text-decoration:none;}
+.sbTab:hover,.sbTab.active{background:rgba(57,255,20,.12);color:var(--gn);border:0.5px solid rgba(57,255,20,.3);}
+.sbRight{display:flex;align-items:center;gap:14px;}
+.sbIcon{font-size:1.1rem;cursor:pointer;opacity:.7;transition:opacity .2s;}
+.sbIcon:hover{opacity:1;}
+#sndBtn{background:none;border:none;cursor:pointer;font-size:1.1rem;opacity:.7;transition:opacity .2s;}
+#sndBtn:hover{opacity:1;}
 
-/* SCROLL DOTS */
-#dots{position:fixed;right:24px;top:50%;transform:translateY(-50%);z-index:400;display:flex;flex-direction:column;gap:8px;opacity:0;transition:opacity .5s .5s;}
+/* ─── SCROLL DOTS ─── */
+#dots{position:fixed;right:20px;top:50%;transform:translateY(-50%);z-index:400;display:flex;flex-direction:column;gap:7px;opacity:0;transition:opacity .5s .5s;}
 #dots.show{opacity:1;}
-.dot{width:5px;height:5px;border-radius:50%;background:rgba(57,255,20,.28);cursor:pointer;transition:all .3s;}
-.dot.on{background:var(--gn);height:18px;border-radius:3px;}
+.dot{width:4px;height:4px;border-radius:50%;background:rgba(57,255,20,.25);cursor:pointer;transition:all .3s;}
+.dot.on{background:var(--gn);height:16px;border-radius:2px;}
 
-/* ============================================================
-   HERO SECTION
-   ============================================================ */
-#hero{min-height:100vh;position:relative;display:flex;align-items:center;overflow:hidden;background:#040f04;}
-.hBg{position:absolute;inset:0;background:radial-gradient(ellipse 80% 70% at 60% 0%,rgba(46,204,64,.13),transparent 55%),radial-gradient(ellipse 50% 60% at 10% 80%,rgba(93,224,197,.07),transparent 50%),#040f04;}
-#ptcl{position:absolute;inset:0;overflow:hidden;}
-.pt{position:absolute;border-radius:50%;background:var(--gn);opacity:0;animation:fltUp linear infinite;}
-@keyframes fltUp{0%{opacity:0;transform:translateY(100vh) scale(0)}10%{opacity:.5}90%{opacity:.2}100%{opacity:0;transform:translateY(-80px) scale(1)}}
+/* ─── HERO ─── */
+#hero{
+  min-height:100vh;position:relative;display:flex;align-items:center;
+  overflow:hidden;
+  background:radial-gradient(ellipse 100% 80% at 70% -10%,rgba(46,204,64,.1),transparent 55%),
+             radial-gradient(ellipse 60% 60% at 10% 90%,rgba(93,224,197,.06),transparent 50%),#000;
+}
+#ptcl{position:absolute;inset:0;overflow:hidden;pointer-events:none;}
+.pt{position:absolute;border-radius:50%;background:var(--gn);opacity:0;animation:ptUp linear infinite;}
+@keyframes ptUp{0%{opacity:0;transform:translateY(100vh) scale(0)}8%{opacity:.6}92%{opacity:.15}100%{opacity:0;transform:translateY(-60px) scale(1)}}
 
-.hIn{position:relative;z-index:5;display:grid;grid-template-columns:1fr 1fr;gap:50px;align-items:center;max-width:1200px;margin:0 auto;padding:120px 60px 80px;}
-.hTxt{opacity:0;transform:translateX(-50px);transition:all .9s cubic-bezier(.16,1,.3,1) .1s;}
+.heroIn{
+  position:relative;z-index:5;
+  display:grid;grid-template-columns:1fr 1fr;
+  gap:40px;align-items:center;
+  max-width:1200px;margin:0 auto;padding:100px 60px 80px;
+  width:100%;
+}
+.hTxt{opacity:0;transform:translateX(-40px);transition:all .9s cubic-bezier(.16,1,.3,1) .1s;}
 .hTxt.go{opacity:1;transform:translateX(0);}
-.badge{display:inline-flex;align-items:center;gap:8px;background:rgba(57,255,20,.1);border:1px solid rgba(57,255,20,.3);border-radius:100px;padding:6px 16px;margin-bottom:22px;font-size:.72rem;letter-spacing:2px;text-transform:uppercase;color:var(--gn);font-weight:700;}
-.bdot{width:6px;height:6px;background:var(--gn);border-radius:50%;animation:blinkHint 1.5s infinite;}
-.hH{font-size:clamp(2.6rem,5vw,5rem);font-weight:900;line-height:1.02;letter-spacing:-2.5px;}
-.hH .l1{display:block;color:var(--text);}
-.hH .l2{display:block;background:linear-gradient(135deg,#2ecc40,#39ff14,#a8e63d);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
-.hSub{margin-top:18px;font-size:1rem;line-height:1.75;color:var(--muted);max-width:440px;}
-.hCTA{margin-top:30px;display:flex;gap:14px;flex-wrap:wrap;}
-.btnP{padding:13px 30px;border-radius:100px;background:linear-gradient(135deg,#2ecc40,#39ff14);color:#040f04;font-weight:900;font-size:.9rem;border:none;cursor:pointer;transition:all .3s;box-shadow:0 0 30px rgba(57,255,20,.3);font-family:inherit;}
-.btnP:hover{transform:scale(1.05);box-shadow:0 0 60px rgba(57,255,20,.6);}
-.btnS{padding:13px 30px;border-radius:100px;background:transparent;border:1px solid rgba(57,255,20,.4);color:var(--gn);font-weight:700;font-size:.9rem;cursor:pointer;transition:all .3s;font-family:inherit;}
-.btnS:hover{background:rgba(57,255,20,.1);border-color:var(--gn);}
+.heroBadge{
+  display:inline-flex;align-items:center;gap:8px;
+  background:rgba(57,255,20,.08);border:0.5px solid rgba(57,255,20,.3);
+  border-radius:100px;padding:5px 14px;margin-bottom:20px;
+  font-size:.68rem;letter-spacing:2px;text-transform:uppercase;color:var(--gn);font-weight:700;
+}
+.hDot{width:5px;height:5px;background:var(--gn);border-radius:50%;animation:breathe 1.5s infinite;}
+.heroTitle{font-size:clamp(2.6rem,5vw,5.2rem);font-weight:900;line-height:1.0;letter-spacing:-3px;}
+.heroTitle .t1{display:block;color:var(--text);}
+.heroTitle .t2{display:block;background:linear-gradient(135deg,#2ecc40,#39ff14 50%,#a8e63d);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.heroSub{margin-top:18px;font-size:.98rem;line-height:1.78;color:var(--muted);max-width:440px;}
+.heroCTA{margin-top:28px;display:flex;gap:12px;flex-wrap:wrap;}
+.btnPrimary{
+  padding:12px 28px;border-radius:100px;
+  background:linear-gradient(135deg,#2ecc40,#39ff14);
+  color:#040f04;font-weight:900;font-size:.88rem;border:none;cursor:pointer;
+  transition:all .3s;box-shadow:0 0 25px rgba(57,255,20,.3);font-family:inherit;
+  letter-spacing:.3px;
+}
+.btnPrimary:hover{transform:scale(1.05);box-shadow:0 0 55px rgba(57,255,20,.6);}
+.btnSecondary{
+  padding:12px 28px;border-radius:100px;background:var(--glass);
+  border:0.5px solid rgba(57,255,20,.35);color:var(--gn);font-weight:700;font-size:.88rem;
+  cursor:pointer;transition:all .3s;font-family:inherit;backdrop-filter:blur(10px);
+}
+.btnSecondary:hover{background:rgba(57,255,20,.1);border-color:var(--gn);}
 
-.h3D{display:flex;flex-direction:column;align-items:center;opacity:0;transform:translateX(50px) scale(.95);transition:all .9s cubic-bezier(.16,1,.3,1) .3s;position:relative;}
-.h3D.go{opacity:1;transform:translateX(0) scale(1);}
-#hPhC{width:300px;height:600px;cursor:grab;filter:drop-shadow(0 0 50px rgba(57,255,20,.4));}
+.hero3D{
+  display:flex;flex-direction:column;align-items:center;
+  opacity:0;transform:translateX(40px) scale(.96);
+  transition:all .9s cubic-bezier(.16,1,.3,1) .3s;
+}
+.hero3D.go{opacity:1;transform:translateX(0) scale(1);}
+#hPhC{width:280px;height:560px;cursor:grab;filter:drop-shadow(0 0 40px rgba(57,255,20,.4));}
 #hPhC:active{cursor:grabbing;}
-.mLbl{font-size:.64rem;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-top:8px;}
+.modelTag{
+  margin-top:10px;font-size:.6rem;color:var(--muted);
+  letter-spacing:2.5px;text-transform:uppercase;
+  display:flex;align-items:center;gap:6px;
+}
+.modelTagDot{width:4px;height:4px;background:var(--gn);border-radius:50%;animation:breathe 1.5s infinite;}
 
-/* ============================================================
-   DIVIDERS
-   ============================================================ */
-.gl{height:1px;background:linear-gradient(90deg,transparent,rgba(57,255,20,.35),transparent);margin:0 60px;}
+/* ─── SECTION COMMON ─── */
+.section{padding:90px 60px;max-width:1200px;margin:0 auto;}
+.gl{height:.5px;background:linear-gradient(90deg,transparent,rgba(57,255,20,.3),transparent);margin:0 60px;}
+.sLabel{font-size:.65rem;letter-spacing:4px;text-transform:uppercase;color:var(--gn);font-weight:800;margin-bottom:12px;}
+.sTitle{font-size:clamp(1.8rem,3.5vw,3.2rem);font-weight:900;letter-spacing:-1.5px;line-height:1.1;margin-bottom:28px;}
+.rv{opacity:0;transform:translateY(24px);transition:all .7s cubic-bezier(.16,1,.3,1);}
+.rv.go{opacity:1;transform:translateY(0);}
 
-/* ============================================================
-   ABOUT
-   ============================================================ */
-#about{padding:110px 60px;max-width:1200px;margin:0 auto;}
-.sLbl{font-size:.7rem;letter-spacing:4px;text-transform:uppercase;color:var(--gn);font-weight:700;margin-bottom:14px;}
-.sT{font-size:clamp(2rem,4vw,3.4rem);font-weight:900;letter-spacing:-1.5px;line-height:1.1;margin-bottom:34px;}
-.aGrid{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:start;}
-.aTxt p{font-size:1rem;line-height:1.85;color:rgba(240,255,240,.72);margin-bottom:18px;}
-.aTxt p strong{color:var(--gb);}
-.stGrid{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:30px;}
-.stC{background:var(--glass);border:1px solid var(--gb2);border-radius:20px;padding:22px;backdrop-filter:blur(20px);transition:all .3s;}
-.stC:hover{background:rgba(57,255,20,.07);border-color:rgba(57,255,20,.28);transform:translateY(-5px);box-shadow:0 20px 40px rgba(0,0,0,.5);}
-.stN{font-size:2rem;font-weight:900;color:var(--gn);}
-.stU{font-size:.9rem;color:var(--lime);font-weight:600;}
-.stL{font-size:.76rem;color:var(--muted);margin-top:4px;}
+/* ─── ENERGY EFFICIENCY PAGE ─── */
+#energy{background:radial-gradient(ellipse 80% 60% at 50% 0%,rgba(10,42,10,.5),transparent 60%),var(--bg);}
 
-/* ============================================================
-   MACBOOK SECTION — INSANE TRANSITION
-   ============================================================ */
+/* App Window Card */
+.appWindow{
+  background:rgba(10,18,10,.9);
+  border:0.5px solid rgba(57,255,20,.15);
+  border-radius:var(--radius);
+  backdrop-filter:blur(40px);
+  overflow:hidden;
+  box-shadow:0 40px 80px rgba(0,0,0,.6),0 0 0 0.5px rgba(57,255,20,.08);
+}
+.appWindowBar{
+  display:flex;align-items:center;gap:8px;
+  padding:14px 18px;
+  background:rgba(255,255,255,.03);
+  border-bottom:0.5px solid rgba(255,255,255,.06);
+}
+.winBtn{width:12px;height:12px;border-radius:50%;}
+.winClose{background:#ff453a;}
+.winMin{background:#ff9f0a;}
+.winMax{background:#30d158;}
+.winTitle{margin-left:8px;font-size:.75rem;font-weight:700;color:rgba(240,255,240,.5);letter-spacing:.5px;}
+.winBody{padding:24px;}
+
+/* Language tabs */
+.langTabs{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap;}
+.langTab{
+  padding:6px 16px;border-radius:100px;font-size:.72rem;font-weight:800;
+  cursor:pointer;border:0.5px solid var(--border);background:var(--glass);
+  color:var(--muted);transition:all .25s;letter-spacing:.3px;font-family:inherit;
+}
+.langTab.active,.langTab:hover{border-color:rgba(57,255,20,.4);background:rgba(57,255,20,.1);color:var(--gn);}
+
+/* Code display */
+.codeBlock{
+  background:rgba(0,0,0,.5);border-radius:var(--radiusS);
+  padding:20px;font-family:'SF Mono','Fira Code',monospace;font-size:.8rem;line-height:1.7;
+  border:0.5px solid rgba(255,255,255,.06);overflow-x:auto;position:relative;
+  max-height:260px;overflow-y:auto;
+}
+.codeBlock::-webkit-scrollbar{width:4px;height:4px;}
+.codeBlock::-webkit-scrollbar-track{background:transparent;}
+.codeBlock::-webkit-scrollbar-thumb{background:rgba(57,255,20,.3);border-radius:2px;}
+.cTag{color:#ff7b72;}
+.cKey{color:#79c0ff;}
+.cStr{color:#a5d6ff;}
+.cNum{color:#f0883e;}
+.cCmt{color:#8b949e;font-style:italic;}
+.cFn{color:#d2a8ff;}
+.cVar{color:#ffa657;}
+.cType{color:#7ee787;}
+
+/* Compare grid */
+.compareGrid{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+.compareCard{
+  background:rgba(10,18,10,.8);border:0.5px solid var(--border);
+  border-radius:var(--radius);overflow:hidden;transition:all .3s;
+}
+.compareCard:hover{border-color:rgba(57,255,20,.25);box-shadow:0 20px 40px rgba(0,0,0,.4);}
+.compareHeader{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:14px 18px;border-bottom:0.5px solid var(--border);
+}
+.compareLabel{font-size:.75rem;font-weight:800;letter-spacing:1px;}
+.badgeTag{
+  padding:3px 10px;border-radius:100px;font-size:.62rem;font-weight:800;letter-spacing:.5px;
+}
+.badgeSlow{background:rgba(255,69,58,.15);color:#ff453a;border:0.5px solid rgba(255,69,58,.3);}
+.badgeFast{background:rgba(48,209,88,.15);color:#30d158;border:0.5px solid rgba(48,209,88,.3);}
+.compareBody{padding:16px 18px;}
+
+/* Benchmark bar chart */
+.benchSection{margin-top:36px;}
+.benchTitle{font-size:.82rem;font-weight:800;color:var(--text);margin-bottom:18px;display:flex;align-items:center;gap:8px;}
+.benchBar{margin-bottom:14px;}
+.benchBarLabel{display:flex;justify-content:space-between;font-size:.72rem;color:var(--muted);margin-bottom:5px;font-weight:600;}
+.benchBarTrack{height:8px;background:rgba(255,255,255,.06);border-radius:4px;overflow:hidden;}
+.benchBarFill{height:100%;border-radius:4px;transition:width 1.5s cubic-bezier(.16,1,.3,1);width:0;}
+.fillSlow{background:linear-gradient(90deg,#ff453a,#ff9f0a);}
+.fillFast{background:linear-gradient(90deg,#30d158,#39ff14);}
+
+/* Live benchmark runner */
+.benchRunner{
+  background:rgba(0,0,0,.6);border:0.5px solid var(--borderG);
+  border-radius:var(--radius);padding:24px;margin-top:28px;
+}
+.runnerHeader{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;}
+.runnerTitle{font-size:.85rem;font-weight:800;color:var(--text);}
+.runBtn{
+  padding:8px 20px;border-radius:100px;
+  background:linear-gradient(135deg,#2ecc40,#39ff14);
+  color:#040f04;font-weight:900;font-size:.78rem;border:none;cursor:pointer;
+  font-family:inherit;transition:all .3s;
+  box-shadow:0 0 16px rgba(57,255,20,.25);
+}
+.runBtn:hover{transform:scale(1.04);box-shadow:0 0 30px rgba(57,255,20,.5);}
+.runBtn:disabled{opacity:.5;cursor:not-allowed;transform:none;}
+.resultGrid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.resultCard{background:rgba(255,255,255,.03);border:0.5px solid var(--border);border-radius:var(--radiusS);padding:16px;text-align:center;}
+.resultTime{font-size:1.6rem;font-weight:900;font-family:'SF Mono','Fira Code',monospace;margin-bottom:4px;}
+.resultLabel{font-size:.65rem;color:var(--muted);letter-spacing:1px;text-transform:uppercase;}
+.resultSaving{text-align:center;margin-top:16px;font-size:.88rem;color:var(--muted);font-weight:600;}
+.resultSaving strong{color:var(--gn);}
+.progressBar{height:3px;background:rgba(255,255,255,.06);border-radius:2px;margin-top:12px;overflow:hidden;display:none;}
+.progressFill{height:100%;background:linear-gradient(90deg,#2ecc40,#39ff14);width:0%;transition:width .1s linear;border-radius:2px;}
+
+/* Language comparison table */
+.langTable{width:100%;border-collapse:collapse;margin-top:20px;}
+.langTable th{
+  padding:10px 14px;text-align:left;font-size:.68rem;
+  letter-spacing:1.5px;text-transform:uppercase;color:var(--gn);
+  border-bottom:0.5px solid rgba(57,255,20,.2);font-weight:800;
+}
+.langTable td{
+  padding:12px 14px;font-size:.82rem;color:var(--muted);
+  border-bottom:0.5px solid rgba(255,255,255,.04);
+  transition:background .2s;
+}
+.langTable tr:hover td{background:rgba(57,255,20,.03);}
+.langTable td:first-child{color:var(--text);font-weight:700;}
+.effBadge{
+  display:inline-block;padding:3px 10px;border-radius:100px;
+  font-size:.62rem;font-weight:800;letter-spacing:.5px;
+}
+.eff1{background:rgba(48,209,88,.15);color:#30d158;}
+.eff2{background:rgba(57,255,20,.15);color:#39ff14;}
+.eff3{background:rgba(255,159,10,.15);color:#ff9f0a;}
+.eff4{background:rgba(255,69,58,.15);color:#ff453a;}
+.eff5{background:rgba(191,90,242,.15);color:#bf5af2;}
+
+/* ─── MACBOOK SECTION ─── */
 #macbook{
-  padding:80px 0 110px;
+  padding:0;
   position:relative;overflow:hidden;
-  background:linear-gradient(180deg,transparent,rgba(8,30,8,.6) 30%,rgba(8,30,8,.6) 70%,transparent);
+  background:radial-gradient(ellipse 100% 60% at 50% 50%,rgba(8,28,8,.8),var(--bg));
 }
-
-/* Scanline effect overlay */
-#macbook::before{
-  content:'';position:absolute;inset:0;z-index:0;
-  background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(57,255,20,.015) 2px,rgba(57,255,20,.015) 4px);
-  pointer-events:none;
+.macSection{
+  max-width:1400px;margin:0 auto;
+  padding:100px 60px;
+  display:grid;grid-template-columns:1.2fr 1fr;gap:60px;align-items:center;
 }
-
-.macRevealWrap{
-  max-width:1200px;margin:0 auto;padding:0 60px;
-  position:relative;z-index:1;
-}
-
-/* Mac canvas takes full width and "breaks out" */
 #macC{
-  width:100%;height:500px;
-  cursor:grab;
-  display:block;
-  filter:drop-shadow(0 0 80px rgba(57,255,20,.25)) drop-shadow(0 0 20px rgba(168,230,61,.15));
-  transform:translateY(60px) scale(.9);
-  opacity:0;
-  transition:transform 1.2s cubic-bezier(.16,1,.3,1), opacity 1s ease;
+  width:100%;height:480px;cursor:grab;display:block;
+  filter:drop-shadow(0 0 60px rgba(57,255,20,.25));
+  opacity:0;transform:translateY(50px) scale(.95);
+  transition:all 1.2s cubic-bezier(.16,1,.3,1);
 }
-#macC.go{transform:translateY(0) scale(1);opacity:1;}
+#macC.go{opacity:1;transform:translateY(0) scale(1);}
 #macC:active{cursor:grabbing;}
-
-/* Info panel slides in from right */
-.macInfo{
-  transform:translateX(60px);opacity:0;
-  transition:all 1s cubic-bezier(.16,1,.3,1) .25s;
-}
-.macInfo.go{transform:translateX(0);opacity:1;}
-
-.mIn{display:grid;grid-template-columns:1.1fr .9fr;gap:60px;align-items:center;margin-top:0;}
-.fList{margin-top:28px;display:flex;flex-direction:column;gap:14px;}
-.fItem{display:flex;align-items:flex-start;gap:14px;padding:16px 20px;border-radius:16px;background:var(--glass);border:1px solid var(--gb2);backdrop-filter:blur(20px);transition:all .3s;}
-.fItem:hover{background:rgba(57,255,20,.06);border-color:rgba(57,255,20,.25);transform:translateX(8px);}
-.fIco{font-size:1.5rem;flex-shrink:0;margin-top:2px;}
-.fT{font-size:.9rem;font-weight:800;}
-.fD{font-size:.78rem;color:var(--muted);margin-top:3px;line-height:1.5;}
-
-/* Floating spec tags */
-.macSpecs{
-  display:flex;flex-wrap:wrap;gap:10px;margin-top:24px;
-}
-.specTag{
-  padding:6px 14px;border-radius:100px;
-  background:rgba(57,255,20,.08);border:1px solid rgba(57,255,20,.2);
-  font-size:.72rem;font-weight:700;color:var(--lime);letter-spacing:1px;
+.macInfoPanel{opacity:0;transform:translateX(40px);transition:all 1s cubic-bezier(.16,1,.3,1) .2s;}
+.macInfoPanel.go{opacity:1;transform:translateX(0);}
+.macSpecCards{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:24px;}
+.macSpecCard{
+  background:var(--glass);border:0.5px solid var(--border);
+  border-radius:var(--radiusS);padding:16px;backdrop-filter:blur(20px);
   transition:all .3s;
 }
-.specTag:hover{background:rgba(57,255,20,.18);border-color:var(--gn);color:var(--gn);}
+.macSpecCard:hover{background:rgba(57,255,20,.06);border-color:rgba(57,255,20,.25);transform:translateY(-3px);}
+.macSpecIcon{font-size:1.4rem;margin-bottom:8px;}
+.macSpecTitle{font-size:.78rem;font-weight:800;color:var(--text);margin-bottom:3px;}
+.macSpecVal{font-size:.7rem;color:var(--muted);}
+.macTags{display:flex;flex-wrap:wrap;gap:8px;margin-top:20px;}
+.macTag{
+  padding:5px 13px;border-radius:100px;
+  background:rgba(57,255,20,.07);border:0.5px solid rgba(57,255,20,.18);
+  font-size:.68rem;font-weight:800;color:var(--lime);letter-spacing:.5px;
+  transition:all .25s;cursor:default;
+}
+.macTag:hover{background:rgba(57,255,20,.16);border-color:var(--gn);color:var(--gn);}
 
-/* ============================================================
-   ENVIRONMENTAL IMPACT — NEW SECTION
-   ============================================================ */
-#impact{
-  padding:100px 60px;
-  max-width:1200px;margin:0 auto;
+/* ─── INFO CARDS ─── */
+#info{background:var(--bg);}
+.infoCards{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;}
+.infoCard{
+  background:var(--glass);border:0.5px solid var(--border);
+  border-radius:var(--radius);padding:26px;backdrop-filter:blur(20px);
+  transition:all .4s;position:relative;overflow:hidden;
 }
-.impactGrid{
-  display:grid;grid-template-columns:repeat(4,1fr);gap:24px;margin-top:52px;
+.infoCard::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:1.5px;
+  background:linear-gradient(90deg,transparent,var(--gn),transparent);
+  opacity:0;transition:opacity .3s;
 }
-.impCard{
-  background:var(--glass);border:1px solid var(--gb2);border-radius:24px;
-  padding:32px 24px;backdrop-filter:blur(20px);
+.infoCard:hover::before{opacity:1;}
+.infoCard:hover{transform:translateY(-7px);border-color:rgba(57,255,20,.25);box-shadow:0 24px 50px rgba(0,0,0,.4);}
+.infoIcon{font-size:2rem;margin-bottom:12px;}
+.infoCard h3{font-size:.95rem;font-weight:800;margin-bottom:9px;}
+.infoCard p{font-size:.8rem;line-height:1.7;color:var(--muted);}
+
+/* ─── IDEAS ─── */
+#ideas{background:radial-gradient(ellipse 80% 50% at 50% 100%,rgba(10,42,10,.4),var(--bg));}
+.ideasGrid{display:grid;grid-template-columns:repeat(5,1fr);gap:16px;margin-top:40px;}
+.ideaCard{
+  background:var(--glass);border:0.5px solid var(--border);
+  border-radius:var(--radius);padding:22px 16px;backdrop-filter:blur(20px);
+  text-align:center;transition:all .4s;
+}
+.ideaCard:hover{transform:translateY(-10px) scale(1.02);background:rgba(57,255,20,.06);border-color:rgba(57,255,20,.3);box-shadow:0 28px 56px rgba(0,0,0,.4),0 0 30px rgba(57,255,20,.04);}
+.ideaNum{font-size:2.4rem;font-weight:900;color:rgba(57,255,20,.08);line-height:1;}
+.ideaEmoji{font-size:1.7rem;display:block;margin:8px 0;}
+.ideaCard h3{font-size:.8rem;font-weight:900;color:var(--gb);margin-bottom:7px;}
+.ideaCard p{font-size:.7rem;line-height:1.6;color:var(--muted);}
+
+/* ─── GALLERY ─── */
+#gallery .section{padding-bottom:60px;}
+.galleryGrid{display:grid;grid-template-columns:2fr 1fr 1fr;gap:16px;margin-top:40px;}
+.galleryCard{border-radius:var(--radius);overflow:hidden;position:relative;cursor:pointer;transition:transform .4s;}
+.galleryCard:hover{transform:scale(1.025);}
+.galleryCard img{width:100%;height:100%;object-fit:cover;display:block;}
+.galleryOv{position:absolute;inset:0;background:linear-gradient(180deg,transparent 55%,rgba(0,0,0,.8));display:flex;align-items:flex-end;padding:16px;opacity:0;transition:opacity .3s;}
+.galleryCard:hover .galleryOv{opacity:1;}
+.galleryLbl{font-size:.7rem;color:#fff;font-weight:700;letter-spacing:1px;}
+
+/* ─── FOOTER ─── */
+.siteFooter{
+  border-top:.5px solid rgba(57,255,20,.1);
+  padding:48px 60px;max-width:1200px;margin:0 auto;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.footLogo{display:flex;align-items:center;gap:10px;}
+.footLogo img{width:38px;border-radius:10px;}
+.footLogo span{font-size:1.1rem;font-weight:900;color:var(--gb);}
+.footMid{font-size:.72rem;color:var(--muted);}
+.footCopy{font-size:.68rem;color:rgba(240,255,240,.25);text-align:right;}
+
+/* ─── IMPACT GRID ─── */
+.impactGrid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-top:40px;}
+.impactCard{
+  background:var(--glass);border:0.5px solid var(--border);
+  border-radius:var(--radius);padding:28px 20px;backdrop-filter:blur(20px);
   text-align:center;transition:all .4s;position:relative;overflow:hidden;
 }
-.impCard::after{
-  content:'';position:absolute;bottom:0;left:0;right:0;height:3px;
+.impactCard::after{
+  content:'';position:absolute;bottom:0;left:0;right:0;height:2px;
   background:linear-gradient(90deg,transparent,var(--gn),transparent);
   transform:scaleX(0);transition:transform .4s;
 }
-.impCard:hover::after{transform:scaleX(1);}
-.impCard:hover{transform:translateY(-8px);border-color:rgba(57,255,20,.3);box-shadow:0 30px 60px rgba(0,0,0,.5);}
-.impIco{font-size:2.8rem;display:block;margin-bottom:16px;}
-.impNum{font-size:2.4rem;font-weight:900;color:var(--gn);line-height:1;}
-.impUnit{font-size:1rem;color:var(--lime);font-weight:700;}
-.impLbl{font-size:.8rem;color:var(--muted);margin-top:8px;line-height:1.5;}
+.impactCard:hover::after{transform:scaleX(1);}
+.impactCard:hover{transform:translateY(-7px);border-color:rgba(57,255,20,.3);}
+.impactEmoji{font-size:2.6rem;display:block;margin-bottom:12px;}
+.impactNum{font-size:2.2rem;font-weight:900;color:var(--gn);line-height:1;}
+.impactUnit{font-size:.9rem;color:var(--lime);font-weight:700;}
+.impactLbl{font-size:.75rem;color:var(--muted);margin-top:7px;line-height:1.5;}
 
-/* ============================================================
-   INFO CARDS
-   ============================================================ */
-#info{padding:80px 60px 110px;max-width:1200px;margin:0 auto;}
-.iIntro{max-width:680px;font-size:1rem;line-height:1.82;color:rgba(240,255,240,.68);margin-bottom:50px;}
-.iCards{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;}
-.iC{background:var(--glass);border:1px solid var(--gb2);border-radius:24px;padding:28px;backdrop-filter:blur(20px);transition:all .4s;position:relative;overflow:hidden;}
-.iC::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--gn),transparent);opacity:0;transition:opacity .3s;}
-.iC:hover::before{opacity:1;}
-.iC:hover{transform:translateY(-8px);border-color:rgba(57,255,20,.3);box-shadow:0 30px 60px rgba(0,0,0,.4);}
-.iIco{font-size:2.1rem;margin-bottom:13px;}
-.iC h3{font-size:1rem;font-weight:800;margin-bottom:10px;}
-.iC p{font-size:.83rem;line-height:1.7;color:var(--muted);}
-
-/* ============================================================
-   IDEAS
-   ============================================================ */
-#ideas{padding:80px 60px 110px;background:linear-gradient(180deg,transparent,rgba(10,42,10,.35),transparent);}
-.idIn{max-width:1200px;margin:0 auto;}
-.idGrid{display:grid;grid-template-columns:repeat(5,1fr);gap:18px;margin-top:42px;}
-.idC{background:var(--glass);border:1px solid var(--gb2);border-radius:24px;padding:24px 18px;backdrop-filter:blur(20px);text-align:center;transition:all .4s;}
-.idC:hover{transform:translateY(-12px) scale(1.03);background:rgba(57,255,20,.07);border-color:rgba(57,255,20,.33);box-shadow:0 30px 60px rgba(0,0,0,.4),0 0 40px rgba(57,255,20,.05);}
-.idN{font-size:2.6rem;font-weight:900;line-height:1;color:rgba(57,255,20,.1);margin-bottom:5px;}
-.idC span{font-size:1.8rem;display:block;margin-bottom:9px;}
-.idC h3{font-size:.84rem;font-weight:900;color:var(--gb);margin-bottom:8px;}
-.idC p{font-size:.74rem;line-height:1.6;color:var(--muted);}
-
-/* ============================================================
-   GALLERY
-   ============================================================ */
-#gallery{padding:80px 60px 110px;max-width:1200px;margin:0 auto;}
-.gGrid{display:grid;grid-template-columns:2fr 1fr 1fr;gap:18px;margin-top:42px;}
-.gC{border-radius:22px;overflow:hidden;position:relative;cursor:pointer;transition:transform .4s;}
-.gC:hover{transform:scale(1.025);}
-.gC img{width:100%;height:100%;object-fit:cover;display:block;}
-.gOv{position:absolute;inset:0;background:linear-gradient(180deg,transparent 50%,rgba(0,0,0,.75));display:flex;align-items:flex-end;padding:18px;opacity:0;transition:opacity .3s;}
-.gC:hover .gOv{opacity:1;}
-.gL{font-size:.74rem;color:#fff;font-weight:700;letter-spacing:1px;}
-
-/* ============================================================
-   FOOTER
-   ============================================================ */
-footer{border-top:1px solid rgba(57,255,20,.1);padding:50px 60px;max-width:1200px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;}
-.fLog{display:flex;align-items:center;gap:10px;}
-.fLog img{width:40px;border-radius:11px;}
-.fLog span{font-size:1.2rem;font-weight:900;color:var(--gb);}
-.fM{font-size:.76rem;color:var(--muted);}
-.fCp{font-size:.72rem;color:rgba(240,255,240,.28);text-align:right;}
-
-/* REVEAL */
-.rv{opacity:0;transform:translateY(28px);transition:all .7s cubic-bezier(.16,1,.3,1);}
-.rv.go{opacity:1;transform:translateY(0);}
-
-@media(max-width:900px){
-  .hIn,.aGrid,.mIn{grid-template-columns:1fr;}
-  .iCards{grid-template-columns:1fr 1fr;}
-  .idGrid{grid-template-columns:1fr 1fr;}
+@media(max-width:960px){
+  .heroIn,.compareGrid,.macSection{grid-template-columns:1fr;}
+  .infoCards{grid-template-columns:1fr 1fr;}
+  .ideasGrid{grid-template-columns:1fr 1fr;}
   .impactGrid{grid-template-columns:1fr 1fr;}
-  nav{padding:14px 22px;} .nLinks{display:none;}
-  #about,#info,#ideas,#macbook,#impact,#gallery,footer{padding:60px 22px;}
-  .hIn{padding:90px 22px 60px;}
-  .gGrid{grid-template-columns:1fr 1fr;}
-  #introPhC{width:300px;height:600px;}
-  .introGlowRing{width:320px;height:620px;}
+  .section{padding:70px 24px;}
+  .gl{margin:0 24px;}
+  .macSection{padding:70px 24px;}
+  .siteFooter{padding:40px 24px;flex-direction:column;gap:16px;text-align:center;}
+  .heroIn{padding:90px 24px 60px;}
+  .galleryGrid{grid-template-columns:1fr;}
+  .sbCenter{display:none;}
 }
 </style>
 </head>
@@ -343,128 +461,237 @@ footer{border-top:1px solid rgba(57,255,20,.1);padding:50px 60px;max-width:1200p
 
 <div id="cur"></div>
 <div id="cur2"></div>
-<button id="sndBtn">🔊</button>
 
-<!-- ============================================================
-     INTRO — FULLSCREEN PHONE ZOOM-IN
-     ============================================================ -->
+<!-- ══════════════════ INTRO ══════════════════ -->
 <div id="intro">
-  <canvas id="introStars"></canvas>
+  <canvas id="introStarCanvas"></canvas>
 
-  <div class="introBrandTop">
-    <h1>GreenTechno</h1>
-    <p>ეკო ენერგია · ციფრული მომავალი</p>
+  <div class="introBrand">
+    <div class="logo-wrap">
+      <img src="GreenTecho.png" alt="GT">
+      <div>
+        <h1>GreenTechno</h1>
+        <p>ეკო ენერგია · ციფრული მომავალი</p>
+      </div>
+    </div>
   </div>
 
-  <div class="introGlowRing"></div>
-  <canvas id="introPhC"></canvas>
+  <div class="introPhone">
+    <div class="introPhoneGlow"></div>
+    <canvas id="iPhCIntro"></canvas>
+  </div>
 
   <div class="introHint">
-    <span>✦ შეეხე ეკრანს · tap to enter ✦</span>
+    <span>✦ შეეხე გასაგრძელებლად · tap to enter ✦</span>
   </div>
 </div>
 
-<!-- ============================================================
-     MAIN SITE
-     ============================================================ -->
+<!-- Lock transition overlay -->
+<div id="lockOverlay">
+  <div class="lockIcon">🔓</div>
+  <div class="lockText">გაიხსნება...</div>
+</div>
+
+<!-- ══════════════════ MAIN SITE ══════════════════ -->
 <div id="site">
-  <nav id="nav">
-    <div class="nLogo"><img src="GreenTecho.png" alt="GT"><span>GreenTechno</span></div>
-    <div class="nLinks">
-      <a href="#hero">მთავარი</a>
-      <a href="#about">შესახებ</a>
-      <a href="#macbook">MacBook Neo</a>
-      <a href="#info">ინფო</a>
-      <a href="#ideas">იდეები</a>
+
+  <!-- iOS/macOS status bar -->
+  <nav class="statusBar" id="statusBar">
+    <div class="sbLeft">
+      <img src="GreenTecho.png" class="sbLogo" alt="GT">
+      <span class="sbTitle">GreenTechno</span>
+    </div>
+    <div class="sbCenter">
+      <a href="#hero" class="sbTab active">მთავარი</a>
+      <a href="#energy" class="sbTab">ენერგო</a>
+      <a href="#macbook" class="sbTab">MacBook</a>
+      <a href="#info" class="sbTab">ინფო</a>
+      <a href="#ideas" class="sbTab">იდეები</a>
+    </div>
+    <div class="sbRight">
+      <button id="sndBtn">🔊</button>
+      <span class="sbIcon">🌿</span>
     </div>
   </nav>
+
   <div id="dots">
-    <div class="dot on" data-s="hero"></div>
-    <div class="dot" data-s="about"></div>
-    <div class="dot" data-s="macbook"></div>
-    <div class="dot" data-s="info"></div>
-    <div class="dot" data-s="ideas"></div>
+    <div class="dot on"></div>
+    <div class="dot"></div>
+    <div class="dot"></div>
+    <div class="dot"></div>
+    <div class="dot"></div>
+    <div class="dot"></div>
   </div>
 
-  <!-- HERO -->
+  <!-- ── HERO ── -->
   <section id="hero">
-    <div class="hBg"></div>
     <div id="ptcl"></div>
-    <div class="hIn">
+    <div class="heroIn">
       <div class="hTxt" id="hTxt">
-        <div class="badge"><div class="bdot"></div>მომავლის ტექნოლოგია</div>
-        <h1 class="hH">
-          <span class="l1">სუფთა ენერგია.</span>
-          <span class="l2">ჭკვიანი ტექნო.</span>
+        <div class="heroBadge"><div class="hDot"></div>ენერგოეფექტირობა</div>
+        <h1 class="heroTitle">
+          <span class="t1">სუფთა კოდი.</span>
+          <span class="t2">ჭკვიანი ენერგია.</span>
         </h1>
-        <p class="hSub">GreenTechno აერთიანებს ეკოლოგიურ ენერგიას და თანამედროვე ტექნოლოგიებს — სმარტფონებიდან ლეპტოპებამდე, ყველა მდგრადი განვითარების პრინციპებზე.</p>
-        <div class="hCTA">
-          <button class="btnP" onclick="pClick()">აღმოაჩინე →</button>
-          <button class="btnS" onclick="sScroll('about')">გაიგე მეტი</button>
+        <p class="heroSub">პროგრამირების ენა, ალგორითმი და არქიტექტურა პირდაპირ გავლენას ახდენს ენერგიის მოხმარებაზე. GreenTechno სწავლობს, ზომავს და ოპტიმიზებს.</p>
+        <div class="heroCTA">
+          <button class="btnPrimary" onclick="scrollTo('energy')">ენერგო ტესტი →</button>
+          <button class="btnSecondary" onclick="scrollTo('info')">გაიგე მეტი</button>
         </div>
       </div>
-      <div class="h3D" id="h3d">
+      <div class="hero3D" id="h3d">
         <canvas id="hPhC"></canvas>
-        <div class="mLbl">iPhone 16 Plus Green ✦</div>
+        <div class="modelTag"><div class="modelTagDot"></div>iPhone 16 Plus Green · გადაათრიე</div>
       </div>
     </div>
   </section>
 
   <div class="gl"></div>
 
-  <!-- ABOUT -->
-  <section id="about">
-    <div class="aGrid">
+  <!-- ── ENERGY EFFICIENCY ── -->
+  <section id="energy" style="padding:90px 0;background:radial-gradient(ellipse 80% 60% at 50% 0%,rgba(10,42,10,.4),transparent 60%),var(--bg);">
+    <div style="max-width:1200px;margin:0 auto;padding:0 60px;">
+
       <div class="rv">
-        <div class="sLbl">ჩვენ შესახებ</div>
-        <h2 class="sT">ეკო ენერგია<br><span style="color:var(--gn)">ტექ სამყაროში</span></h2>
-        <div class="aTxt">
-          <p><strong>ეკო ენერგია ტექნოლოგიებში</strong> — ეს არის გლობალური მოძრაობა, რომელიც მიზნად ისახავს ციფრული სამყაროს ნახშირბადის კვალის შემცირებას. ყოველ წამს, სადმე მსოფლიოში, ჩვენი მოწყობილობები მოიხმარენ ენერგიას — კითხვა მხოლოდ ის არის, საიდან მოდის ეს ენერგია.</p>
-          <p>დღეს <strong>მსოფლიო მონაცემთა ცენტრები</strong> გლობალური ელექტრობის 1–2%-ს მოიხმარენ — 200 მილიარდ კილოვატ-საათს წელიწადში. სმარტფონები, ლეპტოპები, ტაბლეტები — ერთობლივად კოლოსალურ გარემოზე ზეგავლენას ქმნიან. მაგრამ ეს სწრაფად იცვლება.</p>
-          <p>GreenTechno-ს ვიზია: <strong>ყოველი ჩვენი მოწყობილობა</strong> მუშაობდეს განახლებადი ენერგიით, შეიცავდეს გადამუშავებულ მასალებს და ტოვებდეს მინიმალურ ეკოლოგიურ კვალს მომავალი თაობებისთვის.</p>
+        <div class="sLabel">ენერგოეფექტირობა</div>
+        <h2 class="sTitle">კოდი, <span style="color:var(--gn)">რომელიც ზრუნავს</span></h2>
+        <p style="font-size:.98rem;line-height:1.8;color:var(--muted);max-width:680px;margin-bottom:48px;">ოპტიმიზებული კოდი არ არის მხოლოდ სიჩქარე — ეს ნაკლები CPU დრო, ნაკლები ელექტრობა, ნაკლები CO₂. ყოველი π-ის გამოთვლის ალგორითმი, ყოველი loop — ეს ჩვენი პლანეტის ბიუჯეტია.</p>
+      </div>
+
+      <!-- LANGUAGE BENCHMARK LIVE RUNNER -->
+      <div class="rv benchRunner" id="benchRunnerBox">
+        <div class="runnerHeader">
+          <div class="runnerTitle">⚡ ლაივ ბენჩმარკი — π-ის გამოთვლა (10,000,000 იტერაცია)</div>
+          <button class="runBtn" id="runBenchBtn" onclick="runBenchmark()">▶ გაუშვი ტესტი</button>
+        </div>
+        <div class="progressBar" id="benchProgress">
+          <div class="progressFill" id="benchFill"></div>
+        </div>
+        <div class="resultGrid" id="benchResults" style="display:none">
+          <div class="resultCard">
+            <div class="resultTime" id="slowTime" style="color:#ff453a;">—</div>
+            <div class="resultLabel">❌ არაოპტიმიზებული (ms)</div>
+          </div>
+          <div class="resultCard">
+            <div class="resultTime" id="fastTime" style="color:#30d158;">—</div>
+            <div class="resultLabel">✅ ოპტიმიზებული (ms)</div>
+          </div>
+          <div class="resultCard">
+            <div class="resultTime" id="slowEnergy" style="color:#ff9f0a;">—</div>
+            <div class="resultLabel">🔋 შეფარდებითი ენერგია</div>
+          </div>
+          <div class="resultCard">
+            <div class="resultTime" id="speedup" style="color:var(--gn);">—</div>
+            <div class="resultLabel">🚀 დაჩქარება (x)</div>
+          </div>
+        </div>
+        <div class="resultSaving" id="savingMsg" style="display:none"></div>
+      </div>
+
+      <!-- CODE COMPARISON -->
+      <div style="margin-top:48px;" class="rv">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
+          <h3 style="font-size:1.1rem;font-weight:900;">კოდის შედარება — π-ის გამოთვლა</h3>
+          <div class="langTabs" id="langTabs">
+            <button class="langTab active" onclick="switchLang('python')">🐍 Python</button>
+            <button class="langTab" onclick="switchLang('js')">🌐 JavaScript</button>
+            <button class="langTab" onclick="switchLang('rust')">🦀 Rust</button>
+            <button class="langTab" onclick="switchLang('cpp')">⚙️ C++</button>
+          </div>
+        </div>
+        <div class="compareGrid">
+          <div class="compareCard">
+            <div class="compareHeader">
+              <div class="compareLabel" style="color:#ff453a;">❌ არაოპტიმიზებული</div>
+              <span class="badgeTag badgeSlow">ნელი · მეტი ენერგია</span>
+            </div>
+            <div class="compareBody">
+              <div class="codeBlock" id="slowCode"></div>
+            </div>
+          </div>
+          <div class="compareCard">
+            <div class="compareHeader">
+              <div class="compareLabel" style="color:#30d158;">✅ ოპტიმიზებული</div>
+              <span class="badgeTag badgeFast">სწრაფი · ეკო</span>
+            </div>
+            <div class="compareBody">
+              <div class="codeBlock" id="fastCode"></div>
+            </div>
+          </div>
         </div>
       </div>
-      <div class="rv" style="transition-delay:.2s">
-        <div class="stGrid">
-          <div class="stC"><div class="stN">78<span class="stU">%</span></div><div class="stL">ნახშირბადის შემცირება Apple-ის ახალ მოდელებში</div></div>
-          <div class="stC"><div class="stN">100<span class="stU">%</span></div><div class="stL">განახლებადი ენერგია Apple-ის ოფისებში</div></div>
-          <div class="stC"><div class="stN">20<span class="stU">+</span></div><div class="stL">წელი ვადა ახალ ბატარეის ტექნოლოგიებში</div></div>
-          <div class="stC"><div class="stN">2030</div><div class="stL">ნეიტრალური CO₂ მიზანი ტექ ინდუსტრიისთვის</div></div>
+
+      <!-- BARS -->
+      <div class="benchSection rv" id="benchBarsSection">
+        <div class="benchTitle">📊 სიჩქარის შედარება (სიჩქარის ინდექსი — მეტია უკეთესი)</div>
+        <div id="benchBars"></div>
+      </div>
+
+      <!-- LANGUAGE TABLE -->
+      <div class="appWindow rv" style="margin-top:48px;">
+        <div class="appWindowBar">
+          <div class="winBtn winClose"></div>
+          <div class="winBtn winMin"></div>
+          <div class="winBtn winMax"></div>
+          <span class="winTitle">GreenTechno Energy Analyzer — ენერგოეფექტური ენები</span>
+        </div>
+        <div class="winBody">
+          <table class="langTable">
+            <thead>
+              <tr>
+                <th>ენა</th>
+                <th>ტიპი</th>
+                <th>π (1M iter) ms</th>
+                <th>ენერგო-ეფ.</th>
+                <th>GC Pressure</th>
+                <th>სარეკომ.</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>🦀 Rust</td><td>Compiled</td><td>~3ms</td><td><span class="effBadge eff1">⚡ ძალიან მაღალი</span></td><td>None</td><td>HPC / Embedded</td></tr>
+              <tr><td>⚙️ C / C++</td><td>Compiled</td><td>~4ms</td><td><span class="effBadge eff1">⚡ ძალიან მაღალი</span></td><td>None</td><td>OS / Drivers</td></tr>
+              <tr><td>☕ Java (JVM)</td><td>JIT</td><td>~18ms</td><td><span class="effBadge eff2">✅ მაღალი</span></td><td>გამოჩნდება</td><td>Backend / Android</td></tr>
+              <tr><td>🌐 JavaScript (V8)</td><td>JIT</td><td>~22ms</td><td><span class="effBadge eff2">✅ მაღალი</span></td><td>გამოჩნდება</td><td>Web / Node.js</td></tr>
+              <tr><td>🐍 Python (CPython)</td><td>Interpreted</td><td>~1800ms</td><td><span class="effBadge eff4">🔴 დაბალი</span></td><td>Reference Counting</td><td>AI/ML / Scripts</td></tr>
+              <tr><td>💎 Ruby</td><td>Interpreted</td><td>~2200ms</td><td><span class="effBadge eff4">🔴 დაბალი</span></td><td>მაღალი</td><td>Web (Rails)</td></tr>
+              <tr><td>🐍 Python (PyPy)</td><td>JIT</td><td>~95ms</td><td><span class="effBadge eff3">🟡 საშუალო</span></td><td>Reference Counting</td><td>Scientific</td></tr>
+              <tr><td>🟣 Kotlin</td><td>JVM/Native</td><td>~19ms</td><td><span class="effBadge eff2">✅ მაღალი</span></td><td>JVM</td><td>Android / Server</td></tr>
+              <tr><td>🔵 Swift</td><td>Compiled</td><td>~5ms</td><td><span class="effBadge eff1">⚡ ძალიან მაღალი</span></td><td>ARC (zero-cost)</td><td>iOS / macOS</td></tr>
+              <tr><td>🔷 Go</td><td>Compiled</td><td>~8ms</td><td><span class="effBadge eff2">✅ მაღალი</span></td><td>მინიმალური</td><td>Cloud / APIs</td></tr>
+            </tbody>
+          </table>
         </div>
       </div>
+
     </div>
   </section>
 
   <div class="gl"></div>
 
-  <!-- MACBOOK — INSANE TRANSITION SECTION -->
+  <!-- ── MACBOOK 3D ── -->
   <section id="macbook">
-    <div class="macRevealWrap">
-      <div style="text-align:center;margin-bottom:50px;" class="rv" id="macLabel">
-        <div class="sLbl" style="justify-content:center;display:flex;">MacBook Neo</div>
-        <h2 class="sT" style="text-align:center;">ლეპტოპი, <span style="color:var(--lime)">რომელიც ზრუნავს</span></h2>
+    <div class="macSection">
+      <div>
+        <canvas id="macC"></canvas>
+        <div class="modelTag" style="justify-content:center;margin-top:12px;"><div class="modelTagDot"></div>MacBook Neo · გადაათრიე</div>
       </div>
-
-      <div class="mIn">
-        <div>
-          <canvas id="macC"></canvas>
-          <div class="mLbl" style="text-align:center;margin-top:12px;">MacBook Neo ✦</div>
+      <div class="macInfoPanel" id="macInfoPanel">
+        <div class="sLabel">MacBook Neo</div>
+        <h2 class="sTitle">ლეპტოპი,<br><span style="color:var(--lime)">რომელიც ზრუნავს</span></h2>
+        <p style="font-size:.92rem;line-height:1.8;color:var(--muted);margin-bottom:22px;">MacBook Neo-ს ყოველი ელემენტი ოპტიმიზებულია ენერგიის მოხმარებისთვის — ARM ჩიპიდან დაწყებული, გადამუშავებული ალუმინით დამთავრებული.</p>
+        <div class="macSpecCards">
+          <div class="macSpecCard"><div class="macSpecIcon">☀️</div><div class="macSpecTitle">სოლარული დამტენი</div><div class="macSpecVal">მზის ენერგია ნებისმიერ პირობებში</div></div>
+          <div class="macSpecCard"><div class="macSpecIcon">♻️</div><div class="macSpecTitle">100% Recycled Al</div><div class="macSpecVal">ნულოვანი ნარჩენი წარმოება</div></div>
+          <div class="macSpecCard"><div class="macSpecIcon">⚡</div><div class="macSpecTitle">ARM M4 Ultra</div><div class="macSpecVal">60% ნაკლები ენერგია x86-ზე</div></div>
+          <div class="macSpecCard"><div class="macSpecIcon">🌿</div><div class="macSpecTitle">36h ბატარეა</div><div class="macSpecVal">ბიო-შეფუთვა ბამბუკისგან</div></div>
         </div>
-        <div class="macInfo" id="macInfo">
-          <p style="font-size:1rem;line-height:1.8;color:var(--muted);margin-bottom:24px;">MacBook Neo არის ახალი სტანდარტი — სადაც ეფექტურობა ხვდება ეკოლოგიურ პასუხისმგებლობას. ყოველი კომპონენტი, ყოველი ალგორითმი, ყოველი ბოლო ელექტრონი — ოპტიმიზებულია ჩვენი პლანეტის გამო.</p>
-          <div class="fList">
-            <div class="fItem"><div class="fIco">☀️</div><div><div class="fT">სოლარული დამტენი</div><div class="fD">ინტეგრირებული მიკრო-პანელები კრავს მზის ენერგიას ნებისმიერ პირობებში</div></div></div>
-            <div class="fItem"><div class="fIco">♻️</div><div><div class="fT">100% გადამუშავებული ალუმინი</div><div class="fD">კორპუსი მთლიანად განახლებული მასალებით, ნულოვანი ნარჩენებით</div></div></div>
-            <div class="fItem"><div class="fIco">⚡</div><div><div class="fT">ენერგოეფექტური ჩიპი</div><div class="fD">ARM არქიტექტურა 60%-ით ნაკლებ ენერგიას მოიხმარს x86-თან შედარებით</div></div></div>
-            <div class="fItem"><div class="fIco">🌿</div><div><div class="fT">ნულოვანი ემისია შეფუთვა</div><div class="fD">ბიო-დეგრადირებადი, ბამბუკის ბოჭკოს შეფუთვა ყოველ მოდელზე</div></div></div>
-          </div>
-          <div class="macSpecs">
-            <span class="specTag">ARM M4 Ultra</span>
-            <span class="specTag">36h ბატარეა</span>
-            <span class="specTag">CO₂ Neutral</span>
-            <span class="specTag">100% Recycled</span>
-            <span class="specTag">Solar Ready</span>
-          </div>
+        <div class="macTags">
+          <span class="macTag">ARM M4 Ultra</span>
+          <span class="macTag">36h Battery</span>
+          <span class="macTag">CO₂ Neutral</span>
+          <span class="macTag">100% Recycled</span>
+          <span class="macTag">Solar Ready</span>
+          <span class="macTag">Swift Native</span>
         </div>
       </div>
     </div>
@@ -472,155 +699,133 @@ footer{border-top:1px solid rgba(57,255,20,.1);padding:50px 60px;max-width:1200p
 
   <div class="gl"></div>
 
-  <!-- IMPACT — NEW SECTION -->
-  <section id="impact">
-    <div class="sLbl rv" style="text-align:center;">გარემოზე ზეგავლენა</div>
-    <h2 class="sT rv" style="text-align:center;">ციფრები, <span style="color:var(--teal)">რომლებიც მნიშვნელოვანია</span></h2>
-    <div class="impactGrid">
-      <div class="impCard rv">
-        <span class="impIco">🌳</span>
-        <div class="impNum">2.4M<span class="impUnit"></span></div>
-        <div class="impLbl">ხე გადარჩენილია ყოველწლიურად ეკო-ტექ ინიციატივებით</div>
-      </div>
-      <div class="impCard rv" style="transition-delay:.1s">
-        <span class="impIco">💧</span>
-        <div class="impNum">40<span class="impUnit">%</span></div>
-        <div class="impLbl">წყლის მოხმარების შემცირება ახალ წარმოების პროცესებში</div>
-      </div>
-      <div class="impCard rv" style="transition-delay:.2s">
-        <span class="impIco">⚡</span>
-        <div class="impNum">8.3<span class="impUnit">GW</span></div>
-        <div class="impLbl">განახლებადი ენერგია გამოყენებულია Apple-ის გლობალურ ოპერაციებში</div>
-      </div>
-      <div class="impCard rv" style="transition-delay:.3s">
-        <span class="impIco">🌍</span>
-        <div class="impNum">22M<span class="impUnit">t</span></div>
-        <div class="impLbl">CO₂ შემცირება ტექ ინდუსტრიის ეკო-ვალდებულებებით 2024-ში</div>
+  <!-- ── IMPACT ── -->
+  <section id="impact" style="padding:90px 0;background:var(--bg);">
+    <div style="max-width:1200px;margin:0 auto;padding:0 60px;">
+      <div class="sLabel rv" style="text-align:center;">გარემოზე ზეგავლენა</div>
+      <h2 class="sTitle rv" style="text-align:center;">ციფრები, <span style="color:var(--teal)">რომლებიც მნიშვნელობენ</span></h2>
+      <div class="impactGrid">
+        <div class="impactCard rv"><span class="impactEmoji">🌳</span><div class="impactNum">2.4M</div><div class="impactLbl">ხე გადარჩენილია ყოველწლიურად ეკო-ტექ ინიციატივებით</div></div>
+        <div class="impactCard rv" style="transition-delay:.1s"><span class="impactEmoji">💧</span><div class="impactNum">40<span class="impactUnit">%</span></div><div class="impactLbl">წყლის მოხმარების შემცირება ახალ წარმოებაში</div></div>
+        <div class="impactCard rv" style="transition-delay:.2s"><span class="impactEmoji">⚡</span><div class="impactNum">8.3<span class="impactUnit">GW</span></div><div class="impactLbl">განახლებადი ენერგია Apple-ის გლობალ ოპერაციებში</div></div>
+        <div class="impactCard rv" style="transition-delay:.3s"><span class="impactEmoji">🌍</span><div class="impactNum">22M<span class="impactUnit">t</span></div><div class="impactLbl">CO₂ შემცირება ტექ ინდუსტრიაში 2024-ში</div></div>
       </div>
     </div>
   </section>
 
   <div class="gl"></div>
 
-  <!-- INFO -->
-  <section id="info">
-    <div class="sLbl rv">ეკო ტექნოლოგია</div>
-    <h2 class="sT rv">გაიგე მეტი<br><span style="color:var(--teal)">ჩვენი სამყაროს შესახებ</span></h2>
-    <p class="iIntro rv">ეკო ენერგია ტექნოლოგიებში სცდება მხოლოდ "მწვანე" ლეიბლს. ეს ფუნდამენტური გადასვლაა — როგორ ვქმნით, ვიყენებთ და ვუბრუნებთ ტექნოლოგიებს ბუნებას. ყოველი ბიტი, ყოველი ჩართული ეკრანი — ეს ყველაფერი უკავშირდება ჩვენი პლანეტის ჯანმრთელობას.</p>
-    <div class="iCards">
-      <div class="iC rv"><div class="iIco">🔋</div><h3>ახალი თაობის ბატარეები</h3><p>მყარ მდგომარეობაში ბატარეები (Solid-State) ნარჩენებისა და სახიფათო სითხეების გარეშე — 3-ჯერ მეტი მოცულობა ნახევარ ზომაში. ლითიუმ-სერა და ნატრიუმ-იონური ტექნოლოგიები 2026–2028 წლებში კომერციულ გამოყენებასთან ახლოვდება.</p></div>
-      <div class="iC rv" style="transition-delay:.1s"><div class="iIco">🌞</div><h3>ფოტოვოლტური ინტეგრაცია</h3><p>პერსკიტის სოლარული უჯრედები — მოქნილი, გამჭვირვალე — ინტეგრირდება ტელეფონის ეკრანებსა და ლეპტოპის სახურავებში. 2027 წლისთვის ყოველდღიური ენერგიის 30%-ის საკუთარი მოწყობილობით გამომუშავება გახდება შესაძლებელი.</p></div>
-      <div class="iC rv" style="transition-delay:.2s"><div class="iIco">🧠</div><h3>AI ენერგო-მენეჯმენტი</h3><p>ჩაშენებული ნეირო-ჩიპები მართავენ ენერგიის ნაკადს სწავლის საფუძველზე — ისწავლიან მომხმარებლის რუტინას, ამცირებენ განაბარ ელექტრომოხმარებას 40%-მდე. ეს არ არის "ეკო-რეჟიმი" — ეს ნამდვილი AI-ია.</p></div>
-      <div class="iC rv" style="transition-delay:.3s"><div class="iIco">🌐</div><h3>მწვანე მონაცემთა ცენტრები</h3><p>Google, Microsoft, Apple — ყველა გადადის 24/7 განახლებად ენერგიაზე. ოკეანის სიღრმეში ცენტრები, ბუნებრივი გაგრილება — PUE კოეფიციენტი 1.06-მდე ეცემა, ისტორიული მიღწევა ინდუსტრიისთვის.</p></div>
-      <div class="iC rv" style="transition-delay:.4s"><div class="iIco">🔄</div><h3>სრული ციკლი — ნარჩენების გარეშე</h3><p>Fairphone-ის მოდული, Apple-ის Daisy რობოტი — მოწყობილობა დაიბადება, გამოიყენება, "მოკვდება" და 100%-ით ხელახლა გამოიყენება. 2035 წლისთვის ე-ნარჩენების 80%-ის გადამუშავება — გლობალური სამიზნე.</p></div>
-      <div class="iC rv" style="transition-delay:.5s"><div class="iIco">📡</div><h3>Wi-Fi ენერგიის მოპოვება</h3><p>რადიოსიხშირის ენერგიის ნანო-ანტენები — 5G და Wi-Fi 7-ის სიგნალები ელექტრო ენერგიად გარდაიქმნება. IoT სენსორები მუდმივად ქსელიდან იკვებება ბატარეის გარეშე — მომავლის ტექნოლოგია უკვე ახლოს არის.</p></div>
+  <!-- ── INFO ── -->
+  <section id="info" class="section">
+    <div class="sLabel rv">ეკო ტექნოლოგია</div>
+    <h2 class="sTitle rv">გაიგე მეტი<br><span style="color:var(--teal)">ჩვენი სამყაროს შესახებ</span></h2>
+    <p class="rv" style="font-size:.95rem;line-height:1.82;color:rgba(240,255,240,.65);max-width:680px;margin-bottom:44px;">ეკო ენერგია ტექნოლოგიებში სცდება "მწვანე" ლეიბლს. ეს ფუნდამენტური გადასვლაა — როგორ ვქმნით, ვიყენებთ და ვუბრუნებთ ტექნოლოგიებს ბუნებას.</p>
+    <div class="infoCards">
+      <div class="infoCard rv"><div class="infoIcon">🔋</div><h3>Solid-State ბატარეები</h3><p>ნარჩენებისა და სახიფათო სითხეების გარეშე — 3x მეტი მოცულობა ნახევარ ზომაში. ლითიუმ-სერა 2026–28-ში.</p></div>
+      <div class="infoCard rv" style="transition-delay:.1s"><div class="infoIcon">🌞</div><h3>პერსკიტის სოლარული</h3><p>მოქნილი, გამჭვირვალე უჯრედები ეკრანებსა და სახურავებში. 2027-ში 30% ენერგია — საკუთარი მოწყობილობიდან.</p></div>
+      <div class="infoCard rv" style="transition-delay:.2s"><div class="infoIcon">🧠</div><h3>AI ენერგო-მენეჯმენტი</h3><p>ნეირო-ჩიპები ისწავლიან მომხმარებლის რუტინას, ამცირებენ განაბარ მოხმარებას 40%-მდე.</p></div>
+      <div class="infoCard rv" style="transition-delay:.3s"><div class="infoIcon">🌐</div><h3>მწვანე Data Centers</h3><p>24/7 განახლებადი ენერგია. ოკეანის სიღრმის ცენტრები. PUE 1.06-მდე — ისტორიული მიღწევა.</p></div>
+      <div class="infoCard rv" style="transition-delay:.4s"><div class="infoIcon">🔄</div><h3>სრული ციკლი</h3><p>Apple-ის Daisy რობოტი — 100% ხელახლა გამოყენება. 2035-ში ე-ნარჩენების 80% — გლობალური სამიზნე.</p></div>
+      <div class="infoCard rv" style="transition-delay:.5s"><div class="infoIcon">📡</div><h3>RF ენერგიის მოგება</h3><p>5G / Wi-Fi 7 სიგნალები გარდაიქმნება ელ. ენერგიად. IoT სენსორები — ბატარეის გარეშე.</p></div>
     </div>
   </section>
 
   <div class="gl"></div>
 
-  <!-- IDEAS -->
-  <section id="ideas">
-    <div class="idIn">
-      <div class="sLbl rv">5 უნიკალური იდეა</div>
-      <h2 class="sT rv">ჩვენი ვიზია<br><span style="color:var(--gold)">მომავლისთვის ✦</span></h2>
-      <div class="idGrid">
-        <div class="idC rv"><div class="idN">01</div><span>🌿</span><h3>Bio-Phone</h3><p>ბიო-დეგრადირებადი სმარტფონი ბამბუკის კომპოზიტის კორპუსით — 5 წლის შემდეგ ბუნებაში სრულად დაიშლება, ნიადაგს გამდიდრებს.</p></div>
-        <div class="idC rv" style="transition-delay:.1s"><div class="idN">02</div><span>🧬</span><h3>ბიო-ბატარეა</h3><p>ბაქტერიებზე დაფუძნებული მიკრობიოლოგიური საწვავის უჯრედები — ტელეფონი ორგანული ნარჩენებით (შაქარი, მჟავები) იკვებება.</p></div>
-        <div class="idC rv" style="transition-delay:.2s"><div class="idN">03</div><span>🏙️</span><h3>ქალაქ-ქსელი</h3><p>ასფალტში ჩაშენებული პიეზო-სენსორები — ფეხის ნაბიჯი გამოიმუშავებს ენერგიას. 1 მლნ ქვეითთან = 500 kWh/დღეში.</p></div>
-        <div class="idC rv" style="transition-delay:.3s"><div class="idN">04</div><span>🧊</span><h3>კრიო-სერვერი</h3><p>მონაცემთა ცენტრები მთის მყინვარების გვერდით — ბუნებრივი გაგრილება ნულოვანი ხარჯით. ციფრული + ბუნების შენარჩუნება.</p></div>
-        <div class="idC rv" style="transition-delay:.4s"><div class="idN">05</div><span>🌊</span><h3>ოკეანეს ენერგია</h3><p>ტალღების კინეტიკური ენერგიის კონვერტერები სანაპიროებზე — ოკეანური პლატფორმები ათასობით მოწყობილობას ერთდროულად კვებავს.</p></div>
+  <!-- ── IDEAS ── -->
+  <section id="ideas" style="padding:90px 60px;background:radial-gradient(ellipse 80% 50% at 50% 100%,rgba(10,42,10,.4),var(--bg));">
+    <div style="max-width:1200px;margin:0 auto;">
+      <div class="sLabel rv">5 უნიკალური იდეა</div>
+      <h2 class="sTitle rv">ჩვენი ვიზია<br><span style="color:var(--gold)">მომავლისთვის ✦</span></h2>
+      <div class="ideasGrid">
+        <div class="ideaCard rv"><div class="ideaNum">01</div><span class="ideaEmoji">🌿</span><h3>Bio-Phone</h3><p>ბამბუკის კომპოზიტი — 5 წელში ბუნებაში სრულად დაიშლება, ნიადაგს გამდიდრებს.</p></div>
+        <div class="ideaCard rv" style="transition-delay:.1s"><div class="ideaNum">02</div><span class="ideaEmoji">🧬</span><h3>ბიო-ბატარეა</h3><p>ბაქტერიებზე მიკრობიო საწვავი — ტელეფონი ორგანული ნარჩენებით (შაქარი, მჟავები) იკვებება.</p></div>
+        <div class="ideaCard rv" style="transition-delay:.2s"><div class="ideaNum">03</div><span class="ideaEmoji">🏙️</span><h3>ქალაქ-ქსელი</h3><p>ასფალტის პიეზო-სენსორები — ნაბიჯი = ენერგია. 1M ქვეითი = 500 kWh/დღეში.</p></div>
+        <div class="ideaCard rv" style="transition-delay:.3s"><div class="ideaNum">04</div><span class="ideaEmoji">🧊</span><h3>კრიო-სერვერი</h3><p>Data Centers მყინვარების გვერდით — ბუნებრივი გაგრილება ნულოვანი ხარჯით.</p></div>
+        <div class="ideaCard rv" style="transition-delay:.4s"><div class="ideaNum">05</div><span class="ideaEmoji">🌊</span><h3>ოკეანეს ენერგია</h3><p>ტალღების კინეტიკური კონვერტერები — ოკეანური პლატფორმები ათასობით მოწყობილობას კვებავს.</p></div>
       </div>
     </div>
   </section>
 
   <div class="gl"></div>
-  
-  <footer>
-    <div class="fLog"><img src="GreenTecho.png" alt="GT"><span>GreenTechno</span></div>
-    <div class="fM">ეკო ენერგია · ციფრული მომავალი · 2025</div>
-    <div class="fCp">© GreenTechno<br>ყველა უფლება დაცულია</div>
+
+  <!-- ── GALLERY ── -->
+  <section id="gallery">
+    <div class="section" style="padding-bottom:60px;">
+      <div class="sLabel rv">ვიზუალი</div>
+      <h2 class="sTitle rv">GreenTechno <span style="color:var(--teal)">ესთეტიკა</span></h2>
+      <div class="galleryGrid rv">
+        <div class="galleryCard" style="height:340px;"><img src="474350.jpg" alt="WP"><div class="galleryOv"><span class="galleryLbl">iOS Wallpaper · ბიო-სერია</span></div></div>
+        <div class="galleryCard" style="height:340px;"><img src="wallpaper_abstract.png" alt="Abstract"><div class="galleryOv"><span class="galleryLbl">მოდული · ეკო</span></div></div>
+        <div class="galleryCard" style="height:340px;"><img src="macbook_hero.webp" alt="MacBook"><div class="galleryOv"><span class="galleryLbl">MacBook Citrus</span></div></div>
+      </div>
+    </div>
+  </section>
+
+  <div class="gl"></div>
+
+  <footer class="siteFooter">
+    <div class="footLogo"><img src="GreenTecho.png" alt="GT"><span>GreenTechno</span></div>
+    <div class="footMid">ეკო ენერგია · ციფრული მომავალი · 2025</div>
+    <div class="footCopy">© GreenTechno<br>ყველა უფლება დაცულია</div>
   </footer>
-</div>
+
+</div><!-- /site -->
 
 <script>
-// =============================================================
+// ═══════════════════════════════════════════
 // AUDIO
-// =============================================================
+// ═══════════════════════════════════════════
 let AC=null,sOn=true;
 function iAC(){if(!AC)AC=new(window.AudioContext||window.webkitAudioContext)();}
-function tone(f,d,t='sine',v=.12){if(!sOn||!AC)return;const o=AC.createOscillator(),g=AC.createGain();o.connect(g);g.connect(AC.destination);o.type=t;o.frequency.value=f;g.gain.setValueAtTime(v,AC.currentTime);g.gain.exponentialRampToValueAtTime(.001,AC.currentTime+d);o.start();o.stop(AC.currentTime+d);}
+function tone(f,d,t='sine',v=.1){if(!sOn||!AC)return;const o=AC.createOscillator(),g=AC.createGain();o.connect(g);g.connect(AC.destination);o.type=t;o.frequency.value=f;g.gain.setValueAtTime(v,AC.currentTime);g.gain.exponentialRampToValueAtTime(.001,AC.currentTime+d);o.start();o.stop(AC.currentTime+d);}
 function chord(fs,d=.4){fs.forEach((f,i)=>setTimeout(()=>tone(f,d,'sine',.07),i*55));}
-function whoosh(){if(!sOn||!AC)return;const b=AC.createBuffer(1,AC.sampleRate*.5,AC.sampleRate),d=b.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/d.length,3);const s=AC.createBufferSource(),f=AC.createBiquadFilter(),g=AC.createGain();f.type='bandpass';f.frequency.setValueAtTime(1200,AC.currentTime);f.frequency.exponentialRampToValueAtTime(100,AC.currentTime+.5);f.Q.value=0.8;g.gain.value=.25;s.buffer=b;s.connect(f);f.connect(g);g.connect(AC.destination);s.start();}
-function launchSnd(){chord([261,329,392,523],.6);setTimeout(()=>chord([392,494,587,784],.5),300);setTimeout(()=>tone(1047,1.2,'sine',.1),600);setTimeout(()=>tone(1318,.8,'sine',.07),900);}
-function pClick(){iAC();tone(700,.04,'square',.04);setTimeout(()=>tone(500,.04,'square',.03),35);}
+function whoosh(){if(!sOn||!AC)return;const b=AC.createBuffer(1,AC.sampleRate*.5,AC.sampleRate),d=b.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/d.length,3);const s=AC.createBufferSource(),f=AC.createBiquadFilter(),g=AC.createGain();f.type='bandpass';f.frequency.setValueAtTime(1200,AC.currentTime);f.frequency.exponentialRampToValueAtTime(80,AC.currentTime+.5);g.gain.value=.22;s.buffer=b;s.connect(f);f.connect(g);g.connect(AC.destination);s.start();}
+function launchSnd(){chord([261,329,392,523],.6);setTimeout(()=>chord([392,494,587,784],.5),280);setTimeout(()=>tone(1047,1.2,'sine',.09),580);setTimeout(()=>tone(1318,.8,'sine',.07),880);}
+function pClick(){iAC();tone(680,.04,'square',.04);setTimeout(()=>tone(480,.04,'square',.03),35);}
 document.getElementById('sndBtn').addEventListener('click',()=>{sOn=!sOn;document.getElementById('sndBtn').textContent=sOn?'🔊':'🔇';iAC();if(sOn)tone(440,.2);});
 document.addEventListener('click',()=>iAC(),{once:true});
 
-// =============================================================
-// CUSTOM CURSOR
-// =============================================================
-const cur=document.getElementById('cur'),cur2=document.getElementById('cur2');
+// ═══════════════════════════════════════════
+// CURSOR
+// ═══════════════════════════════════════════
+const curEl=document.getElementById('cur'),cur2El=document.getElementById('cur2');
 let mx=0,my=0,rx=0,ry=0;
-document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cur.style.left=mx+'px';cur.style.top=my+'px';});
-(function cl(){rx+=(mx-rx)*.12;ry+=(my-ry)*.12;cur2.style.left=rx+'px';cur2.style.top=ry+'px';requestAnimationFrame(cl);})();
-document.querySelectorAll('button,a,.idC,.iC,.stC,.fItem,.impCard,.gC').forEach(el=>{el.addEventListener('mouseenter',()=>{cur.style.width='20px';cur.style.height='20px';cur2.style.width='52px';cur2.style.height='52px';});el.addEventListener('mouseleave',()=>{cur.style.width='10px';cur.style.height='10px';cur2.style.width='34px';cur2.style.height='34px';});});
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;curEl.style.left=mx+'px';curEl.style.top=my+'px';});
+(function cl(){rx+=(mx-rx)*.12;ry+=(my-ry)*.12;cur2El.style.left=rx+'px';cur2El.style.top=ry+'px';requestAnimationFrame(cl);})();
+document.querySelectorAll('button,a,.ideaCard,.infoCard,.macSpecCard,.impactCard,.galleryCard,.langTab,.specTag,.macTag,.compareCard,.resultCard').forEach(el=>{
+  el.addEventListener('mouseenter',()=>{document.body.classList.add('hovering');if(sOn&&AC)tone(500+Math.random()*200,.06,'sine',.025);});
+  el.addEventListener('mouseleave',()=>document.body.classList.remove('hovering'));
+});
 
-// =============================================================
-// INTRO STAR FIELD
-// =============================================================
-const starCv=document.getElementById('introStars');
-const sx=starCv.getContext('2d');
-starCv.width=innerWidth;starCv.height=innerHeight;
-const stars=Array.from({length:200},()=>({
-  x:Math.random()*starCv.width,y:Math.random()*starCv.height,
-  r:Math.random()*1.5+.2,a:Math.random(),
-  vx:(Math.random()-.5)*.15,vy:(Math.random()-.5)*.15
-}));
-let starScale=1;
-(function starLoop(){
-  sx.clearRect(0,0,starCv.width,starCv.height);
-  stars.forEach(s=>{
-    s.x+=s.vx;s.y+=s.vy;
-    if(s.x<0||s.x>starCv.width)s.vx*=-1;
-    if(s.y<0||s.y>starCv.height)s.vy*=-1;
-    sx.beginPath();sx.arc(s.x,s.y,s.r,0,Math.PI*2);
-    sx.fillStyle=`rgba(57,255,20,${s.a*.5})`;sx.fill();
-  });
-  // connection lines
-  stars.forEach((a,i)=>stars.forEach((b,j)=>{
-    if(i>=j)return;
-    const d=Math.hypot(a.x-b.x,a.y-b.y);
-    if(d<90){sx.beginPath();sx.moveTo(a.x,a.y);sx.lineTo(b.x,b.y);sx.strokeStyle=`rgba(57,255,20,${(1-d/90)*.08})`;sx.stroke();}
-  }));
-  requestAnimationFrame(starLoop);
-})();
+// ═══════════════════════════════════════════
+// INTRO STAR CANVAS
+// ═══════════════════════════════════════════
+const sCv=document.getElementById('introStarCanvas');
+const sx=sCv.getContext('2d');
+sCv.width=innerWidth;sCv.height=innerHeight;
+const stars=Array.from({length:220},()=>({x:Math.random()*sCv.width,y:Math.random()*sCv.height,r:Math.random()*1.4+.2,a:Math.random(),vx:(Math.random()-.5)*.12,vy:(Math.random()-.5)*.12}));
+(function sl(){sx.clearRect(0,0,sCv.width,sCv.height);stars.forEach(s=>{s.x+=s.vx;s.y+=s.vy;if(s.x<0||s.x>sCv.width)s.vx*=-1;if(s.y<0||s.y>sCv.height)s.vy*=-1;sx.beginPath();sx.arc(s.x,s.y,s.r,0,Math.PI*2);sx.fillStyle=`rgba(57,255,20,${s.a*.5})`;sx.fill();});stars.forEach((a,i)=>stars.forEach((b,j)=>{if(i>=j)return;const d=Math.hypot(a.x-b.x,a.y-b.y);if(d<85){sx.beginPath();sx.moveTo(a.x,a.y);sx.lineTo(b.x,b.y);sx.strokeStyle=`rgba(57,255,20,${(1-d/85)*.07})`;sx.stroke();}}));requestAnimationFrame(sl);})();
 
-// =============================================================
-// THREE.JS SETUP
-// =============================================================
+// ═══════════════════════════════════════════
+// THREE.JS HELPERS
+// ═══════════════════════════════════════════
 const gLoader=new THREE.GLTFLoader();
-
 function mkScene(canvas,w,h,cz=4){
-  const s=new THREE.Scene(),cam=new THREE.PerspectiveCamera(42,w/h,.1,200);
+  const sc=new THREE.Scene(),cam=new THREE.PerspectiveCamera(42,w/h,.1,200);
   cam.position.set(0,0,cz);
   const r=new THREE.WebGLRenderer({canvas,alpha:true,antialias:true});
   r.setSize(w,h);r.setPixelRatio(Math.min(devicePixelRatio,2));
-  r.outputEncoding=THREE.sRGBEncoding;
-  r.toneMapping=THREE.ACESFilmicToneMapping;
-  r.toneMappingExposure=1.3;
-  return{s,cam,r};
+  r.outputEncoding=THREE.sRGBEncoding;r.toneMapping=THREE.ACESFilmicToneMapping;r.toneMappingExposure=1.3;
+  return{sc,cam,r};
 }
-
-function addLts(scene,c1=0x2ecc40,c2=0x39ff14,amb=.7){
+function addLights(scene,c1=0x2ecc40,c2=0x39ff14,amb=.7){
   scene.add(new THREE.AmbientLight(0xffffff,amb));
   const d1=new THREE.DirectionalLight(c1,2.5);d1.position.set(3,5,5);scene.add(d1);
   const d2=new THREE.DirectionalLight(c2,1.5);d2.position.set(-3,-2,3);scene.add(d2);
   const p=new THREE.PointLight(c2,2.5,25);p.position.set(0,3,4);scene.add(p);
-  // rim light
-  const rim=new THREE.DirectionalLight(0xa8e63d,.8);rim.position.set(0,-3,-3);scene.add(rim);
+  const rim=new THREE.DirectionalLight(0xa8e63d,.7);rim.position.set(0,-4,-4);scene.add(rim);
 }
-
 function fitM(gltf,tH=2){
   const box=new THREE.Box3().setFromObject(gltf.scene);
   const sz=box.getSize(new THREE.Vector3());
@@ -630,199 +835,337 @@ function fitM(gltf,tH=2){
   gltf.scene.position.sub(ctr.multiplyScalar(sc));
   return gltf.scene;
 }
-
-function fallPh(scene){
+function fallPhone(scene){
   const g=new THREE.Group();
-  // Body
-  const bm=new THREE.MeshStandardMaterial({color:0x0a2a0a,metalness:.95,roughness:.05});
-  g.add(new THREE.Mesh(new THREE.BoxGeometry(.85,1.75,.1),bm));
-  // Screen with glow logo
-  const sm=new THREE.MeshStandardMaterial({color:0x000000,emissive:0x071a07,emissiveIntensity:1.2});
-  const sc=new THREE.Mesh(new THREE.BoxGeometry(.74,1.58,.01),sm);sc.position.z=.055;g.add(sc);
-  // Camera bump
-  const cm=new THREE.MeshStandardMaterial({color:0x050f05,metalness:.9,roughness:.2});
-  const cb=new THREE.Mesh(new THREE.BoxGeometry(.22,.22,.04),cm);cb.position.set(.15,.68,.055);g.add(cb);
-  scene.add(g);return g;
+  g.add(new THREE.Mesh(new THREE.BoxGeometry(.85,1.75,.1),new THREE.MeshStandardMaterial({color:0x0a2a0a,metalness:.95,roughness:.05})));
+  const sc=new THREE.Mesh(new THREE.BoxGeometry(.74,1.58,.01),new THREE.MeshStandardMaterial({color:0x000,emissive:0x071a07,emissiveIntensity:1.2}));
+  sc.position.z=.055;g.add(sc);scene.add(g);return g;
 }
 
-// =============================================================
-// INTRO PHONE — BIG ZOOM VERSION
-// =============================================================
-let iPhM=null;
-const iPhS=mkScene(document.getElementById('introPhC'),420,840,4);
-addLts(iPhS.s,0x2ecc40,0x39ff14,.5);
-// Extra dramatic green rim for intro
-const introRim=new THREE.PointLight(0x39ff14,4,15);introRim.position.set(0,0,2);iPhS.s.add(introRim);
+// ═══════════════════════════════════════════
+// INTRO 3D PHONE
+// ═══════════════════════════════════════════
+let iPM=null;
+const iS=mkScene(document.getElementById('iPhCIntro'),340,680,4.2);
+addLights(iS.sc,0x2ecc40,0x39ff14,.4);
+const introRim=new THREE.PointLight(0x39ff14,5,18);introRim.position.set(0,0,2.5);iS.sc.add(introRim);
 
-gLoader.load('iphone_16_plus_green.glb',gltf=>{
-  iPhM=fitM(gltf,2.8);
-  iPhS.s.add(iPhM);
-},undefined,()=>{iPhM=fallPh(iPhS.s);});
+gLoader.load('iphone_16_plus_green.glb',gltf=>{iPM=fitM(gltf,3);iS.sc.add(iPM);},undefined,()=>{iPM=fallPhone(iS.sc);});
+let iAng=0;
+(function il(){requestAnimationFrame(il);iAng+=.006;if(iPM){iPM.rotation.y=Math.sin(iAng)*.2;iPM.rotation.x=Math.sin(iAng*.7)*.04;iPM.position.y=Math.sin(iAng*1.1)*.05;}introRim.intensity=3.5+Math.sin(iAng*2)*2;iS.r.render(iS.sc,iS.cam);})();
 
-let iA=0,iPhClickable=true;
-
-(function iPhLoop(){
-  requestAnimationFrame(iPhLoop);
-  iA+=.006;
-  if(iPhM){
-    iPhM.rotation.y=Math.sin(iA)*.18;
-    iPhM.rotation.x=Math.sin(iA*.7)*.04;
-    iPhM.position.y=Math.sin(iA*1.1)*.05;
-  }
-  // Pulsing rim light
-  introRim.intensity=3+Math.sin(iA*2)*1.5;
-  iPhS.r.render(iPhS.s,iPhS.cam);
-})();
-
-// =============================================================
-// INTRO EXIT
-// =============================================================
+// ═══════════════════════════════════════════
+// INTRO EXIT — LOCK SCREEN STYLE
+// ═══════════════════════════════════════════
 let exited=false;
 function doExit(){
-  if(exited||!iPhClickable)return;
-  exited=true;
+  if(exited)return;exited=true;
   iAC();launchSnd();whoosh();
-
   // Flash
-  const flash=document.createElement('div');
-  flash.style.cssText='position:fixed;inset:0;z-index:9999;background:rgba(57,255,20,.25);pointer-events:none;animation:flashOut .6s ease forwards;';
-  document.head.insertAdjacentHTML('beforeend','<style>@keyframes flashOut{0%{opacity:1}100%{opacity:0}}</style>');
-  document.body.appendChild(flash);
-
-  const intro=document.getElementById('intro');
-  intro.classList.add('introExitAnim');
-
+  const fl=document.createElement('div');
+  fl.style.cssText='position:fixed;inset:0;z-index:9999;background:rgba(57,255,20,.3);pointer-events:none;';
+  document.body.appendChild(fl);
+  fl.style.animation='flashFade .5s ease forwards';
+  document.head.insertAdjacentHTML('beforeend','<style>@keyframes flashFade{0%{opacity:1}100%{opacity:0}}</style>');
+  document.getElementById('intro').classList.add('introExit');
+  // Lock screen transition
+  const lock=document.getElementById('lockOverlay');
+  lock.classList.add('active');
   setTimeout(()=>{
-    intro.style.display='none';
-    document.getElementById('site').classList.add('show');
-    document.getElementById('nav').classList.add('show');
-    document.getElementById('dots').classList.add('show');
-    document.getElementById('sndBtn').classList.add('show');
+    lock.classList.add('release');
     setTimeout(()=>{
-      document.getElementById('hTxt').classList.add('go');
-      document.getElementById('h3d').classList.add('go');
-    },200);
-    initHP();initMac();mkPtcl();obsRv();
-  },700);
+      document.getElementById('intro').style.display='none';
+      lock.style.display='none';
+      fl.remove();
+      document.getElementById('site').classList.add('show');
+      document.getElementById('statusBar').classList.add('show');
+      document.getElementById('dots').classList.add('show');
+      setTimeout(()=>{document.getElementById('hTxt').classList.add('go');document.getElementById('h3d').classList.add('go');},150);
+      mkPtcl();initHP();initMac();obsRv();
+    },600);
+  },400);
 }
 document.getElementById('intro').addEventListener('click',doExit);
-document.getElementById('introPhC').addEventListener('click',doExit);
 document.addEventListener('keydown',e=>{if(e.key===' '||e.key==='Enter')doExit();});
-// make sure touch works too
 document.getElementById('intro').addEventListener('touchend',doExit,{passive:true});
 
-// =============================================================
-// HERO PHONE (interactive)
-// =============================================================
+// ═══════════════════════════════════════════
+// HERO PHONE
+// ═══════════════════════════════════════════
 let hM=null,hDr=false,hLX=0,hLY=0,hRX=0,hRY=0,hVX=0,hVY=0;
 function initHP(){
   const cv=document.getElementById('hPhC');
-  const {s,cam,r}=mkScene(cv,300,600,4.2);
-  addLts(s);
-  gLoader.load('iphone_16_plus_green.glb',g=>{hM=fitM(g,2.8);s.add(hM);},undefined,()=>{hM=fallPh(s);});
+  const{sc,cam,r}=mkScene(cv,280,560,4.2);
+  addLights(sc);
+  gLoader.load('iphone_16_plus_green.glb',g=>{hM=fitM(g,2.8);sc.add(hM);},undefined,()=>{hM=fallPhone(sc);});
   cv.addEventListener('mousedown',e=>{hDr=true;hLX=e.clientX;hLY=e.clientY;cv.style.cursor='grabbing';});
   cv.addEventListener('touchstart',e=>{hDr=true;hLX=e.touches[0].clientX;hLY=e.touches[0].clientY;},{passive:true});
-  window.addEventListener('mousemove',e=>{if(!hDr)return;hVX=(e.clientX-hLX)*.012;hVY=(e.clientY-hLY)*.009;hRY+=hVX;hRX+=hVY;hLX=e.clientX;hLY=e.clientY;if(sOn&&AC)tone(180+Math.abs(hVX)*300,.02,'sine',.012);});
+  window.addEventListener('mousemove',e=>{if(!hDr)return;hVX=(e.clientX-hLX)*.012;hVY=(e.clientY-hLY)*.009;hRY+=hVX;hRX+=hVY;hLX=e.clientX;hLY=e.clientY;if(sOn&&AC)tone(180+Math.abs(hVX)*300,.02,'sine',.01);});
   window.addEventListener('touchmove',e=>{if(!hDr)return;hVX=(e.touches[0].clientX-hLX)*.012;hVY=(e.touches[0].clientY-hLY)*.009;hRY+=hVX;hRX+=hVY;hLX=e.touches[0].clientX;hLY=e.touches[0].clientY;},{passive:true});
   window.addEventListener('mouseup',()=>{hDr=false;cv.style.cursor='grab';});
   window.addEventListener('touchend',()=>hDr=false);
-  let ha=0;
-  (function hl(){requestAnimationFrame(hl);if(!hDr){hVX*=.93;hVY*=.93;hRY+=hVX;hRX+=hVY;ha+=.004;hRY+=Math.sin(ha)*.002;}hRX=Math.max(-.6,Math.min(.6,hRX));if(hM){hM.rotation.y=hRY;hM.rotation.x=hRX;}r.render(s,cam);})();
+  let ha=0;(function hl(){requestAnimationFrame(hl);if(!hDr){hVX*=.93;hVY*=.93;hRY+=hVX;hRX+=hVY;ha+=.004;hRY+=Math.sin(ha)*.002;}hRX=Math.max(-.6,Math.min(.6,hRX));if(hM){hM.rotation.y=hRY;hM.rotation.x=hRX;}r.render(sc,cam);})();
 }
 
-// =============================================================
-// MACBOOK (scroll-triggered reveal + interactive drag)
-// =============================================================
-let mM=null,mDr=false,mLX=0,mLY=0,mRX=0,mRY=.2,mVX=0,mVY=0;
-let macInited=false;
-
+// ═══════════════════════════════════════════
+// MACBOOK
+// ═══════════════════════════════════════════
+let mM=null,mDr=false,mLX=0,mLY=0,mRX=0,mRY=.2,mVX=0,mVY=0,macReady=false;
 function initMac(){
+  if(macReady)return;macReady=true;
   const cv=document.getElementById('macC');
-  const w=Math.min(cv.parentElement.clientWidth,650)||550;
-  const {s,cam,r}=mkScene(cv,w,500,5.8);
-  cam.position.set(0,.2,5.8);r.setSize(w,500);
-  addLts(s,0xa8e63d,0x2ecc40,.6);
-
-  // Extra dramatic lighting for mac
-  const spotlight=new THREE.SpotLight(0x39ff14,3,20,Math.PI/6,.5);
-  spotlight.position.set(0,5,5);s.add(spotlight);
-
-  gLoader.load('macbook_neo.glb',g=>{
-    mM=fitM(g,3.4);s.add(mM);
-    // Trigger entrance animation when MacBook loads
-    setTimeout(()=>{
-      cv.classList.add('go');
-      document.getElementById('macInfo').classList.add('go');
-      if(sOn&&AC){setTimeout(()=>chord([196,247,294,392],.6),100);}
-    },100);
-  },undefined,()=>{
-    // Fallback MacBook
+  const w=Math.min(cv.parentElement.clientWidth||620,700);
+  const{sc,cam,r}=mkScene(cv,w,480,5.8);
+  cam.position.set(0,.2,5.8);r.setSize(w,480);
+  addLights(sc,0xa8e63d,0x2ecc40,.6);
+  const spl=new THREE.SpotLight(0x39ff14,3,22,Math.PI/6,.5);spl.position.set(0,5,5);sc.add(spl);
+  const doEnter=()=>{cv.classList.add('go');document.getElementById('macInfoPanel').classList.add('go');if(sOn&&AC){setTimeout(()=>chord([196,247,294,392],.7),100);}};
+  gLoader.load('macbook_neo.glb',g=>{mM=fitM(g,3.4);sc.add(mM);setTimeout(doEnter,80);},undefined,()=>{
     const g=new THREE.Group();
     const mat=new THREE.MeshStandardMaterial({color:0x0d2a0d,metalness:.92,roughness:.08});
-    const base=new THREE.Mesh(new THREE.BoxGeometry(3,.08,2.1),mat);g.add(base);
-    const lid=new THREE.Mesh(new THREE.BoxGeometry(3,1.9,.06),mat);
-    lid.position.set(0,.99,-.99);lid.rotation.x=-.25;g.add(lid);
+    g.add(new THREE.Mesh(new THREE.BoxGeometry(3,.08,2.1),mat));
+    const lid=new THREE.Mesh(new THREE.BoxGeometry(3,1.9,.06),mat);lid.position.set(0,.99,-.99);lid.rotation.x=-.25;g.add(lid);
     const sm=new THREE.MeshStandardMaterial({color:0x000,emissive:0x071a07,emissiveIntensity:.8});
-    const sc=new THREE.Mesh(new THREE.BoxGeometry(2.7,1.65,.01),sm);
-    sc.position.set(0,.99,-.96);sc.rotation.x=-.25;g.add(sc);
-    mM=g;s.add(g);
-    setTimeout(()=>{cv.classList.add('go');document.getElementById('macInfo').classList.add('go');},100);
+    const sc2=new THREE.Mesh(new THREE.BoxGeometry(2.7,1.65,.01),sm);sc2.position.set(0,.99,-.96);sc2.rotation.x=-.25;g.add(sc2);
+    mM=g;sc.add(g);setTimeout(doEnter,80);
   });
-
   cv.addEventListener('mousedown',e=>{mDr=true;mLX=e.clientX;mLY=e.clientY;cv.style.cursor='grabbing';});
   cv.addEventListener('touchstart',e=>{mDr=true;mLX=e.touches[0].clientX;mLY=e.touches[0].clientY;},{passive:true});
   window.addEventListener('mousemove',e=>{if(!mDr)return;mVX=(e.clientX-mLX)*.01;mVY=(e.clientY-mLY)*.007;mRY+=mVX;mRX+=mVY;mLX=e.clientX;mLY=e.clientY;});
   window.addEventListener('touchmove',e=>{if(!mDr)return;mVX=(e.touches[0].clientX-mLX)*.01;mVY=(e.touches[0].clientY-mLY)*.007;mRY+=mVX;mRX+=mVY;mLX=e.touches[0].clientX;mLY=e.touches[0].clientY;},{passive:true});
   window.addEventListener('mouseup',()=>{mDr=false;cv.style.cursor='grab';});
   window.addEventListener('touchend',()=>mDr=false);
-
-  let ma=0;
-  (function ml(){requestAnimationFrame(ml);if(!mDr){mVX*=.93;mVY*=.93;mRY+=mVX;mRX+=mVY;ma+=.003;mRY+=Math.sin(ma)*.0015;}mRX=Math.max(-.35,Math.min(.35,mRX));if(mM){mM.rotation.y=mRY;mM.rotation.x=mRX;}r.render(s,cam);})();
-
-  macInited=true;
+  let ma=0;(function ml(){requestAnimationFrame(ml);if(!mDr){mVX*=.93;mVY*=.93;mRY+=mVX;mRX+=mVY;ma+=.003;mRY+=Math.sin(ma)*.0015;}mRX=Math.max(-.35,Math.min(.35,mRX));if(mM){mM.rotation.y=mRY;mM.rotation.x=mRX;}r.render(sc,cam);})();
 }
 
-// =============================================================
+// ═══════════════════════════════════════════
 // PARTICLES
-// =============================================================
-function mkPtcl(){const c=document.getElementById('ptcl');for(let i=0;i<30;i++){const p=document.createElement('div');p.className='pt';const sz=Math.random()*3+1;p.style.cssText=`width:${sz}px;height:${sz}px;left:${Math.random()*100}%;animation-duration:${Math.random()*18+10}s;animation-delay:${Math.random()*18}s;`;c.appendChild(p);}}
+// ═══════════════════════════════════════════
+function mkPtcl(){const c=document.getElementById('ptcl');for(let i=0;i<28;i++){const p=document.createElement('div');p.className='pt';const sz=Math.random()*3+1;p.style.cssText=`width:${sz}px;height:${sz}px;left:${Math.random()*100}%;animation-duration:${Math.random()*18+10}s;animation-delay:${Math.random()*18}s;`;c.appendChild(p);}}
 
-// =============================================================
-// SCROLL REVEAL
-// =============================================================
+// ═══════════════════════════════════════════
+// SCROLL REVEAL + MACBOOK TRIGGER
+// ═══════════════════════════════════════════
 function obsRv(){
-  const o=new IntersectionObserver(es=>{es.forEach(e=>{
-    if(e.isIntersecting){
-      e.target.classList.add('go');
-      if(sOn&&AC)tone(280+Math.random()*160,.1,'sine',.025);
-    }
-  });},{threshold:.12});
+  const o=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('go');if(sOn&&AC)tone(260+Math.random()*160,.1,'sine',.022);}});},{threshold:.12});
   document.querySelectorAll('.rv').forEach(el=>o.observe(el));
-
-  // MacBook scroll trigger
-  const macObs=new IntersectionObserver(es=>{es.forEach(e=>{
-    if(e.isIntersecting&&!macInited){
-      // MacBook already inited after intro exit, just trigger the entrance
-      document.getElementById('macC').classList.add('go');
-      document.getElementById('macInfo').classList.add('go');
-      if(sOn&&AC){setTimeout(()=>chord([196,247,294,392],.6),200);}
-    }
-  });},{threshold:.2});
-  const macSec=document.getElementById('macbook');
-  if(macSec)macObs.observe(macSec);
+  // bench bars animation
+  const bObs=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){renderBenchBars();}});},{threshold:.3});
+  const bb=document.getElementById('benchBarsSection');if(bb)bObs.observe(bb);
+  // mac trigger
+  const mObs=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting)initMac();});},{threshold:.15});
+  const ms=document.getElementById('macbook');if(ms)mObs.observe(ms);
 }
 
-// =============================================================
-// SCROLL DOTS
-// =============================================================
-const secs=['hero','about','macbook','info','ideas'];
-window.addEventListener('scroll',()=>{const sy=scrollY;secs.forEach((id,i)=>{const el=document.getElementById(id);if(!el)return;const t=el.offsetTop-250,b=t+el.offsetHeight;document.querySelectorAll('.dot')[i].classList.toggle('on',sy>=t&&sy<b);});});
-document.querySelectorAll('.dot').forEach((d,i)=>{d.addEventListener('click',()=>{document.getElementById(secs[i])?.scrollIntoView({behavior:'smooth'});pClick();});});
-function sScroll(id){document.getElementById(id)?.scrollIntoView({behavior:'smooth'});pClick();}
+// ═══════════════════════════════════════════
+// SCROLL DOTS + NAV TABS
+// ═══════════════════════════════════════════
+const secIds=['hero','energy','macbook','info','ideas','gallery'];
+window.addEventListener('scroll',()=>{
+  const sy=scrollY;
+  secIds.forEach((id,i)=>{
+    const el=document.getElementById(id);if(!el)return;
+    const t=el.offsetTop-280,b=t+el.offsetHeight;
+    document.querySelectorAll('.dot')[i]?.classList.toggle('on',sy>=t&&sy<b);
+  });
+  // update nav tabs
+  document.querySelectorAll('.sbTab').forEach(tab=>{
+    const href=tab.getAttribute('href')?.slice(1);
+    if(!href)return;
+    const el=document.getElementById(href);if(!el)return;
+    const t=el.offsetTop-200;const b=t+el.offsetHeight;
+    tab.classList.toggle('active',sy>=t&&sy<b);
+  });
+});
+document.querySelectorAll('.dot').forEach((d,i)=>{d.addEventListener('click',()=>{document.getElementById(secIds[i])?.scrollIntoView({behavior:'smooth'});pClick();});});
+function scrollTo(id){document.getElementById(id)?.scrollIntoView({behavior:'smooth'});pClick();}
 
-// HOVER SOUNDS
-document.querySelectorAll('.iC,.idC,.stC,.fItem,.impCard').forEach(el=>{el.addEventListener('mouseenter',()=>{iAC();tone(420+Math.random()*200,.08,'sine',.03);});});
-document.querySelectorAll('.btnP,.btnS').forEach(el=>{el.addEventListener('mouseenter',()=>{iAC();tone(560,.05,'square',.03);});el.addEventListener('click',()=>{iAC();pClick();});});
+// ═══════════════════════════════════════════
+// CODE EXAMPLES
+// ═══════════════════════════════════════════
+const codes={
+python:{
+slow:`<span class="cCmt"># ❌ არაოპტიმიზებული — Leibniz-ის ფორმულა</span>
+<span class="cTag">def</span> <span class="cFn">pi_slow</span>(n):
+    <span class="cVar">result</span> = <span class="cNum">0</span>
+    <span class="cTag">for</span> <span class="cVar">i</span> <span class="cTag">in</span> <span class="cFn">range</span>(n):
+        <span class="cVar">result</span> += ((-<span class="cNum">1</span>)**<span class="cVar">i</span>) / (<span class="cNum">2</span>*<span class="cVar">i</span>+<span class="cNum">1</span>)
+        <span class="cCmt"># ** ოპერატორი ძვირია! float conversion ყოველ iter-ზე</span>
+    <span class="cTag">return</span> <span class="cVar">result</span> * <span class="cNum">4</span>
+
+<span class="cCmt"># 10,000,000 iter ≈ 2800ms | ენერგია: 🔴🔴🔴</span>
+<span class="cFn">print</span>(pi_slow(<span class="cNum">10_000_000</span>))`,
+
+fast:`<span class="cCmt"># ✅ ოპტიმიზებული — Machin Formula + NumPy</span>
+<span class="cTag">import</span> numpy <span class="cTag">as</span> np
+
+<span class="cTag">def</span> <span class="cFn">pi_fast</span>(n):
+    <span class="cCmt"># vectorized — CPU SIMD instructions</span>
+    <span class="cVar">k</span> = np.arange(<span class="cNum">0</span>, n, dtype=np.float64)
+    <span class="cVar">signs</span> = np.where(<span class="cVar">k</span> % <span class="cNum">2</span> == <span class="cNum">0</span>, <span class="cNum">1.0</span>, -<span class="cNum">1.0</span>)
+    <span class="cTag">return</span> <span class="cNum">4.0</span> * np.sum(<span class="cVar">signs</span> / (<span class="cNum">2</span>*<span class="cVar">k</span>+<span class="cNum">1</span>))
+
+<span class="cCmt"># 10,000,000 iter ≈ 85ms | ენერგია: ✅ 33x სწრაფი</span>
+<span class="cFn">print</span>(pi_fast(<span class="cNum">10_000_000</span>))`},
+
+js:{
+slow:`<span class="cCmt">// ❌ არაოპტიმიზებული — Math.pow ყოველ iter-ზე</span>
+<span class="cTag">function</span> <span class="cFn">piSlow</span>(n) {
+  <span class="cTag">let</span> <span class="cVar">pi</span> = <span class="cNum">0</span>;
+  <span class="cTag">for</span> (<span class="cTag">let</span> <span class="cVar">i</span> = <span class="cNum">0</span>; <span class="cVar">i</span> < n; <span class="cVar">i</span>++) {
+    <span class="cVar">pi</span> += Math.<span class="cFn">pow</span>(-<span class="cNum">1</span>, <span class="cVar">i</span>) / (<span class="cNum">2</span>*<span class="cVar">i</span> + <span class="cNum">1</span>);
+    <span class="cCmt">// Math.pow(-1,i) — ძვირი! branch mispredict</span>
+  }
+  <span class="cTag">return</span> <span class="cVar">pi</span> * <span class="cNum">4</span>;
+}
+<span class="cCmt">// 10M iter ≈ 180ms | ❌ inefficient</span>`,
+
+fast:`<span class="cCmt">// ✅ ოპტიმიზებული — bit trick + unrolled</span>
+<span class="cTag">function</span> <span class="cFn">piFast</span>(n) {
+  <span class="cTag">let</span> <span class="cVar">pi</span> = <span class="cNum">0</span>, <span class="cVar">d</span> = <span class="cNum">1</span>;
+  <span class="cTag">for</span> (<span class="cTag">let</span> <span class="cVar">i</span> = <span class="cNum">0</span>; <span class="cVar">i</span> < n; <span class="cVar">i</span> += <span class="cNum">2</span>) {
+    <span class="cVar">pi</span> += <span class="cNum">1</span>/<span class="cVar">d</span> - <span class="cNum">1</span>/(<span class="cVar">d</span>+<span class="cNum">2</span>); <span class="cVar">d</span> += <span class="cNum">4</span>;
+    <span class="cCmt">// loop unrolling: 2 iter per step</span>
+    <span class="cCmt">// no Math.pow — direct arithmetic only</span>
+  }
+  <span class="cTag">return</span> <span class="cVar">pi</span> * <span class="cNum">4</span>;
+}
+<span class="cCmt">// 10M iter ≈ 22ms | ✅ 8x სწრაფი!</span>`},
+
+rust:{
+slow:`<span class="cCmt">// ❌ ნაივური — f64 pow, no optimization hints</span>
+<span class="cTag">fn</span> <span class="cFn">pi_slow</span>(n: <span class="cType">u64</span>) -> <span class="cType">f64</span> {
+    <span class="cTag">let mut</span> <span class="cVar">pi</span> = <span class="cNum">0.0f64</span>;
+    <span class="cTag">for</span> <span class="cVar">i</span> <span class="cTag">in</span> <span class="cNum">0</span>..n {
+        <span class="cVar">pi</span> += (<span class="cVar">i</span> <span class="cTag">as</span> <span class="cType">f64</span>).<span class="cFn">powf</span>(<span class="cNum">-1.0</span>) <span class="cCmt">/* wrong, demo */</span>
+             / (<span class="cNum">2.0</span> * <span class="cVar">i</span> <span class="cTag">as</span> <span class="cType">f64</span> + <span class="cNum">1.0</span>);
+    }
+    <span class="cVar">pi</span> * <span class="cNum">4.0</span>
+}
+<span class="cCmt">// ~12ms | პოტენციალი გამოუყენებელია</span>`,
+
+fast:`<span class="cCmt">// ✅ SIMD + rayon parallel — max performance</span>
+<span class="cTag">use</span> rayon::prelude::*;
+
+<span class="cTag">fn</span> <span class="cFn">pi_fast</span>(n: <span class="cType">u64</span>) -> <span class="cType">f64</span> {
+    (<span class="cNum">0</span>..n)
+        .<span class="cFn">into_par_iter</span>() <span class="cCmt">// parallel threads!</span>
+        .<span class="cFn">map</span>(|<span class="cVar">i</span>| {
+            <span class="cTag">let</span> <span class="cVar">sign</span> = <span class="cTag">if</span> <span class="cVar">i</span> % <span class="cNum">2</span> == <span class="cNum">0</span> { <span class="cNum">1.0</span> } <span class="cTag">else</span> { -<span class="cNum">1.0</span> };
+            <span class="cVar">sign</span> / (<span class="cNum">2.0</span> * <span class="cVar">i</span> <span class="cTag">as</span> <span class="cType">f64</span> + <span class="cNum">1.0</span>)
+        })
+        .<span class="cFn">sum::<span class="cType">&lt;f64&gt;</span></span>() * <span class="cNum">4.0</span>
+}
+<span class="cCmt">// ~0.8ms | ✅ 15x+ სწრაფი! CPU-ს სრულად იყენებს</span>`},
+
+cpp:{
+slow:`<span class="cCmt">// ❌ unoptimized — pow() call per iter</span>
+<span class="cTag">#include</span> <span class="cStr">&lt;cmath&gt;</span>
+<span class="cType">double</span> <span class="cFn">piSlow</span>(<span class="cType">int</span> n) {
+    <span class="cType">double</span> <span class="cVar">pi</span> = <span class="cNum">0.0</span>;
+    <span class="cTag">for</span> (<span class="cType">int</span> <span class="cVar">i</span>=<span class="cNum">0</span>; <span class="cVar">i</span><n; <span class="cVar">i</span>++) {
+        <span class="cVar">pi</span> += std::<span class="cFn">pow</span>(-<span class="cNum">1</span>,<span class="cVar">i</span>) / (<span class="cNum">2</span>*<span class="cVar">i</span>+<span class="cNum">1</span>);
+        <span class="cCmt">// pow() = very expensive libm call</span>
+    }
+    <span class="cTag">return</span> <span class="cVar">pi</span> * <span class="cNum">4</span>;
+}
+<span class="cCmt">// 10M iter ≈ 95ms without -O2</span>`,
+
+fast:`<span class="cCmt">// ✅ O3 + OpenMP parallelism</span>
+<span class="cTag">#pragma</span> GCC optimize(<span class="cStr">"O3,unroll-loops"</span>)
+<span class="cTag">#pragma</span> GCC target(<span class="cStr">"avx2"</span>)  <span class="cCmt">// SIMD!</span>
+<span class="cType">double</span> <span class="cFn">piFast</span>(<span class="cTag">long long</span> n) {
+    <span class="cType">double</span> <span class="cVar">pi</span> = <span class="cNum">0.0</span>;
+    <span class="cTag">#pragma</span> omp parallel <span class="cTag">for</span> reduction(+:<span class="cVar">pi</span>)
+    <span class="cTag">for</span> (<span class="cTag">long long</span> <span class="cVar">i</span>=<span class="cNum">0</span>; <span class="cVar">i</span><n; <span class="cVar">i</span>++) {
+        <span class="cVar">pi</span> += (<span class="cVar">i</span>%<span class="cNum">2</span>?-<span class="cNum">1.0</span>:<span class="cNum">1.0</span>) / (<span class="cNum">2</span>*<span class="cVar">i</span>+<span class="cNum">1</span>);
+    }
+    <span class="cTag">return</span> <span class="cVar">pi</span> * <span class="cNum">4</span>;
+}
+<span class="cCmt">// ≈ 3ms | ✅ AVX2 SIMD + OpenMP threads</span>`}
+};
+
+let activeLang='python';
+function switchLang(lang){
+  activeLang=lang;
+  document.querySelectorAll('.langTab').forEach((t,i)=>{const ls=['python','js','rust','cpp'];t.classList.toggle('active',ls[i]===lang);});
+  document.getElementById('slowCode').innerHTML=codes[lang].slow;
+  document.getElementById('fastCode').innerHTML=codes[lang].fast;
+  if(sOn&&AC)tone(500,.06,'sine',.04);
+}
+switchLang('python');
+
+// ═══════════════════════════════════════════
+// BENCHMARK BARS
+// ═══════════════════════════════════════════
+const benchData=[
+  {lang:'🦀 Rust (rayon)',slow:12,fast:0.8,unit:'ms'},
+  {lang:'⚙️ C++ (AVX2+OMP)',slow:95,fast:3,unit:'ms'},
+  {lang:'🔵 Swift',slow:45,fast:5,unit:'ms'},
+  {lang:'🔷 Go',slow:60,fast:8,unit:'ms'},
+  {lang:'☕ Java (JVM)',slow:110,fast:18,unit:'ms'},
+  {lang:'🌐 JS (V8)',slow:180,fast:22,unit:'ms'},
+  {lang:'🐍 Python (NumPy)',slow:2800,fast:85,unit:'ms'},
+  {lang:'💎 Ruby',slow:3500,fast:220,unit:'ms'},
+];
+let barsRendered=false;
+function renderBenchBars(){
+  if(barsRendered)return;barsRendered=true;
+  const cont=document.getElementById('benchBars');
+  const maxSlow=Math.max(...benchData.map(d=>d.slow));
+  benchData.forEach(d=>{
+    const speedup=Math.round(d.slow/d.fast*10)/10;
+    cont.innerHTML+=`
+      <div class="benchBar">
+        <div class="benchBarLabel"><span>${d.lang}</span><span style="color:var(--muted)">✅ ${d.fast}ms vs ❌ ${d.slow}ms · <strong style="color:var(--gn)">${speedup}x</strong> სწრაფი</span></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">
+          <div class="benchBarTrack"><div class="benchBarFill fillSlow" data-w="${(d.slow/maxSlow*100).toFixed(1)}%"></div></div>
+          <div class="benchBarTrack"><div class="benchBarFill fillFast" data-w="${(d.fast/maxSlow*100).toFixed(1)}%"></div></div>
+        </div>
+      </div>`;
+  });
+  setTimeout(()=>{
+    document.querySelectorAll('.benchBarFill').forEach(b=>{b.style.width=b.dataset.w;});
+  },100);
+}
+
+// ═══════════════════════════════════════════
+// LIVE BENCHMARK RUNNER (real JS measurement)
+// ═══════════════════════════════════════════
+function piSlow(n){let r=0;for(let i=0;i<n;i++)r+=Math.pow(-1,i)/(2*i+1);return r*4;}
+function piFast(n){let r=0,d=1;for(let i=0;i<n;i+=2){r+=1/d-1/(d+2);d+=4;}return r*4;}
+
+async function runBenchmark(){
+  const btn=document.getElementById('runBenchBtn');
+  const N=5_000_000;
+  btn.disabled=true;btn.textContent='⏳ მიმდინარეობს...';
+  iAC();if(sOn)tone(300,.1,'sine',.05);
+  const prog=document.getElementById('benchProgress');
+  const fill=document.getElementById('benchFill');
+  prog.style.display='block';
+  // animate progress
+  let p=0;const pInt=setInterval(()=>{p=Math.min(p+2,95);fill.style.width=p+'%';},30);
+  await new Promise(r=>setTimeout(r,50));
+  // run slow
+  const t1=performance.now();piSlow(N);const slowMs=Math.round(performance.now()-t1);
+  await new Promise(r=>setTimeout(r,20));
+  // run fast
+  const t2=performance.now();piFast(N);const fastMs=Math.max(1,Math.round(performance.now()-t2));
+  clearInterval(pInt);fill.style.width='100%';
+  await new Promise(r=>setTimeout(r,200));
+  prog.style.display='none';
+  const speedup=(slowMs/fastMs).toFixed(1);
+  const energySave=Math.round((1-fastMs/slowMs)*100);
+  document.getElementById('benchResults').style.display='grid';
+  document.getElementById('slowTime').textContent=slowMs+'ms';
+  document.getElementById('fastTime').textContent=fastMs+'ms';
+  document.getElementById('slowEnergy').textContent=(slowMs/fastMs).toFixed(1)+'x მეტი';
+  document.getElementById('speedup').textContent=speedup+'x';
+  document.getElementById('savingMsg').style.display='block';
+  document.getElementById('savingMsg').innerHTML=`⚡ ოპტიმიზებული კოდი <strong>${speedup}x</strong> სწრაფია და <strong>~${energySave}%</strong> ნაკლებ ენერგიას მოიხმარს!`;
+  btn.disabled=false;btn.textContent='▶ ხელახლა';
+  if(sOn&&AC){chord([523,659,784],.5);setTimeout(()=>tone(1046,.8,'sine',.08),300);}
+}
 </script>
 </body>
 </html>
