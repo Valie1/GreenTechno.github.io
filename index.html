@@ -6,454 +6,454 @@
 <title>GreenTechno — ენერგოეფექტირობა</title>
 <script src="three.min.js"></script>
 <script src="GLTFLoader.js"></script>
-<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;600;700;800;900&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
 :root{
   --gn:#39ff14;--gb:#2ecc40;--lime:#a8e63d;
-  --teal:#5de0c5;--gold:#d4a017;--red:#ff453a;--orange:#ff9f0a;--blue:#0a84ff;--purple:#bf5af2;
-  --bg:#000;--bg2:#0a0f0a;--bg3:#0d160d;
-  --glass:rgba(255,255,255,0.06);--glass2:rgba(255,255,255,0.1);
-  --border:rgba(255,255,255,0.1);--borderG:rgba(57,255,20,0.2);
-  --text:#f0fff0;--muted:rgba(240,255,240,0.55);
-  --radius:22px;--radiusS:14px;
+  --teal:#5de0c5;--gold:#ffd60a;--red:#ff453a;--orange:#ff9f0a;--blue:#0a84ff;--purple:#bf5af2;
+  --bg:#000;--bg2:#080d08;--bg3:#0d160d;
+  --glass:rgba(255,255,255,0.055);--glass2:rgba(255,255,255,0.1);
+  --border:rgba(255,255,255,0.09);--borderG:rgba(57,255,20,0.18);
+  --text:#f0fff0;--muted:rgba(240,255,240,0.52);
+  --r:22px;--rs:14px;
 }
 html{scroll-behavior:smooth;overflow-x:hidden;}
 body{background:var(--bg);color:var(--text);font-family:'Nunito',sans-serif;overflow-x:hidden;cursor:none;-webkit-font-smoothing:antialiased;}
 
-/* ─── CURSOR ─── */
-#cur{position:fixed;width:8px;height:8px;background:var(--gn);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);mix-blend-mode:screen;transition:width .15s,height .15s,background .2s;}
-#cur2{position:fixed;width:32px;height:32px;border:1px solid rgba(57,255,20,.4);border-radius:50%;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:width .2s,height .2s;}
-body.hovering #cur{width:16px;height:16px;background:#fff;}
-body.hovering #cur2{width:50px;height:50px;border-color:rgba(57,255,20,.6);}
+/* ── CURSOR ── */
+#cur{position:fixed;width:8px;height:8px;background:var(--gn);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);mix-blend-mode:screen;transition:width .15s,height .15s;}
+#cur2{position:fixed;width:30px;height:30px;border:1px solid rgba(57,255,20,.38);border-radius:50%;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:width .2s,height .2s;}
+body.hov #cur{width:14px;height:14px;background:#fff;}
+body.hov #cur2{width:46px;height:46px;border-color:rgba(57,255,20,.55);}
 
-/* ─── INTRO ─── */
+/* ══════════════════════════════════════
+   INTRO
+══════════════════════════════════════ */
 #intro{
   position:fixed;inset:0;z-index:2000;background:#000;
   display:flex;align-items:center;justify-content:center;
   flex-direction:column;overflow:hidden;cursor:pointer;
 }
-#introStarCanvas{position:absolute;inset:0;z-index:0;}
-.introPhone{
+#starsCanvas{position:absolute;inset:0;z-index:0;}
+
+/* Brand top */
+.introBrand{
+  position:absolute;top:40px;z-index:5;text-align:center;
+  opacity:0;animation:fUp .9s ease 2.6s forwards;
+}
+.introBrand .bRow{display:flex;align-items:center;justify-content:center;gap:12px;margin-bottom:6px;}
+.introBrand .bRow img{width:42px;height:42px;border-radius:13px;box-shadow:0 0 24px rgba(57,255,20,.5);}
+.introBrand h1{font-size:1.75rem;font-weight:900;background:linear-gradient(135deg,#2ecc40,#39ff14,#a8e63d);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;letter-spacing:-0.5px;}
+.introBrand p{font-size:.62rem;color:var(--muted);letter-spacing:4.5px;text-transform:uppercase;margin-top:3px;}
+
+/* Phone wrapper — zoom-out */
+.introPhoneWrap{
   position:relative;z-index:3;
   width:340px;height:680px;
-  transform:scale(3.2) translateY(5%);opacity:0;
-  animation:zoomOutPhone 2.4s cubic-bezier(.16,1,.3,1) .2s forwards;
-  filter:drop-shadow(0 0 60px rgba(57,255,20,.7)) drop-shadow(0 0 120px rgba(57,255,20,.3));
+  transform:scale(3.5) translateY(4%);opacity:0;
+  animation:zoomOut 2.6s cubic-bezier(.14,1,.3,1) .15s forwards;
+  filter:drop-shadow(0 0 70px rgba(57,255,20,.75)) drop-shadow(0 0 140px rgba(57,255,20,.3));
 }
-@keyframes zoomOutPhone{
-  0%{transform:scale(3.2) translateY(5%);opacity:0;}
-  15%{opacity:1;}
+@keyframes zoomOut{
+  0%{transform:scale(3.5) translateY(4%);opacity:0;}
+  12%{opacity:1;}
   100%{transform:scale(1) translateY(0);opacity:1;}
 }
-#iPhCIntro{width:100%;height:100%;display:block;}
-.introPhoneGlow{
-  position:absolute;inset:-20px;border-radius:60px;
-  border:1px solid rgba(57,255,20,.0);
-  box-shadow:0 0 0 rgba(57,255,20,0);
-  animation:glowPulse 2.8s ease-in-out 2.4s infinite;
-  pointer-events:none;z-index:2;
-}
-@keyframes glowPulse{
-  0%,100%{box-shadow:0 0 40px rgba(57,255,20,.2),0 0 80px rgba(57,255,20,.1);border-color:rgba(57,255,20,.15);}
-  50%{box-shadow:0 0 100px rgba(57,255,20,.5),0 0 200px rgba(57,255,20,.2);border-color:rgba(57,255,20,.35);}
-}
-.introBrand{
-  position:absolute;top:44px;z-index:5;text-align:center;
-  opacity:0;animation:fadeSlideUp .8s ease 2.6s forwards;
-}
-@keyframes fadeSlideUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
-.introBrand .logo-wrap{display:flex;align-items:center;gap:12px;justify-content:center;margin-bottom:6px;}
-.introBrand .logo-wrap img{width:40px;height:40px;border-radius:12px;box-shadow:0 0 20px rgba(57,255,20,.4);}
-.introBrand h1{font-size:1.7rem;font-weight:900;background:linear-gradient(135deg,#2ecc40,#39ff14,#a8e63d);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;letter-spacing:-0.5px;}
-.introBrand p{font-size:.65rem;color:var(--muted);letter-spacing:4px;text-transform:uppercase;margin-top:3px;}
-.introHint{
-  position:absolute;bottom:52px;z-index:5;
-  font-size:.72rem;letter-spacing:3px;text-transform:uppercase;
-  color:rgba(57,255,20,.55);font-weight:700;text-align:center;
-  opacity:0;animation:fadeSlideUp .8s ease 3s forwards;
-}
-.introHint span{display:inline-block;animation:breathe 2s ease-in-out infinite;}
-@keyframes breathe{0%,100%{opacity:.4;}50%{opacity:1;}}
-.introExit{animation:exitBlast .6s cubic-bezier(.7,0,.9,1) forwards!important;}
-@keyframes exitBlast{0%{opacity:1;filter:brightness(1);}40%{opacity:1;filter:brightness(3);}100%{opacity:0;filter:brightness(0.5);transform:scale(1.1);}}
+#introPhC{width:100%;height:100%;display:block;}
 
-/* ─── LOCK SCREEN STYLE TRANSITION ─── */
-#lockOverlay{
-  position:fixed;inset:0;z-index:1500;
-  background:radial-gradient(ellipse at 50% 40%,#0d2e0d 0%,#000 70%);
-  opacity:0;pointer-events:none;
-  display:flex;align-items:center;justify-content:center;
-  flex-direction:column;gap:16px;
+/* Orbiting ring */
+.orbitRing{
+  position:absolute;top:-24px;left:-24px;right:-24px;bottom:-24px;
+  border-radius:56px;
+  border:1px solid transparent;
+  background:linear-gradient(var(--bg),var(--bg)) padding-box,
+             linear-gradient(135deg,rgba(57,255,20,.4),transparent 50%,rgba(57,255,20,.2)) border-box;
+  opacity:0;animation:ringAppear .6s ease 2.7s forwards,orbitSpin 8s linear 3s infinite;
+  pointer-events:none;
 }
-#lockOverlay.active{pointer-events:all;animation:lockIn .4s ease forwards;}
-#lockOverlay.release{animation:lockOut .6s cubic-bezier(.16,1,.3,1) forwards;}
+@keyframes ringAppear{to{opacity:1;}}
+@keyframes orbitSpin{0%{filter:hue-rotate(0deg);}100%{filter:hue-rotate(360deg);}}
+.orbitDot{
+  position:absolute;width:8px;height:8px;border-radius:50%;
+  background:var(--gn);box-shadow:0 0 12px var(--gn);
+  top:-4px;left:50%;margin-left:-4px;
+  transform-origin:4px calc(50% + 24px);
+  opacity:0;animation:ringAppear .3s ease 3s forwards,dotOrbit 4s linear 3s infinite;
+}
+@keyframes dotOrbit{from{transform:rotate(0deg) translateY(-340px);}to{transform:rotate(360deg) translateY(-340px);}}
+
+/* Hint */
+.introHint{
+  position:absolute;bottom:48px;z-index:5;text-align:center;
+  font-size:.7rem;letter-spacing:3.5px;text-transform:uppercase;
+  color:rgba(57,255,20,.5);font-weight:700;
+  opacity:0;animation:fUp .8s ease 3.1s forwards;
+}
+.introHint span{animation:breathe 2s ease-in-out infinite;}
+@keyframes breathe{0%,100%{opacity:.35;}50%{opacity:1;}}
+@keyframes fUp{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+
+/* Exit */
+.introExiting{animation:introExit .65s cubic-bezier(.7,0,1,1) forwards!important;}
+@keyframes introExit{0%{opacity:1;}30%{filter:brightness(4);}100%{opacity:0;transform:scale(1.08);}}
+
+/* ══════════════════════════════════════
+   LOCK OVERLAY
+══════════════════════════════════════ */
+#lockOv{
+  position:fixed;inset:0;z-index:1800;
+  background:radial-gradient(ellipse at 50% 40%,#0d2e0d,#000 70%);
+  opacity:0;pointer-events:none;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;
+}
+#lockOv.in{pointer-events:all;animation:lockIn .35s ease forwards;}
+#lockOv.out{animation:lockOut .55s cubic-bezier(.16,1,.3,1) forwards;}
 @keyframes lockIn{to{opacity:1;}}
 @keyframes lockOut{from{opacity:1;}to{opacity:0;}}
-.lockIcon{font-size:3rem;animation:lockBounce .5s ease;}
-@keyframes lockBounce{0%{transform:scale(0.5);}60%{transform:scale(1.1);}100%{transform:scale(1);}}
-.lockText{font-size:.75rem;letter-spacing:3px;text-transform:uppercase;color:var(--gn);font-weight:700;}
+.lockEmoji{font-size:3.2rem;animation:popIn .4s cubic-bezier(.34,1.56,.64,1);}
+@keyframes popIn{from{transform:scale(.3);opacity:0;}to{transform:scale(1);opacity:1;}}
+.lockTxt{font-size:.7rem;letter-spacing:3px;text-transform:uppercase;color:var(--gn);font-weight:800;}
 
-/* ─── MAIN SITE ─── */
-#site{opacity:0;transition:opacity .8s ease;}
+/* ══════════════════════════════════════
+   MAIN SITE
+══════════════════════════════════════ */
+#site{opacity:0;transition:opacity .9s ease;}
 #site.show{opacity:1;}
 
-/* ─── iOS/macOS TOP STATUS BAR ─── */
-.statusBar{
-  position:fixed;top:0;left:0;right:0;z-index:900;
-  height:52px;display:flex;align-items:center;justify-content:space-between;
+/* ── macOS status bar ── */
+.topBar{
+  position:fixed;top:0;left:0;right:0;z-index:900;height:54px;
+  display:flex;align-items:center;justify-content:space-between;
   padding:0 28px;
-  background:rgba(0,0,0,.55);backdrop-filter:blur(40px) saturate(1.8);
-  -webkit-backdrop-filter:blur(40px) saturate(1.8);
-  border-bottom:0.5px solid rgba(255,255,255,.08);
-  transform:translateY(-100%);transition:transform .6s cubic-bezier(.16,1,.3,1);
+  background:rgba(0,0,0,.6);backdrop-filter:blur(44px) saturate(1.8);
+  border-bottom:.5px solid rgba(255,255,255,.07);
+  transform:translateY(-100%);transition:transform .65s cubic-bezier(.16,1,.3,1);
 }
-.statusBar.show{transform:translateY(0);}
-.sbLeft{display:flex;align-items:center;gap:10px;}
-.sbLogo{width:28px;height:28px;border-radius:8px;object-fit:cover;}
-.sbTitle{font-size:.9rem;font-weight:800;color:var(--gb);}
-.sbCenter{display:flex;align-items:center;gap:6px;}
-.sbTab{padding:5px 14px;border-radius:100px;font-size:.7rem;font-weight:700;letter-spacing:.5px;cursor:pointer;transition:all .25s;color:var(--muted);text-decoration:none;}
-.sbTab:hover,.sbTab.active{background:rgba(57,255,20,.12);color:var(--gn);border:0.5px solid rgba(57,255,20,.3);}
-.sbRight{display:flex;align-items:center;gap:14px;}
-.sbIcon{font-size:1.1rem;cursor:pointer;opacity:.7;transition:opacity .2s;}
-.sbIcon:hover{opacity:1;}
-#sndBtn{background:none;border:none;cursor:pointer;font-size:1.1rem;opacity:.7;transition:opacity .2s;}
+.topBar.show{transform:translateY(0);}
+.tbLeft{display:flex;align-items:center;gap:10px;}
+.tbLogo{width:27px;height:27px;border-radius:8px;}
+.tbName{font-size:.88rem;font-weight:900;color:var(--gb);}
+.tbSep{width:.5px;height:18px;background:rgba(255,255,255,.12);margin:0 4px;}
+.tbSub{font-size:.72rem;color:var(--muted);letter-spacing:.5px;}
+.tbCenter{display:flex;gap:4px;}
+.tbLink{padding:5px 14px;border-radius:100px;font-size:.68rem;font-weight:700;letter-spacing:.4px;cursor:pointer;color:var(--muted);transition:all .2s;text-decoration:none;border:.5px solid transparent;}
+.tbLink:hover,.tbLink.on{background:rgba(57,255,20,.1);color:var(--gn);border-color:rgba(57,255,20,.25);}
+.tbRight{display:flex;align-items:center;gap:12px;}
+#sndBtn{background:none;border:none;cursor:pointer;font-size:1rem;opacity:.65;transition:opacity .2s;}
 #sndBtn:hover{opacity:1;}
 
-/* ─── SCROLL DOTS ─── */
-#dots{position:fixed;right:20px;top:50%;transform:translateY(-50%);z-index:400;display:flex;flex-direction:column;gap:7px;opacity:0;transition:opacity .5s .5s;}
+/* ── scroll dots ── */
+#dots{position:fixed;right:18px;top:50%;transform:translateY(-50%);z-index:500;display:flex;flex-direction:column;gap:6px;opacity:0;transition:opacity .5s .6s;}
 #dots.show{opacity:1;}
-.dot{width:4px;height:4px;border-radius:50%;background:rgba(57,255,20,.25);cursor:pointer;transition:all .3s;}
-.dot.on{background:var(--gn);height:16px;border-radius:2px;}
+.dot{width:4px;height:4px;border-radius:2px;background:rgba(57,255,20,.22);cursor:pointer;transition:all .3s;}
+.dot.on{background:var(--gn);height:18px;}
 
-/* ─── HERO ─── */
+/* ══════════════════════════════════════
+   HERO
+══════════════════════════════════════ */
 #hero{
-  min-height:100vh;position:relative;display:flex;align-items:center;
-  overflow:hidden;
-  background:radial-gradient(ellipse 100% 80% at 70% -10%,rgba(46,204,64,.1),transparent 55%),
-             radial-gradient(ellipse 60% 60% at 10% 90%,rgba(93,224,197,.06),transparent 50%),#000;
+  min-height:100vh;position:relative;display:flex;align-items:center;overflow:hidden;
+  background:
+    radial-gradient(ellipse 90% 70% at 65% -5%,rgba(46,204,64,.12),transparent 55%),
+    radial-gradient(ellipse 55% 55% at 8% 90%,rgba(93,224,197,.07),transparent 50%),#000;
 }
 #ptcl{position:absolute;inset:0;overflow:hidden;pointer-events:none;}
 .pt{position:absolute;border-radius:50%;background:var(--gn);opacity:0;animation:ptUp linear infinite;}
-@keyframes ptUp{0%{opacity:0;transform:translateY(100vh) scale(0)}8%{opacity:.6}92%{opacity:.15}100%{opacity:0;transform:translateY(-60px) scale(1)}}
+@keyframes ptUp{0%{opacity:0;transform:translateY(100vh) scale(0)}8%{opacity:.55}92%{opacity:.12}100%{opacity:0;transform:translateY(-60px) scale(1)}}
 
-.heroIn{
-  position:relative;z-index:5;
-  display:grid;grid-template-columns:1fr 1fr;
-  gap:40px;align-items:center;
-  max-width:1200px;margin:0 auto;padding:100px 60px 80px;
-  width:100%;
+.heroWrap{
+  position:relative;z-index:5;display:grid;grid-template-columns:1fr 1fr;
+  gap:40px;align-items:center;max-width:1200px;margin:0 auto;padding:100px 60px 80px;width:100%;
 }
-.hTxt{opacity:0;transform:translateX(-40px);transition:all .9s cubic-bezier(.16,1,.3,1) .1s;}
+.hTxt{opacity:0;transform:translateX(-42px);transition:all .9s cubic-bezier(.16,1,.3,1) .1s;}
 .hTxt.go{opacity:1;transform:translateX(0);}
 .heroBadge{
-  display:inline-flex;align-items:center;gap:8px;
-  background:rgba(57,255,20,.08);border:0.5px solid rgba(57,255,20,.3);
-  border-radius:100px;padding:5px 14px;margin-bottom:20px;
-  font-size:.68rem;letter-spacing:2px;text-transform:uppercase;color:var(--gn);font-weight:700;
+  display:inline-flex;align-items:center;gap:7px;
+  background:rgba(57,255,20,.08);border:.5px solid rgba(57,255,20,.28);
+  border-radius:100px;padding:5px 14px;margin-bottom:18px;
+  font-size:.66rem;letter-spacing:2px;text-transform:uppercase;color:var(--gn);font-weight:800;
 }
-.hDot{width:5px;height:5px;background:var(--gn);border-radius:50%;animation:breathe 1.5s infinite;}
-.heroTitle{font-size:clamp(2.6rem,5vw,5.2rem);font-weight:900;line-height:1.0;letter-spacing:-3px;}
-.heroTitle .t1{display:block;color:var(--text);}
-.heroTitle .t2{display:block;background:linear-gradient(135deg,#2ecc40,#39ff14 50%,#a8e63d);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
-.heroSub{margin-top:18px;font-size:.98rem;line-height:1.78;color:var(--muted);max-width:440px;}
-.heroCTA{margin-top:28px;display:flex;gap:12px;flex-wrap:wrap;}
-.btnPrimary{
-  padding:12px 28px;border-radius:100px;
-  background:linear-gradient(135deg,#2ecc40,#39ff14);
-  color:#040f04;font-weight:900;font-size:.88rem;border:none;cursor:pointer;
-  transition:all .3s;box-shadow:0 0 25px rgba(57,255,20,.3);font-family:inherit;
-  letter-spacing:.3px;
-}
-.btnPrimary:hover{transform:scale(1.05);box-shadow:0 0 55px rgba(57,255,20,.6);}
-.btnSecondary{
-  padding:12px 28px;border-radius:100px;background:var(--glass);
-  border:0.5px solid rgba(57,255,20,.35);color:var(--gn);font-weight:700;font-size:.88rem;
-  cursor:pointer;transition:all .3s;font-family:inherit;backdrop-filter:blur(10px);
-}
-.btnSecondary:hover{background:rgba(57,255,20,.1);border-color:var(--gn);}
+.bdot{width:5px;height:5px;background:var(--gn);border-radius:50%;animation:breathe 1.5s infinite;}
+.heroH{font-size:clamp(2.4rem,4.8vw,5rem);font-weight:900;line-height:1.01;letter-spacing:-3px;}
+.heroH .l1{display:block;color:var(--text);}
+.heroH .l2{display:block;background:linear-gradient(135deg,#2ecc40,#39ff14 55%,#a8e63d);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.heroSub{margin-top:16px;font-size:.95rem;line-height:1.78;color:var(--muted);max-width:430px;}
+.heroCTA{margin-top:26px;display:flex;gap:11px;flex-wrap:wrap;}
+.btnP{padding:11px 26px;border-radius:100px;background:linear-gradient(135deg,#2ecc40,#39ff14);color:#030f03;font-weight:900;font-size:.86rem;border:none;cursor:pointer;transition:all .3s;box-shadow:0 0 24px rgba(57,255,20,.3);font-family:inherit;}
+.btnP:hover{transform:scale(1.05);box-shadow:0 0 52px rgba(57,255,20,.6);}
+.btnS{padding:11px 26px;border-radius:100px;background:var(--glass);border:.5px solid rgba(57,255,20,.32);color:var(--gn);font-weight:700;font-size:.86rem;cursor:pointer;transition:all .3s;font-family:inherit;backdrop-filter:blur(10px);}
+.btnS:hover{background:rgba(57,255,20,.1);border-color:var(--gn);}
 
-.hero3D{
-  display:flex;flex-direction:column;align-items:center;
-  opacity:0;transform:translateX(40px) scale(.96);
-  transition:all .9s cubic-bezier(.16,1,.3,1) .3s;
-}
+.hero3D{display:flex;flex-direction:column;align-items:center;opacity:0;transform:translateX(40px) scale(.95);transition:all .9s cubic-bezier(.16,1,.3,1) .35s;}
 .hero3D.go{opacity:1;transform:translateX(0) scale(1);}
-#hPhC{width:280px;height:560px;cursor:grab;filter:drop-shadow(0 0 40px rgba(57,255,20,.4));}
+#hPhC{width:270px;height:540px;cursor:grab;filter:drop-shadow(0 0 40px rgba(57,255,20,.4));}
 #hPhC:active{cursor:grabbing;}
-.modelTag{
-  margin-top:10px;font-size:.6rem;color:var(--muted);
-  letter-spacing:2.5px;text-transform:uppercase;
-  display:flex;align-items:center;gap:6px;
-}
-.modelTagDot{width:4px;height:4px;background:var(--gn);border-radius:50%;animation:breathe 1.5s infinite;}
+.mTag{margin-top:9px;font-size:.58rem;color:var(--muted);letter-spacing:2.5px;text-transform:uppercase;display:flex;align-items:center;gap:6px;}
+.mTagDot{width:4px;height:4px;background:var(--gn);border-radius:50%;animation:breathe 1.5s infinite;}
 
-/* ─── SECTION COMMON ─── */
-.section{padding:90px 60px;max-width:1200px;margin:0 auto;}
-.gl{height:.5px;background:linear-gradient(90deg,transparent,rgba(57,255,20,.3),transparent);margin:0 60px;}
-.sLabel{font-size:.65rem;letter-spacing:4px;text-transform:uppercase;color:var(--gn);font-weight:800;margin-bottom:12px;}
-.sTitle{font-size:clamp(1.8rem,3.5vw,3.2rem);font-weight:900;letter-spacing:-1.5px;line-height:1.1;margin-bottom:28px;}
-.rv{opacity:0;transform:translateY(24px);transition:all .7s cubic-bezier(.16,1,.3,1);}
+/* ══════════════════════════════════════
+   SHARED
+══════════════════════════════════════ */
+.gl{height:.5px;background:linear-gradient(90deg,transparent,rgba(57,255,20,.28),transparent);margin:0 60px;}
+.sLabel{font-size:.62rem;letter-spacing:4px;text-transform:uppercase;color:var(--gn);font-weight:800;margin-bottom:11px;}
+.sTitle{font-size:clamp(1.8rem,3.4vw,3.1rem);font-weight:900;letter-spacing:-1.5px;line-height:1.08;margin-bottom:24px;}
+.rv{opacity:0;transform:translateY(22px);transition:all .7s cubic-bezier(.16,1,.3,1);}
 .rv.go{opacity:1;transform:translateY(0);}
+.sec{padding:88px 60px;max-width:1200px;margin:0 auto;}
 
-/* ─── ENERGY EFFICIENCY PAGE ─── */
-#energy{background:radial-gradient(ellipse 80% 60% at 50% 0%,rgba(10,42,10,.5),transparent 60%),var(--bg);}
+/* ══════════════════════════════════════
+   PRESENTATION HERO BAND
+══════════════════════════════════════ */
+.presBand{
+  background:linear-gradient(135deg,rgba(57,255,20,.06),rgba(93,224,197,.04));
+  border:.5px solid rgba(57,255,20,.14);
+  border-radius:var(--r);padding:32px 36px;margin-bottom:56px;
+  display:flex;align-items:center;justify-content:space-between;gap:24px;
+  backdrop-filter:blur(20px);
+}
+.presInfo h2{font-size:1.4rem;font-weight:900;letter-spacing:-0.5px;margin-bottom:6px;}
+.presInfo p{font-size:.82rem;color:var(--muted);line-height:1.6;}
+.presMeta{display:flex;gap:16px;flex-shrink:0;flex-wrap:wrap;}
+.presTag{
+  display:flex;flex-direction:column;align-items:center;gap:3px;
+  background:rgba(255,255,255,.04);border:.5px solid var(--border);
+  border-radius:var(--rs);padding:12px 18px;min-width:90px;
+}
+.presTagIcon{font-size:1.4rem;}
+.presTagLbl{font-size:.6rem;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;margin-top:2px;}
+.presTagVal{font-size:.78rem;font-weight:800;color:var(--text);}
 
-/* App Window Card */
-.appWindow{
-  background:rgba(10,18,10,.9);
-  border:0.5px solid rgba(57,255,20,.15);
-  border-radius:var(--radius);
-  backdrop-filter:blur(40px);
-  overflow:hidden;
-  box-shadow:0 40px 80px rgba(0,0,0,.6),0 0 0 0.5px rgba(57,255,20,.08);
+/* ══════════════════════════════════════
+   CODE SECTION — macOS WINDOW STYLE
+══════════════════════════════════════ */
+.macWin{
+  background:rgba(8,14,8,.92);border:.5px solid rgba(57,255,20,.14);
+  border-radius:var(--r);overflow:hidden;
+  box-shadow:0 48px 96px rgba(0,0,0,.7),0 0 0 .5px rgba(57,255,20,.07),0 0 80px rgba(57,255,20,.03);
 }
-.appWindowBar{
-  display:flex;align-items:center;gap:8px;
-  padding:14px 18px;
-  background:rgba(255,255,255,.03);
-  border-bottom:0.5px solid rgba(255,255,255,.06);
+.macBar{
+  display:flex;align-items:center;gap:7px;padding:13px 18px;
+  background:rgba(255,255,255,.025);border-bottom:.5px solid rgba(255,255,255,.055);
+  position:sticky;top:0;z-index:2;
 }
-.winBtn{width:12px;height:12px;border-radius:50%;}
-.winClose{background:#ff453a;}
-.winMin{background:#ff9f0a;}
-.winMax{background:#30d158;}
-.winTitle{margin-left:8px;font-size:.75rem;font-weight:700;color:rgba(240,255,240,.5);letter-spacing:.5px;}
-.winBody{padding:24px;}
+.wc{width:12px;height:12px;border-radius:50%;}
+.wRed{background:#ff5f56;box-shadow:0 0 6px rgba(255,95,86,.4);}
+.wYel{background:#febc2e;box-shadow:0 0 6px rgba(254,188,46,.4);}
+.wGrn{background:#28c840;box-shadow:0 0 6px rgba(40,200,64,.4);}
+.wTitle{margin-left:8px;font-size:.7rem;font-weight:700;color:rgba(240,255,240,.4);letter-spacing:.4px;font-family:'JetBrains Mono',monospace;}
 
-/* Language tabs */
-.langTabs{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap;}
-.langTab{
-  padding:6px 16px;border-radius:100px;font-size:.72rem;font-weight:800;
-  cursor:pointer;border:0.5px solid var(--border);background:var(--glass);
-  color:var(--muted);transition:all .25s;letter-spacing:.3px;font-family:inherit;
+/* Language selector tabs */
+.langRow{display:flex;align-items:center;gap:8px;padding:16px 20px;border-bottom:.5px solid rgba(255,255,255,.05);}
+.langBtn{
+  padding:6px 16px;border-radius:100px;font-size:.7rem;font-weight:800;
+  cursor:pointer;border:.5px solid var(--border);background:var(--glass);
+  color:var(--muted);transition:all .22s;letter-spacing:.3px;font-family:inherit;
 }
-.langTab.active,.langTab:hover{border-color:rgba(57,255,20,.4);background:rgba(57,255,20,.1);color:var(--gn);}
+.langBtn.on,.langBtn:hover{border-color:rgba(57,255,20,.38);background:rgba(57,255,20,.09);color:var(--gn);}
+.langDot{width:6px;height:6px;border-radius:50%;display:inline-block;margin-right:5px;vertical-align:middle;}
+.lC{background:#555;} .lCpp{background:#0080ff;} .lCs{background:#9b59b6;}
 
-/* Code display */
-.codeBlock{
-  background:rgba(0,0,0,.5);border-radius:var(--radiusS);
-  padding:20px;font-family:'SF Mono','Fira Code',monospace;font-size:.8rem;line-height:1.7;
-  border:0.5px solid rgba(255,255,255,.06);overflow-x:auto;position:relative;
-  max-height:260px;overflow-y:auto;
+/* Example tabs inside code panel */
+.exTabs{display:flex;gap:0;border-bottom:.5px solid rgba(255,255,255,.055);overflow-x:auto;padding:0 20px;}
+.exTab{
+  padding:10px 18px;font-size:.68rem;font-weight:700;cursor:pointer;
+  color:var(--muted);border-bottom:2px solid transparent;transition:all .2s;
+  white-space:nowrap;font-family:inherit;letter-spacing:.3px;
 }
-.codeBlock::-webkit-scrollbar{width:4px;height:4px;}
-.codeBlock::-webkit-scrollbar-track{background:transparent;}
-.codeBlock::-webkit-scrollbar-thumb{background:rgba(57,255,20,.3);border-radius:2px;}
-.cTag{color:#ff7b72;}
-.cKey{color:#79c0ff;}
-.cStr{color:#a5d6ff;}
-.cNum{color:#f0883e;}
-.cCmt{color:#8b949e;font-style:italic;}
-.cFn{color:#d2a8ff;}
-.cVar{color:#ffa657;}
-.cType{color:#7ee787;}
+.exTab.on{color:var(--gn);border-bottom-color:var(--gn);}
+.exTab:hover{color:var(--text);}
 
-/* Compare grid */
-.compareGrid{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
-.compareCard{
-  background:rgba(10,18,10,.8);border:0.5px solid var(--border);
-  border-radius:var(--radius);overflow:hidden;transition:all .3s;
-}
-.compareCard:hover{border-color:rgba(57,255,20,.25);box-shadow:0 20px 40px rgba(0,0,0,.4);}
-.compareHeader{
+/* Split code view */
+.codeSplit{display:grid;grid-template-columns:1fr 1fr;border-top:.5px solid rgba(255,255,255,.04);}
+.codeSide{padding:0;}
+.codeSideHdr{
   display:flex;align-items:center;justify-content:space-between;
-  padding:14px 18px;border-bottom:0.5px solid var(--border);
+  padding:12px 18px;border-bottom:.5px solid rgba(255,255,255,.05);
 }
-.compareLabel{font-size:.75rem;font-weight:800;letter-spacing:1px;}
-.badgeTag{
-  padding:3px 10px;border-radius:100px;font-size:.62rem;font-weight:800;letter-spacing:.5px;
+.codeHdrBadge{
+  font-size:.62rem;font-weight:800;letter-spacing:.8px;padding:3px 10px;border-radius:100px;
 }
-.badgeSlow{background:rgba(255,69,58,.15);color:#ff453a;border:0.5px solid rgba(255,69,58,.3);}
-.badgeFast{background:rgba(48,209,88,.15);color:#30d158;border:0.5px solid rgba(48,209,88,.3);}
-.compareBody{padding:16px 18px;}
+.badSlow{background:rgba(255,69,58,.12);color:#ff453a;border:.5px solid rgba(255,69,58,.25);}
+.badFast{background:rgba(40,200,64,.12);color:#28c840;border:.5px solid rgba(40,200,64,.25);}
+.codeArea{
+  font-family:'JetBrains Mono',monospace;font-size:.76rem;line-height:1.72;
+  padding:18px 20px;background:transparent;
+  max-height:320px;overflow-y:auto;overflow-x:auto;
+  color:rgba(230,255,230,.85);
+}
+.codeArea::-webkit-scrollbar{width:3px;height:3px;}
+.codeArea::-webkit-scrollbar-thumb{background:rgba(57,255,20,.25);border-radius:2px;}
+.codeSplit .codeSide:first-child{border-right:.5px solid rgba(255,255,255,.05);}
 
-/* Benchmark bar chart */
-.benchSection{margin-top:36px;}
-.benchTitle{font-size:.82rem;font-weight:800;color:var(--text);margin-bottom:18px;display:flex;align-items:center;gap:8px;}
-.benchBar{margin-bottom:14px;}
-.benchBarLabel{display:flex;justify-content:space-between;font-size:.72rem;color:var(--muted);margin-bottom:5px;font-weight:600;}
-.benchBarTrack{height:8px;background:rgba(255,255,255,.06);border-radius:4px;overflow:hidden;}
-.benchBarFill{height:100%;border-radius:4px;transition:width 1.5s cubic-bezier(.16,1,.3,1);width:0;}
-.fillSlow{background:linear-gradient(90deg,#ff453a,#ff9f0a);}
-.fillFast{background:linear-gradient(90deg,#30d158,#39ff14);}
+/* Syntax colors */
+.kw{color:#f97583;} .fn{color:#b392f0;} .str{color:#9ecbff;}
+.num{color:#f0a057;} .cm{color:#6a737d;font-style:italic;}
+.tp{color:#85e89d;} .op{color:#79b8ff;} .pp{color:#f97583;}
+.vr{color:#ffab70;}
 
-/* Live benchmark runner */
-.benchRunner{
-  background:rgba(0,0,0,.6);border:0.5px solid var(--borderG);
-  border-radius:var(--radius);padding:24px;margin-top:28px;
+/* ══════════════════════════════════════
+   LIVE BENCHMARK
+══════════════════════════════════════ */
+.benchBox{
+  background:rgba(0,0,0,.55);border:.5px solid var(--borderG);
+  border-radius:var(--r);padding:28px;margin-top:32px;
 }
-.runnerHeader{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;}
-.runnerTitle{font-size:.85rem;font-weight:800;color:var(--text);}
+.benchTop{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;}
+.benchTitle{font-size:.88rem;font-weight:900;color:var(--text);}
 .runBtn{
-  padding:8px 20px;border-radius:100px;
+  padding:9px 22px;border-radius:100px;
   background:linear-gradient(135deg,#2ecc40,#39ff14);
-  color:#040f04;font-weight:900;font-size:.78rem;border:none;cursor:pointer;
-  font-family:inherit;transition:all .3s;
-  box-shadow:0 0 16px rgba(57,255,20,.25);
+  color:#030f03;font-weight:900;font-size:.78rem;border:none;cursor:pointer;
+  font-family:inherit;transition:all .3s;box-shadow:0 0 18px rgba(57,255,20,.28);
 }
-.runBtn:hover{transform:scale(1.04);box-shadow:0 0 30px rgba(57,255,20,.5);}
-.runBtn:disabled{opacity:.5;cursor:not-allowed;transform:none;}
-.resultGrid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
-.resultCard{background:rgba(255,255,255,.03);border:0.5px solid var(--border);border-radius:var(--radiusS);padding:16px;text-align:center;}
-.resultTime{font-size:1.6rem;font-weight:900;font-family:'SF Mono','Fira Code',monospace;margin-bottom:4px;}
-.resultLabel{font-size:.65rem;color:var(--muted);letter-spacing:1px;text-transform:uppercase;}
-.resultSaving{text-align:center;margin-top:16px;font-size:.88rem;color:var(--muted);font-weight:600;}
-.resultSaving strong{color:var(--gn);}
-.progressBar{height:3px;background:rgba(255,255,255,.06);border-radius:2px;margin-top:12px;overflow:hidden;display:none;}
-.progressFill{height:100%;background:linear-gradient(90deg,#2ecc40,#39ff14);width:0%;transition:width .1s linear;border-radius:2px;}
+.runBtn:hover{transform:scale(1.05);box-shadow:0 0 32px rgba(57,255,20,.5);}
+.runBtn:disabled{opacity:.45;cursor:not-allowed;transform:none;}
+.progBar{height:3px;background:rgba(255,255,255,.05);border-radius:2px;margin-bottom:18px;overflow:hidden;display:none;}
+.progFill{height:100%;background:linear-gradient(90deg,#2ecc40,#39ff14);width:0%;transition:width .08s linear;border-radius:2px;}
+.resGrid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;}
+.resCard{background:rgba(255,255,255,.03);border:.5px solid var(--border);border-radius:var(--rs);padding:14px;text-align:center;}
+.resNum{font-size:1.5rem;font-weight:900;font-family:'JetBrains Mono',monospace;margin-bottom:3px;}
+.resLbl{font-size:.58rem;color:var(--muted);letter-spacing:1px;text-transform:uppercase;}
+.resSave{text-align:center;margin-top:14px;font-size:.84rem;color:var(--muted);font-weight:600;}
+.resSave strong{color:var(--gn);}
 
-/* Language comparison table */
-.langTable{width:100%;border-collapse:collapse;margin-top:20px;}
-.langTable th{
-  padding:10px 14px;text-align:left;font-size:.68rem;
-  letter-spacing:1.5px;text-transform:uppercase;color:var(--gn);
-  border-bottom:0.5px solid rgba(57,255,20,.2);font-weight:800;
-}
-.langTable td{
-  padding:12px 14px;font-size:.82rem;color:var(--muted);
-  border-bottom:0.5px solid rgba(255,255,255,.04);
-  transition:background .2s;
-}
-.langTable tr:hover td{background:rgba(57,255,20,.03);}
-.langTable td:first-child{color:var(--text);font-weight:700;}
-.effBadge{
-  display:inline-block;padding:3px 10px;border-radius:100px;
-  font-size:.62rem;font-weight:800;letter-spacing:.5px;
-}
-.eff1{background:rgba(48,209,88,.15);color:#30d158;}
-.eff2{background:rgba(57,255,20,.15);color:#39ff14;}
-.eff3{background:rgba(255,159,10,.15);color:#ff9f0a;}
-.eff4{background:rgba(255,69,58,.15);color:#ff453a;}
-.eff5{background:rgba(191,90,242,.15);color:#bf5af2;}
+/* ══════════════════════════════════════
+   BAR CHART
+══════════════════════════════════════ */
+.barSection{margin-top:40px;}
+.barTitle{font-size:.8rem;font-weight:800;color:var(--text);margin-bottom:16px;display:flex;align-items:center;gap:8px;}
+.barRow{margin-bottom:12px;}
+.barMeta{display:flex;justify-content:space-between;font-size:.68rem;color:var(--muted);margin-bottom:4px;font-weight:600;}
+.barTrack{height:7px;background:rgba(255,255,255,.05);border-radius:4px;overflow:hidden;margin-bottom:3px;}
+.barFill{height:100%;border-radius:4px;transition:width 1.4s cubic-bezier(.16,1,.3,1);width:0%;}
+.fSlow{background:linear-gradient(90deg,#ff453a,#ff9f0a);}
+.fFast{background:linear-gradient(90deg,#28c840,#39ff14);}
 
-/* ─── MACBOOK SECTION ─── */
+/* ══════════════════════════════════════
+   ENERGY TABLE
+══════════════════════════════════════ */
+.eTable{width:100%;border-collapse:collapse;margin-top:22px;}
+.eTable th{padding:10px 14px;text-align:left;font-size:.62rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--gn);border-bottom:.5px solid rgba(57,255,20,.18);font-weight:800;}
+.eTable td{padding:11px 14px;font-size:.78rem;color:var(--muted);border-bottom:.5px solid rgba(255,255,255,.035);transition:background .2s;}
+.eTable tr:hover td{background:rgba(57,255,20,.025);}
+.eTable td:first-child{color:var(--text);font-weight:700;}
+.eBadge{display:inline-block;padding:2px 9px;border-radius:100px;font-size:.58rem;font-weight:800;letter-spacing:.5px;}
+.e1{background:rgba(40,200,64,.15);color:#28c840;}
+.e2{background:rgba(57,255,20,.13);color:#39ff14;}
+.e3{background:rgba(255,159,10,.13);color:#ff9f0a;}
+.e4{background:rgba(255,69,58,.13);color:#ff453a;}
+
+/* ══════════════════════════════════════
+   MACBOOK SECTION
+══════════════════════════════════════ */
 #macbook{
-  padding:0;
-  position:relative;overflow:hidden;
-  background:radial-gradient(ellipse 100% 60% at 50% 50%,rgba(8,28,8,.8),var(--bg));
+  padding:0;position:relative;overflow:hidden;
+  background:radial-gradient(ellipse 90% 60% at 50% 50%,rgba(8,28,8,.75),var(--bg));
 }
-.macSection{
-  max-width:1400px;margin:0 auto;
-  padding:100px 60px;
-  display:grid;grid-template-columns:1.2fr 1fr;gap:60px;align-items:center;
+.macWrap{
+  max-width:1360px;margin:0 auto;padding:100px 60px;
+  display:grid;grid-template-columns:1.15fr 1fr;gap:56px;align-items:center;
 }
 #macC{
   width:100%;height:480px;cursor:grab;display:block;
-  filter:drop-shadow(0 0 60px rgba(57,255,20,.25));
-  opacity:0;transform:translateY(50px) scale(.95);
-  transition:all 1.2s cubic-bezier(.16,1,.3,1);
+  filter:drop-shadow(0 0 55px rgba(57,255,20,.22));
+  opacity:0;transform:translateY(55px) scale(.93) rotateX(6deg);
+  transition:all 1.3s cubic-bezier(.16,1,.3,1);
 }
-#macC.go{opacity:1;transform:translateY(0) scale(1);}
+#macC.go{opacity:1;transform:translateY(0) scale(1) rotateX(0);}
 #macC:active{cursor:grabbing;}
-.macInfoPanel{opacity:0;transform:translateX(40px);transition:all 1s cubic-bezier(.16,1,.3,1) .2s;}
-.macInfoPanel.go{opacity:1;transform:translateX(0);}
-.macSpecCards{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:24px;}
-.macSpecCard{
-  background:var(--glass);border:0.5px solid var(--border);
-  border-radius:var(--radiusS);padding:16px;backdrop-filter:blur(20px);
-  transition:all .3s;
+.macPanel{opacity:0;transform:translateX(45px);transition:all 1s cubic-bezier(.16,1,.3,1) .25s;}
+.macPanel.go{opacity:1;transform:translateX(0);}
+.macCards{display:grid;grid-template-columns:1fr 1fr;gap:11px;margin-top:22px;}
+.macCard{
+  background:var(--glass);border:.5px solid var(--border);border-radius:var(--rs);padding:15px;
+  backdrop-filter:blur(20px);transition:all .3s;
 }
-.macSpecCard:hover{background:rgba(57,255,20,.06);border-color:rgba(57,255,20,.25);transform:translateY(-3px);}
-.macSpecIcon{font-size:1.4rem;margin-bottom:8px;}
-.macSpecTitle{font-size:.78rem;font-weight:800;color:var(--text);margin-bottom:3px;}
-.macSpecVal{font-size:.7rem;color:var(--muted);}
-.macTags{display:flex;flex-wrap:wrap;gap:8px;margin-top:20px;}
-.macTag{
-  padding:5px 13px;border-radius:100px;
-  background:rgba(57,255,20,.07);border:0.5px solid rgba(57,255,20,.18);
-  font-size:.68rem;font-weight:800;color:var(--lime);letter-spacing:.5px;
-  transition:all .25s;cursor:default;
-}
-.macTag:hover{background:rgba(57,255,20,.16);border-color:var(--gn);color:var(--gn);}
+.macCard:hover{background:rgba(57,255,20,.055);border-color:rgba(57,255,20,.22);transform:translateY(-3px);}
+.mcIco{font-size:1.3rem;margin-bottom:7px;}
+.mcT{font-size:.74rem;font-weight:800;color:var(--text);margin-bottom:2px;}
+.mcV{font-size:.66rem;color:var(--muted);}
+.macTags{display:flex;flex-wrap:wrap;gap:7px;margin-top:18px;}
+.mTag2{padding:5px 12px;border-radius:100px;background:rgba(57,255,20,.065);border:.5px solid rgba(57,255,20,.16);font-size:.64rem;font-weight:800;color:var(--lime);letter-spacing:.4px;transition:all .25s;cursor:default;}
+.mTag2:hover{background:rgba(57,255,20,.16);border-color:var(--gn);color:var(--gn);}
 
-/* ─── INFO CARDS ─── */
-#info{background:var(--bg);}
-.infoCards{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;}
+/* ══════════════════════════════════════
+   IMPACT
+══════════════════════════════════════ */
+.impGrid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:40px;}
+.impCard{
+  background:var(--glass);border:.5px solid var(--border);border-radius:var(--r);
+  padding:26px 18px;backdrop-filter:blur(20px);text-align:center;transition:all .4s;
+  position:relative;overflow:hidden;
+}
+.impCard::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1.5px;background:linear-gradient(90deg,transparent,var(--gn),transparent);transform:scaleX(0);transition:transform .4s;}
+.impCard:hover::after{transform:scaleX(1);}
+.impCard:hover{transform:translateY(-7px);border-color:rgba(57,255,20,.28);}
+.impEmoji{font-size:2.4rem;display:block;margin-bottom:10px;}
+.impNum{font-size:2rem;font-weight:900;color:var(--gn);line-height:1;}
+.impUnit{font-size:.82rem;color:var(--lime);font-weight:700;}
+.impLbl{font-size:.7rem;color:var(--muted);margin-top:6px;line-height:1.5;}
+
+/* ══════════════════════════════════════
+   INFO CARDS
+══════════════════════════════════════ */
+.infoGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
 .infoCard{
-  background:var(--glass);border:0.5px solid var(--border);
-  border-radius:var(--radius);padding:26px;backdrop-filter:blur(20px);
-  transition:all .4s;position:relative;overflow:hidden;
+  background:var(--glass);border:.5px solid var(--border);border-radius:var(--r);padding:24px;
+  backdrop-filter:blur(20px);transition:all .4s;position:relative;overflow:hidden;
 }
-.infoCard::before{
-  content:'';position:absolute;top:0;left:0;right:0;height:1.5px;
-  background:linear-gradient(90deg,transparent,var(--gn),transparent);
-  opacity:0;transition:opacity .3s;
-}
+.infoCard::before{content:'';position:absolute;top:0;left:0;right:0;height:1.5px;background:linear-gradient(90deg,transparent,var(--gn),transparent);opacity:0;transition:opacity .3s;}
 .infoCard:hover::before{opacity:1;}
-.infoCard:hover{transform:translateY(-7px);border-color:rgba(57,255,20,.25);box-shadow:0 24px 50px rgba(0,0,0,.4);}
-.infoIcon{font-size:2rem;margin-bottom:12px;}
-.infoCard h3{font-size:.95rem;font-weight:800;margin-bottom:9px;}
-.infoCard p{font-size:.8rem;line-height:1.7;color:var(--muted);}
+.infoCard:hover{transform:translateY(-7px);border-color:rgba(57,255,20,.22);box-shadow:0 22px 46px rgba(0,0,0,.4);}
+.infoIco{font-size:1.9rem;margin-bottom:11px;}
+.infoCard h3{font-size:.88rem;font-weight:800;margin-bottom:8px;}
+.infoCard p{font-size:.76rem;line-height:1.7;color:var(--muted);}
 
-/* ─── IDEAS ─── */
-#ideas{background:radial-gradient(ellipse 80% 50% at 50% 100%,rgba(10,42,10,.4),var(--bg));}
-.ideasGrid{display:grid;grid-template-columns:repeat(5,1fr);gap:16px;margin-top:40px;}
+/* ══════════════════════════════════════
+   IDEAS
+══════════════════════════════════════ */
+.ideaGrid{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-top:38px;}
 .ideaCard{
-  background:var(--glass);border:0.5px solid var(--border);
-  border-radius:var(--radius);padding:22px 16px;backdrop-filter:blur(20px);
-  text-align:center;transition:all .4s;
+  background:var(--glass);border:.5px solid var(--border);border-radius:var(--r);
+  padding:22px 14px;backdrop-filter:blur(20px);text-align:center;transition:all .4s;
 }
-.ideaCard:hover{transform:translateY(-10px) scale(1.02);background:rgba(57,255,20,.06);border-color:rgba(57,255,20,.3);box-shadow:0 28px 56px rgba(0,0,0,.4),0 0 30px rgba(57,255,20,.04);}
-.ideaNum{font-size:2.4rem;font-weight:900;color:rgba(57,255,20,.08);line-height:1;}
-.ideaEmoji{font-size:1.7rem;display:block;margin:8px 0;}
-.ideaCard h3{font-size:.8rem;font-weight:900;color:var(--gb);margin-bottom:7px;}
-.ideaCard p{font-size:.7rem;line-height:1.6;color:var(--muted);}
+.ideaCard:hover{transform:translateY(-10px) scale(1.02);background:rgba(57,255,20,.055);border-color:rgba(57,255,20,.28);box-shadow:0 26px 52px rgba(0,0,0,.4);}
+.idN{font-size:2.2rem;font-weight:900;color:rgba(57,255,20,.08);line-height:1;}
+.idE{font-size:1.6rem;display:block;margin:7px 0;}
+.ideaCard h3{font-size:.76rem;font-weight:900;color:var(--gb);margin-bottom:6px;}
+.ideaCard p{font-size:.66rem;line-height:1.58;color:var(--muted);}
 
-/* ─── GALLERY ─── */
-#gallery .section{padding-bottom:60px;}
-.galleryGrid{display:grid;grid-template-columns:2fr 1fr 1fr;gap:16px;margin-top:40px;}
-.galleryCard{border-radius:var(--radius);overflow:hidden;position:relative;cursor:pointer;transition:transform .4s;}
-.galleryCard:hover{transform:scale(1.025);}
-.galleryCard img{width:100%;height:100%;object-fit:cover;display:block;}
-.galleryOv{position:absolute;inset:0;background:linear-gradient(180deg,transparent 55%,rgba(0,0,0,.8));display:flex;align-items:flex-end;padding:16px;opacity:0;transition:opacity .3s;}
-.galleryCard:hover .galleryOv{opacity:1;}
-.galleryLbl{font-size:.7rem;color:#fff;font-weight:700;letter-spacing:1px;}
+/* GALLERY */
+.galGrid{display:grid;grid-template-columns:2fr 1fr 1fr;gap:14px;margin-top:38px;}
+.galCard{border-radius:var(--r);overflow:hidden;position:relative;cursor:pointer;transition:transform .4s;}
+.galCard:hover{transform:scale(1.022);}
+.galCard img{width:100%;height:100%;object-fit:cover;display:block;}
+.galOv{position:absolute;inset:0;background:linear-gradient(180deg,transparent 55%,rgba(0,0,0,.78));display:flex;align-items:flex-end;padding:15px;opacity:0;transition:opacity .3s;}
+.galCard:hover .galOv{opacity:1;}
+.galLbl{font-size:.67rem;color:#fff;font-weight:700;letter-spacing:1px;}
 
-/* ─── FOOTER ─── */
-.siteFooter{
-  border-top:.5px solid rgba(57,255,20,.1);
-  padding:48px 60px;max-width:1200px;margin:0 auto;
-  display:flex;align-items:center;justify-content:space-between;
-}
-.footLogo{display:flex;align-items:center;gap:10px;}
-.footLogo img{width:38px;border-radius:10px;}
-.footLogo span{font-size:1.1rem;font-weight:900;color:var(--gb);}
-.footMid{font-size:.72rem;color:var(--muted);}
-.footCopy{font-size:.68rem;color:rgba(240,255,240,.25);text-align:right;}
-
-/* ─── IMPACT GRID ─── */
-.impactGrid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-top:40px;}
-.impactCard{
-  background:var(--glass);border:0.5px solid var(--border);
-  border-radius:var(--radius);padding:28px 20px;backdrop-filter:blur(20px);
-  text-align:center;transition:all .4s;position:relative;overflow:hidden;
-}
-.impactCard::after{
-  content:'';position:absolute;bottom:0;left:0;right:0;height:2px;
-  background:linear-gradient(90deg,transparent,var(--gn),transparent);
-  transform:scaleX(0);transition:transform .4s;
-}
-.impactCard:hover::after{transform:scaleX(1);}
-.impactCard:hover{transform:translateY(-7px);border-color:rgba(57,255,20,.3);}
-.impactEmoji{font-size:2.6rem;display:block;margin-bottom:12px;}
-.impactNum{font-size:2.2rem;font-weight:900;color:var(--gn);line-height:1;}
-.impactUnit{font-size:.9rem;color:var(--lime);font-weight:700;}
-.impactLbl{font-size:.75rem;color:var(--muted);margin-top:7px;line-height:1.5;}
+/* FOOTER */
+.ftr{border-top:.5px solid rgba(57,255,20,.08);padding:44px 60px;max-width:1200px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;}
+.fLogo{display:flex;align-items:center;gap:9px;}
+.fLogo img{width:36px;border-radius:10px;}
+.fLogo span{font-size:1.05rem;font-weight:900;color:var(--gb);}
+.fMid{font-size:.68rem;color:var(--muted);}
+.fCp{font-size:.64rem;color:rgba(240,255,240,.22);text-align:right;}
 
 @media(max-width:960px){
-  .heroIn,.compareGrid,.macSection{grid-template-columns:1fr;}
-  .infoCards{grid-template-columns:1fr 1fr;}
-  .ideasGrid{grid-template-columns:1fr 1fr;}
-  .impactGrid{grid-template-columns:1fr 1fr;}
-  .section{padding:70px 24px;}
-  .gl{margin:0 24px;}
-  .macSection{padding:70px 24px;}
-  .siteFooter{padding:40px 24px;flex-direction:column;gap:16px;text-align:center;}
-  .heroIn{padding:90px 24px 60px;}
-  .galleryGrid{grid-template-columns:1fr;}
-  .sbCenter{display:none;}
+  .heroWrap,.codeSplit,.macWrap{grid-template-columns:1fr;}
+  .infoGrid{grid-template-columns:1fr 1fr;}
+  .ideaGrid{grid-template-columns:1fr 1fr;}
+  .impGrid{grid-template-columns:1fr 1fr;}
+  .resGrid{grid-template-columns:1fr 1fr;}
+  .sec,.macWrap{padding:64px 22px;}
+  .gl{margin:0 22px;}
+  .tbCenter{display:none;}
+  .ftr{padding:36px 22px;flex-direction:column;gap:14px;text-align:center;}
+  .presBand{flex-direction:column;}
+  .galGrid{grid-template-columns:1fr;}
+  .heroWrap{padding:90px 22px 60px;}
 }
 </style>
 </head>
@@ -462,55 +462,48 @@ body.hovering #cur2{width:50px;height:50px;border-color:rgba(57,255,20,.6);}
 <div id="cur"></div>
 <div id="cur2"></div>
 
-<!-- ══════════════════ INTRO ══════════════════ -->
+<!-- ══════ INTRO ══════ -->
 <div id="intro">
-  <canvas id="introStarCanvas"></canvas>
-
+  <canvas id="starsCanvas"></canvas>
   <div class="introBrand">
-    <div class="logo-wrap">
+    <div class="bRow">
       <img src="GreenTecho.png" alt="GT">
-      <div>
-        <h1>GreenTechno</h1>
-        <p>ეკო ენერგია · ციფრული მომავალი</p>
-      </div>
+      <div><h1>GreenTechno</h1><p>ეკო ენერგია · ციფრული მომავალი</p></div>
     </div>
   </div>
-
-  <div class="introPhone">
-    <div class="introPhoneGlow"></div>
-    <canvas id="iPhCIntro"></canvas>
+  <div class="introPhoneWrap">
+    <div class="orbitRing"></div>
+    <div class="orbitDot"></div>
+    <canvas id="introPhC"></canvas>
   </div>
-
-  <div class="introHint">
-    <span>✦ შეეხე გასაგრძელებლად · tap to enter ✦</span>
-  </div>
+  <div class="introHint"><span>✦ შეეხე გასაგრძელებლად · tap to enter ✦</span></div>
 </div>
 
-<!-- Lock transition overlay -->
-<div id="lockOverlay">
-  <div class="lockIcon">🔓</div>
-  <div class="lockText">გაიხსნება...</div>
+<div id="lockOv">
+  <div class="lockEmoji">🔓</div>
+  <div class="lockTxt">GreenTechno იხსნება...</div>
 </div>
 
-<!-- ══════════════════ MAIN SITE ══════════════════ -->
+<!-- ══════ MAIN SITE ══════ -->
 <div id="site">
 
-  <!-- iOS/macOS status bar -->
-  <nav class="statusBar" id="statusBar">
-    <div class="sbLeft">
-      <img src="GreenTecho.png" class="sbLogo" alt="GT">
-      <span class="sbTitle">GreenTechno</span>
+  <nav class="topBar" id="topBar">
+    <div class="tbLeft">
+      <img src="GreenTecho.png" class="tbLogo" alt="GT">
+      <span class="tbName">GreenTechno</span>
+      <div class="tbSep"></div>
+      <span class="tbSub">ენერგოეფექტირობა</span>
     </div>
-    <div class="sbCenter">
-      <a href="#hero" class="sbTab active">მთავარი</a>
-      <a href="#energy" class="sbTab">ენერგო</a>
-      <a href="#macbook" class="sbTab">MacBook</a>
-      <a href="#info" class="sbTab">ინფო</a>
-      <a href="#ideas" class="sbTab">იდეები</a>
+    <div class="tbCenter">
+      <a href="#hero" class="tbLink on">მთავარი</a>
+      <a href="#energy" class="tbLink">კოდი</a>
+      <a href="#macbook" class="tbLink">MacBook</a>
+      <a href="#info" class="tbLink">ინფო</a>
+      <a href="#ideas" class="tbLink">იდეები</a>
     </div>
-    <div class="sbRight">
+    <div class="tbRight">
       <button id="sndBtn">🔊</button>
-      <span class="sbIcon">🌿</span>
+      <span style="font-size:.9rem;opacity:.6;">🌿</span>
     </div>
   </nav>
 
@@ -526,172 +519,166 @@ body.hovering #cur2{width:50px;height:50px;border-color:rgba(57,255,20,.6);}
   <!-- ── HERO ── -->
   <section id="hero">
     <div id="ptcl"></div>
-    <div class="heroIn">
+    <div class="heroWrap">
       <div class="hTxt" id="hTxt">
-        <div class="heroBadge"><div class="hDot"></div>ენერგოეფექტირობა</div>
-        <h1 class="heroTitle">
-          <span class="t1">სუფთა კოდი.</span>
-          <span class="t2">ჭკვიანი ენერგია.</span>
+        <div class="heroBadge"><div class="bdot"></div>პრეზენტაცია · ლექტორებისა და რექტორისთვის</div>
+        <h1 class="heroH">
+          <span class="l1">ენერგოეფექ-</span>
+          <span class="l2">ტირობაზე.</span>
         </h1>
-        <p class="heroSub">პროგრამირების ენა, ალგორითმი და არქიტექტურა პირდაპირ გავლენას ახდენს ენერგიის მოხმარებაზე. GreenTechno სწავლობს, ზომავს და ოპტიმიზებს.</p>
+        <p class="heroSub">C, C++ და C# — სამი ენა, ერთი მიზანი: ეკო ენერგია კომპიუტერულ ტექნოლოგიებში. ოპტიმიზებული კოდი = ნაკლები CPU = ნაკლები ელექტრობა = სუფთა პლანეტა.</p>
         <div class="heroCTA">
-          <button class="btnPrimary" onclick="scrollTo('energy')">ენერგო ტესტი →</button>
-          <button class="btnSecondary" onclick="scrollTo('info')">გაიგე მეტი</button>
+          <button class="btnP" onclick="sScroll('energy')">კოდის შედარება →</button>
+          <button class="btnS" onclick="sScroll('info')">გაიგე მეტი</button>
         </div>
       </div>
       <div class="hero3D" id="h3d">
         <canvas id="hPhC"></canvas>
-        <div class="modelTag"><div class="modelTagDot"></div>iPhone 16 Plus Green · გადაათრიე</div>
+        <div class="mTag"><div class="mTagDot"></div>iPhone 16 Plus Green · გადაათრიე</div>
       </div>
     </div>
   </section>
 
   <div class="gl"></div>
 
-  <!-- ── ENERGY EFFICIENCY ── -->
-  <section id="energy" style="padding:90px 0;background:radial-gradient(ellipse 80% 60% at 50% 0%,rgba(10,42,10,.4),transparent 60%),var(--bg);">
-    <div style="max-width:1200px;margin:0 auto;padding:0 60px;">
+  <!-- ══════ ENERGY / CODE SECTION ══════ -->
+  <section id="energy" style="padding:88px 0;background:radial-gradient(ellipse 80% 55% at 50% 0%,rgba(10,42,10,.38),transparent 60%),var(--bg);">
+  <div style="max-width:1200px;margin:0 auto;padding:0 60px;">
 
-      <div class="rv">
-        <div class="sLabel">ენერგოეფექტირობა</div>
-        <h2 class="sTitle">კოდი, <span style="color:var(--gn)">რომელიც ზრუნავს</span></h2>
-        <p style="font-size:.98rem;line-height:1.8;color:var(--muted);max-width:680px;margin-bottom:48px;">ოპტიმიზებული კოდი არ არის მხოლოდ სიჩქარე — ეს ნაკლები CPU დრო, ნაკლები ელექტრობა, ნაკლები CO₂. ყოველი π-ის გამოთვლის ალგორითმი, ყოველი loop — ეს ჩვენი პლანეტის ბიუჯეტია.</p>
+    <!-- Presentation band -->
+    <div class="presBand rv">
+      <div class="presInfo">
+        <h2>🎓 ენერგოეფექტირობა — C / C++ / C#</h2>
+        <p>π-ის გამოთვლა 5 სხვადასხვა ალგორითმით · ოპტიმიზებული vs არაოპტიმიზებული · ენერგიის შემცირება · ლაივ ბენჩმარკი<br>
+        <strong style="color:var(--gn)">მოხსენება მომზადებულია: ლექტორებისთვის, რექტორისთვის და დამხმარე პერსონალისთვის</strong></p>
       </div>
-
-      <!-- LANGUAGE BENCHMARK LIVE RUNNER -->
-      <div class="rv benchRunner" id="benchRunnerBox">
-        <div class="runnerHeader">
-          <div class="runnerTitle">⚡ ლაივ ბენჩმარკი — π-ის გამოთვლა (10,000,000 იტერაცია)</div>
-          <button class="runBtn" id="runBenchBtn" onclick="runBenchmark()">▶ გაუშვი ტესტი</button>
-        </div>
-        <div class="progressBar" id="benchProgress">
-          <div class="progressFill" id="benchFill"></div>
-        </div>
-        <div class="resultGrid" id="benchResults" style="display:none">
-          <div class="resultCard">
-            <div class="resultTime" id="slowTime" style="color:#ff453a;">—</div>
-            <div class="resultLabel">❌ არაოპტიმიზებული (ms)</div>
-          </div>
-          <div class="resultCard">
-            <div class="resultTime" id="fastTime" style="color:#30d158;">—</div>
-            <div class="resultLabel">✅ ოპტიმიზებული (ms)</div>
-          </div>
-          <div class="resultCard">
-            <div class="resultTime" id="slowEnergy" style="color:#ff9f0a;">—</div>
-            <div class="resultLabel">🔋 შეფარდებითი ენერგია</div>
-          </div>
-          <div class="resultCard">
-            <div class="resultTime" id="speedup" style="color:var(--gn);">—</div>
-            <div class="resultLabel">🚀 დაჩქარება (x)</div>
-          </div>
-        </div>
-        <div class="resultSaving" id="savingMsg" style="display:none"></div>
+      <div class="presMeta">
+        <div class="presTag"><span class="presTagIcon">🏛️</span><span class="presTagLbl">სტატუსი</span><span class="presTagVal">პრეზენტაცია</span></div>
+        <div class="presTag"><span class="presTagIcon">🔬</span><span class="presTagLbl">ენები</span><span class="presTagVal">C · C++ · C#</span></div>
+        <div class="presTag"><span class="presTagIcon">⚡</span><span class="presTagLbl">ალგ.</span><span class="presTagVal">5 მაგალითი</span></div>
+        <div class="presTag"><span class="presTagIcon">🌿</span><span class="presTagLbl">თემა</span><span class="presTagVal">ეკო კოდი</span></div>
       </div>
-
-      <!-- CODE COMPARISON -->
-      <div style="margin-top:48px;" class="rv">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
-          <h3 style="font-size:1.1rem;font-weight:900;">კოდის შედარება — π-ის გამოთვლა</h3>
-          <div class="langTabs" id="langTabs">
-            <button class="langTab active" onclick="switchLang('python')">🐍 Python</button>
-            <button class="langTab" onclick="switchLang('js')">🌐 JavaScript</button>
-            <button class="langTab" onclick="switchLang('rust')">🦀 Rust</button>
-            <button class="langTab" onclick="switchLang('cpp')">⚙️ C++</button>
-          </div>
-        </div>
-        <div class="compareGrid">
-          <div class="compareCard">
-            <div class="compareHeader">
-              <div class="compareLabel" style="color:#ff453a;">❌ არაოპტიმიზებული</div>
-              <span class="badgeTag badgeSlow">ნელი · მეტი ენერგია</span>
-            </div>
-            <div class="compareBody">
-              <div class="codeBlock" id="slowCode"></div>
-            </div>
-          </div>
-          <div class="compareCard">
-            <div class="compareHeader">
-              <div class="compareLabel" style="color:#30d158;">✅ ოპტიმიზებული</div>
-              <span class="badgeTag badgeFast">სწრაფი · ეკო</span>
-            </div>
-            <div class="compareBody">
-              <div class="codeBlock" id="fastCode"></div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- BARS -->
-      <div class="benchSection rv" id="benchBarsSection">
-        <div class="benchTitle">📊 სიჩქარის შედარება (სიჩქარის ინდექსი — მეტია უკეთესი)</div>
-        <div id="benchBars"></div>
-      </div>
-
-      <!-- LANGUAGE TABLE -->
-      <div class="appWindow rv" style="margin-top:48px;">
-        <div class="appWindowBar">
-          <div class="winBtn winClose"></div>
-          <div class="winBtn winMin"></div>
-          <div class="winBtn winMax"></div>
-          <span class="winTitle">GreenTechno Energy Analyzer — ენერგოეფექტური ენები</span>
-        </div>
-        <div class="winBody">
-          <table class="langTable">
-            <thead>
-              <tr>
-                <th>ენა</th>
-                <th>ტიპი</th>
-                <th>π (1M iter) ms</th>
-                <th>ენერგო-ეფ.</th>
-                <th>GC Pressure</th>
-                <th>სარეკომ.</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr><td>🦀 Rust</td><td>Compiled</td><td>~3ms</td><td><span class="effBadge eff1">⚡ ძალიან მაღალი</span></td><td>None</td><td>HPC / Embedded</td></tr>
-              <tr><td>⚙️ C / C++</td><td>Compiled</td><td>~4ms</td><td><span class="effBadge eff1">⚡ ძალიან მაღალი</span></td><td>None</td><td>OS / Drivers</td></tr>
-              <tr><td>☕ Java (JVM)</td><td>JIT</td><td>~18ms</td><td><span class="effBadge eff2">✅ მაღალი</span></td><td>გამოჩნდება</td><td>Backend / Android</td></tr>
-              <tr><td>🌐 JavaScript (V8)</td><td>JIT</td><td>~22ms</td><td><span class="effBadge eff2">✅ მაღალი</span></td><td>გამოჩნდება</td><td>Web / Node.js</td></tr>
-              <tr><td>🐍 Python (CPython)</td><td>Interpreted</td><td>~1800ms</td><td><span class="effBadge eff4">🔴 დაბალი</span></td><td>Reference Counting</td><td>AI/ML / Scripts</td></tr>
-              <tr><td>💎 Ruby</td><td>Interpreted</td><td>~2200ms</td><td><span class="effBadge eff4">🔴 დაბალი</span></td><td>მაღალი</td><td>Web (Rails)</td></tr>
-              <tr><td>🐍 Python (PyPy)</td><td>JIT</td><td>~95ms</td><td><span class="effBadge eff3">🟡 საშუალო</span></td><td>Reference Counting</td><td>Scientific</td></tr>
-              <tr><td>🟣 Kotlin</td><td>JVM/Native</td><td>~19ms</td><td><span class="effBadge eff2">✅ მაღალი</span></td><td>JVM</td><td>Android / Server</td></tr>
-              <tr><td>🔵 Swift</td><td>Compiled</td><td>~5ms</td><td><span class="effBadge eff1">⚡ ძალიან მაღალი</span></td><td>ARC (zero-cost)</td><td>iOS / macOS</td></tr>
-              <tr><td>🔷 Go</td><td>Compiled</td><td>~8ms</td><td><span class="effBadge eff2">✅ მაღალი</span></td><td>მინიმალური</td><td>Cloud / APIs</td></tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-
     </div>
+
+    <!-- CODE WINDOW -->
+    <div class="macWin rv" id="codeWin">
+      <div class="macBar">
+        <div class="wc wRed"></div><div class="wc wYel"></div><div class="wc wGrn"></div>
+        <span class="wTitle">GreenTechno Code Analyzer — π-ის ენერგოეფექტური გამოთვლა</span>
+      </div>
+
+      <!-- Language selector -->
+      <div class="langRow">
+        <button class="langBtn on" onclick="setLang('c')"><span class="langDot lC"></span>C</button>
+        <button class="langBtn" onclick="setLang('cpp')"><span class="langDot lCpp"></span>C++</button>
+        <button class="langBtn" onclick="setLang('cs')"><span class="langDot lCs"></span>C#</button>
+        <div style="margin-left:auto;font-size:.64rem;color:var(--muted);">👆 ენა გადართე · 5 მაგალითი</div>
+      </div>
+
+      <!-- Example tabs -->
+      <div class="exTabs" id="exTabs">
+        <div class="exTab on" onclick="setEx(0)">1 · Leibniz</div>
+        <div class="exTab" onclick="setEx(1)">2 · Machin</div>
+        <div class="exTab" onclick="setEx(2)">3 · Monte Carlo</div>
+        <div class="exTab" onclick="setEx(3)">4 · Gauss–Legendre</div>
+        <div class="exTab" onclick="setEx(4)">5 · BBP</div>
+      </div>
+
+      <!-- Split: slow / fast -->
+      <div class="codeSplit" id="codeSplit">
+        <div class="codeSide">
+          <div class="codeSideHdr">
+            <span style="font-size:.72rem;font-weight:800;color:#ff453a;">❌ არაოპტიმიზებული</span>
+            <span class="codeHdrBadge badSlow">ნელი · მეტი ენერგია</span>
+          </div>
+          <div class="codeArea" id="slowCodeEl"></div>
+        </div>
+        <div class="codeSide">
+          <div class="codeSideHdr">
+            <span style="font-size:.72rem;font-weight:800;color:#28c840;">✅ ოპტიმიზებული</span>
+            <span class="codeHdrBadge badFast">სწრაფი · ეკო</span>
+          </div>
+          <div class="codeArea" id="fastCodeEl"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- LIVE BENCHMARK -->
+    <div class="benchBox rv">
+      <div class="benchTop">
+        <div class="benchTitle">⚡ ლაივ ბენჩმარკი — JavaScript-ში (browser) · 5,000,000 იტერაცია</div>
+        <button class="runBtn" id="runBtn" onclick="runBench()">▶ გაუშვი ტესტი</button>
+      </div>
+      <div class="progBar" id="pBar"><div class="progFill" id="pFill"></div></div>
+      <div class="resGrid" id="resGrid" style="display:none">
+        <div class="resCard"><div class="resNum" id="rSlow" style="color:#ff453a;">—</div><div class="resLbl">❌ ნელი (ms)</div></div>
+        <div class="resCard"><div class="resNum" id="rFast" style="color:#28c840;">—</div><div class="resLbl">✅ სწრაფი (ms)</div></div>
+        <div class="resCard"><div class="resNum" id="rEnergy" style="color:#ff9f0a;">—</div><div class="resLbl">🔋 ენერგო-სხვ.</div></div>
+        <div class="resCard"><div class="resNum" id="rSpeedup" style="color:var(--gn);">—</div><div class="resLbl">🚀 დაჩქარება</div></div>
+      </div>
+      <div class="resSave" id="rSaveMsg" style="display:none"></div>
+    </div>
+
+    <!-- BARS -->
+    <div class="barSection rv" id="barsSection">
+      <div class="barTitle">📊 ალგორითმების სიჩქარის შედარება — C / C++ / C# (დაახ. ms, 1M iter)</div>
+      <div id="barsContainer"></div>
+    </div>
+
+    <!-- ENERGY TABLE -->
+    <div class="macWin rv" style="margin-top:40px;">
+      <div class="macBar">
+        <div class="wc wRed"></div><div class="wc wYel"></div><div class="wc wGrn"></div>
+        <span class="wTitle">ენერგო-ეფექტურობის ცხრილი — C / C++ / C# ალგორითმები</span>
+      </div>
+      <div style="padding:20px;overflow-x:auto;">
+        <table class="eTable">
+          <thead><tr>
+            <th>ალგორითმი</th><th>ენა</th><th>1M iter (ms)</th><th>10M iter (ms)</th>
+            <th>ენ. ეფ.</th><th>CPU Load</th><th>შეფ. გამოყენება</th>
+          </tr></thead>
+          <tbody>
+            <tr><td>Leibniz (ოპტ.)</td><td>C</td><td>~4</td><td>~38</td><td><span class="eBadge e1">⚡ მაღალი</span></td><td>დაბალი</td><td>სასწავლო</td></tr>
+            <tr><td>Leibniz (ოპტ.)</td><td>C++</td><td>~3</td><td>~29</td><td><span class="eBadge e1">⚡ მაღალი</span></td><td>დაბალი</td><td>Embedded</td></tr>
+            <tr><td>Leibniz (ოპტ.)</td><td>C#</td><td>~18</td><td>~175</td><td><span class="eBadge e2">✅ კარგი</span></td><td>საშუალო</td><td>.NET Apps</td></tr>
+            <tr><td>Machin (ოპტ.)</td><td>C</td><td>~2</td><td>~19</td><td><span class="eBadge e1">⚡ მაღალი</span></td><td>ძ. დაბალი</td><td>Scientific</td></tr>
+            <tr><td>Machin (ოპტ.)</td><td>C++</td><td>~1.5</td><td>~14</td><td><span class="eBadge e1">⚡ მაღალი</span></td><td>ძ. დაბალი</td><td>HPC</td></tr>
+            <tr><td>Monte Carlo</td><td>C++</td><td>~45</td><td>~450</td><td><span class="eBadge e3">🟡 საშუ.</span></td><td>მაღალი</td><td>სიმულაცია</td></tr>
+            <tr><td>Gauss–Legendre</td><td>C#</td><td>~0.5</td><td>~4</td><td><span class="eBadge e1">⚡ ძ. მაღ.</span></td><td>ძ. დაბალი</td><td>High Precision</td></tr>
+            <tr><td>BBP Formula</td><td>C++</td><td>~6</td><td>~58</td><td><span class="eBadge e2">✅ კარგი</span></td><td>დაბალი</td><td>Hex digits</td></tr>
+            <tr><td>Leibniz (არაოპტ.)</td><td>C</td><td>~95</td><td>~950</td><td><span class="eBadge e4">🔴 დაბალი</span></td><td>მაღალი</td><td>—</td></tr>
+            <tr><td>Monte Carlo (არ.)</td><td>C#</td><td>~280</td><td>~2800</td><td><span class="eBadge e4">🔴 დაბალი</span></td><td>ძ. მაღ.</td><td>—</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
   </section>
 
   <div class="gl"></div>
 
-  <!-- ── MACBOOK 3D ── -->
+  <!-- ══════ MACBOOK 3D ══════ -->
   <section id="macbook">
-    <div class="macSection">
+    <div class="macWrap">
       <div>
         <canvas id="macC"></canvas>
-        <div class="modelTag" style="justify-content:center;margin-top:12px;"><div class="modelTagDot"></div>MacBook Neo · გადაათრიე</div>
+        <div class="mTag" style="justify-content:center;margin-top:12px;"><div class="mTagDot"></div>MacBook Neo · გადაათრიე ✦</div>
       </div>
-      <div class="macInfoPanel" id="macInfoPanel">
+      <div class="macPanel" id="macPanel">
         <div class="sLabel">MacBook Neo</div>
         <h2 class="sTitle">ლეპტოპი,<br><span style="color:var(--lime)">რომელიც ზრუნავს</span></h2>
-        <p style="font-size:.92rem;line-height:1.8;color:var(--muted);margin-bottom:22px;">MacBook Neo-ს ყოველი ელემენტი ოპტიმიზებულია ენერგიის მოხმარებისთვის — ARM ჩიპიდან დაწყებული, გადამუშავებული ალუმინით დამთავრებული.</p>
-        <div class="macSpecCards">
-          <div class="macSpecCard"><div class="macSpecIcon">☀️</div><div class="macSpecTitle">სოლარული დამტენი</div><div class="macSpecVal">მზის ენერგია ნებისმიერ პირობებში</div></div>
-          <div class="macSpecCard"><div class="macSpecIcon">♻️</div><div class="macSpecTitle">100% Recycled Al</div><div class="macSpecVal">ნულოვანი ნარჩენი წარმოება</div></div>
-          <div class="macSpecCard"><div class="macSpecIcon">⚡</div><div class="macSpecTitle">ARM M4 Ultra</div><div class="macSpecVal">60% ნაკლები ენერგია x86-ზე</div></div>
-          <div class="macSpecCard"><div class="macSpecIcon">🌿</div><div class="macSpecTitle">36h ბატარეა</div><div class="macSpecVal">ბიო-შეფუთვა ბამბუკისგან</div></div>
+        <p style="font-size:.88rem;line-height:1.8;color:var(--muted);margin-bottom:20px;">MacBook Neo — ყოველი კომპონენტი ოპტიმიზებულია ენერგიისთვის. ოპტიმიზებული C/C++/C# კოდი + ეფექტური ჩიპი = მინიმალური CO₂ კვალი.</p>
+        <div class="macCards">
+          <div class="macCard"><div class="mcIco">☀️</div><div class="mcT">სოლარული დამტენი</div><div class="mcV">მზის ენერგია ყველა პირობაში</div></div>
+          <div class="macCard"><div class="mcIco">♻️</div><div class="mcT">100% Recycled Al</div><div class="mcV">ნულოვანი ნარჩენი</div></div>
+          <div class="macCard"><div class="mcIco">⚡</div><div class="mcT">ARM M4 Ultra</div><div class="mcV">60% ნაკლები ენ. x86-ზე</div></div>
+          <div class="macCard"><div class="mcIco">🌿</div><div class="mcT">36h ბატარეა</div><div class="mcV">ბიო-შეფუთვა</div></div>
         </div>
         <div class="macTags">
-          <span class="macTag">ARM M4 Ultra</span>
-          <span class="macTag">36h Battery</span>
-          <span class="macTag">CO₂ Neutral</span>
-          <span class="macTag">100% Recycled</span>
-          <span class="macTag">Solar Ready</span>
-          <span class="macTag">Swift Native</span>
+          <span class="mTag2">ARM M4 Ultra</span><span class="mTag2">36h Battery</span>
+          <span class="mTag2">CO₂ Neutral</span><span class="mTag2">Solar Ready</span>
+          <span class="mTag2">Swift Native</span><span class="mTag2">C++ Optimized</span>
         </div>
       </div>
     </div>
@@ -699,132 +686,130 @@ body.hovering #cur2{width:50px;height:50px;border-color:rgba(57,255,20,.6);}
 
   <div class="gl"></div>
 
-  <!-- ── IMPACT ── -->
-  <section id="impact" style="padding:90px 0;background:var(--bg);">
-    <div style="max-width:1200px;margin:0 auto;padding:0 60px;">
-      <div class="sLabel rv" style="text-align:center;">გარემოზე ზეგავლენა</div>
-      <h2 class="sTitle rv" style="text-align:center;">ციფრები, <span style="color:var(--teal)">რომლებიც მნიშვნელობენ</span></h2>
-      <div class="impactGrid">
-        <div class="impactCard rv"><span class="impactEmoji">🌳</span><div class="impactNum">2.4M</div><div class="impactLbl">ხე გადარჩენილია ყოველწლიურად ეკო-ტექ ინიციატივებით</div></div>
-        <div class="impactCard rv" style="transition-delay:.1s"><span class="impactEmoji">💧</span><div class="impactNum">40<span class="impactUnit">%</span></div><div class="impactLbl">წყლის მოხმარების შემცირება ახალ წარმოებაში</div></div>
-        <div class="impactCard rv" style="transition-delay:.2s"><span class="impactEmoji">⚡</span><div class="impactNum">8.3<span class="impactUnit">GW</span></div><div class="impactLbl">განახლებადი ენერგია Apple-ის გლობალ ოპერაციებში</div></div>
-        <div class="impactCard rv" style="transition-delay:.3s"><span class="impactEmoji">🌍</span><div class="impactNum">22M<span class="impactUnit">t</span></div><div class="impactLbl">CO₂ შემცირება ტექ ინდუსტრიაში 2024-ში</div></div>
-      </div>
+  <!-- ══════ IMPACT ══════ -->
+  <section id="impact" style="padding:88px 0;background:var(--bg);">
+  <div style="max-width:1200px;margin:0 auto;padding:0 60px;">
+    <div class="sLabel rv" style="text-align:center;">გარემოზე ზეგავლენა</div>
+    <h2 class="sTitle rv" style="text-align:center;">ციფრები, <span style="color:var(--teal)">რომლებიც მნიშვნელობენ</span></h2>
+    <div class="impGrid">
+      <div class="impCard rv"><span class="impEmoji">🌳</span><div class="impNum">2.4M</div><div class="impLbl">ხე გადარჩენილია ყოველწლიურად ეკო-ტექ ინიციატივებით</div></div>
+      <div class="impCard rv" style="transition-delay:.1s"><span class="impEmoji">💧</span><div class="impNum">40<span class="impUnit">%</span></div><div class="impLbl">წყლის შემცირება ახალ წარმოებაში</div></div>
+      <div class="impCard rv" style="transition-delay:.2s"><span class="impEmoji">⚡</span><div class="impNum">8.3<span class="impUnit">GW</span></div><div class="impLbl">განახლებადი ენერგია Apple-ის გლობ. ოპერ.</div></div>
+      <div class="impCard rv" style="transition-delay:.3s"><span class="impEmoji">🌍</span><div class="impNum">22M<span class="impUnit">t</span></div><div class="impLbl">CO₂ შემცირება ტექ ინდუსტრიაში 2024</div></div>
     </div>
+  </div>
   </section>
 
   <div class="gl"></div>
 
-  <!-- ── INFO ── -->
-  <section id="info" class="section">
+  <!-- ══════ INFO ══════ -->
+  <section id="info" class="sec">
     <div class="sLabel rv">ეკო ტექნოლოგია</div>
     <h2 class="sTitle rv">გაიგე მეტი<br><span style="color:var(--teal)">ჩვენი სამყაროს შესახებ</span></h2>
-    <p class="rv" style="font-size:.95rem;line-height:1.82;color:rgba(240,255,240,.65);max-width:680px;margin-bottom:44px;">ეკო ენერგია ტექნოლოგიებში სცდება "მწვანე" ლეიბლს. ეს ფუნდამენტური გადასვლაა — როგორ ვქმნით, ვიყენებთ და ვუბრუნებთ ტექნოლოგიებს ბუნებას.</p>
-    <div class="infoCards">
-      <div class="infoCard rv"><div class="infoIcon">🔋</div><h3>Solid-State ბატარეები</h3><p>ნარჩენებისა და სახიფათო სითხეების გარეშე — 3x მეტი მოცულობა ნახევარ ზომაში. ლითიუმ-სერა 2026–28-ში.</p></div>
-      <div class="infoCard rv" style="transition-delay:.1s"><div class="infoIcon">🌞</div><h3>პერსკიტის სოლარული</h3><p>მოქნილი, გამჭვირვალე უჯრედები ეკრანებსა და სახურავებში. 2027-ში 30% ენერგია — საკუთარი მოწყობილობიდან.</p></div>
-      <div class="infoCard rv" style="transition-delay:.2s"><div class="infoIcon">🧠</div><h3>AI ენერგო-მენეჯმენტი</h3><p>ნეირო-ჩიპები ისწავლიან მომხმარებლის რუტინას, ამცირებენ განაბარ მოხმარებას 40%-მდე.</p></div>
-      <div class="infoCard rv" style="transition-delay:.3s"><div class="infoIcon">🌐</div><h3>მწვანე Data Centers</h3><p>24/7 განახლებადი ენერგია. ოკეანის სიღრმის ცენტრები. PUE 1.06-მდე — ისტორიული მიღწევა.</p></div>
-      <div class="infoCard rv" style="transition-delay:.4s"><div class="infoIcon">🔄</div><h3>სრული ციკლი</h3><p>Apple-ის Daisy რობოტი — 100% ხელახლა გამოყენება. 2035-ში ე-ნარჩენების 80% — გლობალური სამიზნე.</p></div>
-      <div class="infoCard rv" style="transition-delay:.5s"><div class="infoIcon">📡</div><h3>RF ენერგიის მოგება</h3><p>5G / Wi-Fi 7 სიგნალები გარდაიქმნება ელ. ენერგიად. IoT სენსორები — ბატარეის გარეშე.</p></div>
+    <p class="rv" style="font-size:.9rem;line-height:1.8;color:var(--muted);max-width:660px;margin-bottom:40px;">ეკო ენერგია სცდება "მწვანე" ლეიბლს. ეს ფუნდამენტური გადასვლაა — ოპტიმიზებული კოდიდან, განახლებადი ენერგიამდე.</p>
+    <div class="infoGrid">
+      <div class="infoCard rv"><div class="infoIco">🔋</div><h3>Solid-State ბატარეები</h3><p>3x მეტი მოცულობა ნახევარ ზომაში. ნარჩენების გარეშე. ლითიუმ-სერა 2026–28-ში.</p></div>
+      <div class="infoCard rv" style="transition-delay:.08s"><div class="infoIco">🌞</div><h3>სოლარული ინტეგრაცია</h3><p>მოქნილი პერსკიტის უჯრედები ეკრანებსა და სახურავებში. 2027: 30% ენ. — მოწყობილობიდან.</p></div>
+      <div class="infoCard rv" style="transition-delay:.16s"><div class="infoIco">🧠</div><h3>AI ენერგო-მენეჯ.</h3><p>ნეირო-ჩიპები ისწავლიან რუტინას. განაბარი მოხმარება −40%. ეს არ არის "ეკო-რეჟიმი".</p></div>
+      <div class="infoCard rv" style="transition-delay:.24s"><div class="infoIco">🌐</div><h3>მწვანე Data Centers</h3><p>24/7 განახლებადი. ოკეანის სიღრმის ცენტრები. PUE 1.06 — ისტ. მიღწევა.</p></div>
+      <div class="infoCard rv" style="transition-delay:.32s"><div class="infoIco">🔄</div><h3>სრული ციკლი</h3><p>Apple Daisy: 100% ხელახლა გამოყენება. 2035: ე-ნარჩ. 80% — გლობ. სამიზნე.</p></div>
+      <div class="infoCard rv" style="transition-delay:.4s"><div class="infoIco">📡</div><h3>RF Energy Harvest</h3><p>5G/Wi-Fi 7 → ელ. ენერგია. IoT სენსორები ბატარეის გარეშე — მომავლის ტექ.</p></div>
     </div>
   </section>
 
   <div class="gl"></div>
 
-  <!-- ── IDEAS ── -->
-  <section id="ideas" style="padding:90px 60px;background:radial-gradient(ellipse 80% 50% at 50% 100%,rgba(10,42,10,.4),var(--bg));">
-    <div style="max-width:1200px;margin:0 auto;">
-      <div class="sLabel rv">5 უნიკალური იდეა</div>
-      <h2 class="sTitle rv">ჩვენი ვიზია<br><span style="color:var(--gold)">მომავლისთვის ✦</span></h2>
-      <div class="ideasGrid">
-        <div class="ideaCard rv"><div class="ideaNum">01</div><span class="ideaEmoji">🌿</span><h3>Bio-Phone</h3><p>ბამბუკის კომპოზიტი — 5 წელში ბუნებაში სრულად დაიშლება, ნიადაგს გამდიდრებს.</p></div>
-        <div class="ideaCard rv" style="transition-delay:.1s"><div class="ideaNum">02</div><span class="ideaEmoji">🧬</span><h3>ბიო-ბატარეა</h3><p>ბაქტერიებზე მიკრობიო საწვავი — ტელეფონი ორგანული ნარჩენებით (შაქარი, მჟავები) იკვებება.</p></div>
-        <div class="ideaCard rv" style="transition-delay:.2s"><div class="ideaNum">03</div><span class="ideaEmoji">🏙️</span><h3>ქალაქ-ქსელი</h3><p>ასფალტის პიეზო-სენსორები — ნაბიჯი = ენერგია. 1M ქვეითი = 500 kWh/დღეში.</p></div>
-        <div class="ideaCard rv" style="transition-delay:.3s"><div class="ideaNum">04</div><span class="ideaEmoji">🧊</span><h3>კრიო-სერვერი</h3><p>Data Centers მყინვარების გვერდით — ბუნებრივი გაგრილება ნულოვანი ხარჯით.</p></div>
-        <div class="ideaCard rv" style="transition-delay:.4s"><div class="ideaNum">05</div><span class="ideaEmoji">🌊</span><h3>ოკეანეს ენერგია</h3><p>ტალღების კინეტიკური კონვერტერები — ოკეანური პლატფორმები ათასობით მოწყობილობას კვებავს.</p></div>
-      </div>
+  <!-- ══════ IDEAS ══════ -->
+  <section id="ideas" style="padding:88px 60px;background:radial-gradient(ellipse 80% 50% at 50% 100%,rgba(10,42,10,.35),var(--bg));">
+  <div style="max-width:1200px;margin:0 auto;">
+    <div class="sLabel rv">5 უნიკალური იდეა</div>
+    <h2 class="sTitle rv">ჩვენი ვიზია<br><span style="color:var(--gold)">მომავლისთვის ✦</span></h2>
+    <div class="ideaGrid">
+      <div class="ideaCard rv"><div class="idN">01</div><span class="idE">🌿</span><h3>Bio-Phone</h3><p>ბამბუკის კომპოზიტი — 5 წელში ბუნებაში სრულად დაიშლება.</p></div>
+      <div class="ideaCard rv" style="transition-delay:.1s"><div class="idN">02</div><span class="idE">🧬</span><h3>ბიო-ბატარეა</h3><p>ბაქტერიებზე მიკრობიო საწვავი — ტელეფონი ნარჩენებით იკვებება.</p></div>
+      <div class="ideaCard rv" style="transition-delay:.2s"><div class="idN">03</div><span class="idE">🏙️</span><h3>ქალაქ-ქსელი</h3><p>ასფალტის პიეზო-სენსორები — ნაბიჯი = ენერგია.</p></div>
+      <div class="ideaCard rv" style="transition-delay:.3s"><div class="idN">04</div><span class="idE">🧊</span><h3>კრიო-სერვერი</h3><p>Data Centers მყინვარების გვერდით — ბუნებრივი გაგრილება.</p></div>
+      <div class="ideaCard rv" style="transition-delay:.4s"><div class="idN">05</div><span class="idE">🌊</span><h3>ოკეანეს ენერგია</h3><p>ტალღების კინეტიკა — ოკეანური პლატფორმები ათასობით მოწყობ. კვებავს.</p></div>
+    </div>
+  </div>
+  </section>
+
+  <div class="gl"></div>
+
+  <!-- GALLERY -->
+  <section id="gallery" class="sec" style="padding-bottom:60px;">
+    <div class="sLabel rv">ვიზუალი</div>
+    <h2 class="sTitle rv">GreenTechno <span style="color:var(--teal)">ესთეტიკა</span></h2>
+    <div class="galGrid rv">
+      <div class="galCard" style="height:320px;"><img src="474350.jpg" alt="WP"><div class="galOv"><span class="galLbl">iOS Wallpaper · ბიო-სერია</span></div></div>
+      <div class="galCard" style="height:320px;"><img src="wallpaper_abstract.png" alt="Abs"><div class="galOv"><span class="galLbl">მოდული · ეკო</span></div></div>
+      <div class="galCard" style="height:320px;"><img src="macbook_hero.webp" alt="Mac"><div class="galOv"><span class="galLbl">MacBook Citrus</span></div></div>
     </div>
   </section>
 
   <div class="gl"></div>
 
-  <!-- ── GALLERY ── -->
-  <section id="gallery">
-    <div class="section" style="padding-bottom:60px;">
-      <div class="sLabel rv">ვიზუალი</div>
-      <h2 class="sTitle rv">GreenTechno <span style="color:var(--teal)">ესთეტიკა</span></h2>
-      <div class="galleryGrid rv">
-        <div class="galleryCard" style="height:340px;"><img src="474350.jpg" alt="WP"><div class="galleryOv"><span class="galleryLbl">iOS Wallpaper · ბიო-სერია</span></div></div>
-        <div class="galleryCard" style="height:340px;"><img src="wallpaper_abstract.png" alt="Abstract"><div class="galleryOv"><span class="galleryLbl">მოდული · ეკო</span></div></div>
-        <div class="galleryCard" style="height:340px;"><img src="macbook_hero.webp" alt="MacBook"><div class="galleryOv"><span class="galleryLbl">MacBook Citrus</span></div></div>
-      </div>
-    </div>
-  </section>
-
-  <div class="gl"></div>
-
-  <footer class="siteFooter">
-    <div class="footLogo"><img src="GreenTecho.png" alt="GT"><span>GreenTechno</span></div>
-    <div class="footMid">ეკო ენერგია · ციფრული მომავალი · 2025</div>
-    <div class="footCopy">© GreenTechno<br>ყველა უფლება დაცულია</div>
+  <footer class="ftr">
+    <div class="fLogo"><img src="GreenTecho.png" alt="GT"><span>GreenTechno</span></div>
+    <div class="fMid">ენერგოეფექტირობა · C / C++ / C# · ეკო კოდი · 2025</div>
+    <div class="fCp">© GreenTechno<br>ყველა უფლება დაცულია</div>
   </footer>
 
-</div><!-- /site -->
+</div>
 
 <script>
-// ═══════════════════════════════════════════
+// ═══════════════════════════════════
 // AUDIO
-// ═══════════════════════════════════════════
+// ═══════════════════════════════════
 let AC=null,sOn=true;
 function iAC(){if(!AC)AC=new(window.AudioContext||window.webkitAudioContext)();}
 function tone(f,d,t='sine',v=.1){if(!sOn||!AC)return;const o=AC.createOscillator(),g=AC.createGain();o.connect(g);g.connect(AC.destination);o.type=t;o.frequency.value=f;g.gain.setValueAtTime(v,AC.currentTime);g.gain.exponentialRampToValueAtTime(.001,AC.currentTime+d);o.start();o.stop(AC.currentTime+d);}
 function chord(fs,d=.4){fs.forEach((f,i)=>setTimeout(()=>tone(f,d,'sine',.07),i*55));}
-function whoosh(){if(!sOn||!AC)return;const b=AC.createBuffer(1,AC.sampleRate*.5,AC.sampleRate),d=b.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/d.length,3);const s=AC.createBufferSource(),f=AC.createBiquadFilter(),g=AC.createGain();f.type='bandpass';f.frequency.setValueAtTime(1200,AC.currentTime);f.frequency.exponentialRampToValueAtTime(80,AC.currentTime+.5);g.gain.value=.22;s.buffer=b;s.connect(f);f.connect(g);g.connect(AC.destination);s.start();}
-function launchSnd(){chord([261,329,392,523],.6);setTimeout(()=>chord([392,494,587,784],.5),280);setTimeout(()=>tone(1047,1.2,'sine',.09),580);setTimeout(()=>tone(1318,.8,'sine',.07),880);}
-function pClick(){iAC();tone(680,.04,'square',.04);setTimeout(()=>tone(480,.04,'square',.03),35);}
-document.getElementById('sndBtn').addEventListener('click',()=>{sOn=!sOn;document.getElementById('sndBtn').textContent=sOn?'🔊':'🔇';iAC();if(sOn)tone(440,.2);});
+function whoosh(){if(!sOn||!AC)return;const b=AC.createBuffer(1,AC.sampleRate*.5,AC.sampleRate),d=b.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/d.length,3);const s=AC.createBufferSource(),fl=AC.createBiquadFilter(),g=AC.createGain();fl.type='bandpass';fl.frequency.setValueAtTime(1200,AC.currentTime);fl.frequency.exponentialRampToValueAtTime(80,AC.currentTime+.5);g.gain.value=.2;s.buffer=b;s.connect(fl);fl.connect(g);g.connect(AC.destination);s.start();}
+function launchSnd(){chord([261,329,392,523],.6);setTimeout(()=>chord([392,494,587,784],.5),280);setTimeout(()=>tone(1047,1.2,'sine',.09),570);setTimeout(()=>tone(1318,.7,'sine',.07),870);}
+function pClick(){iAC();tone(660,.04,'square',.04);setTimeout(()=>tone(460,.04,'square',.03),32);}
+document.getElementById('sndBtn').addEventListener('click',()=>{sOn=!sOn;document.getElementById('sndBtn').textContent=sOn?'🔊':'🔇';iAC();if(sOn)tone(440,.18);});
 document.addEventListener('click',()=>iAC(),{once:true});
 
-// ═══════════════════════════════════════════
+// ═══════════════════════════════════
 // CURSOR
-// ═══════════════════════════════════════════
-const curEl=document.getElementById('cur'),cur2El=document.getElementById('cur2');
+// ═══════════════════════════════════
+const cEl=document.getElementById('cur'),c2El=document.getElementById('cur2');
 let mx=0,my=0,rx=0,ry=0;
-document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;curEl.style.left=mx+'px';curEl.style.top=my+'px';});
-(function cl(){rx+=(mx-rx)*.12;ry+=(my-ry)*.12;cur2El.style.left=rx+'px';cur2El.style.top=ry+'px';requestAnimationFrame(cl);})();
-document.querySelectorAll('button,a,.ideaCard,.infoCard,.macSpecCard,.impactCard,.galleryCard,.langTab,.specTag,.macTag,.compareCard,.resultCard').forEach(el=>{
-  el.addEventListener('mouseenter',()=>{document.body.classList.add('hovering');if(sOn&&AC)tone(500+Math.random()*200,.06,'sine',.025);});
-  el.addEventListener('mouseleave',()=>document.body.classList.remove('hovering'));
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cEl.style.left=mx+'px';cEl.style.top=my+'px';});
+(function cl(){rx+=(mx-rx)*.12;ry+=(my-ry)*.12;c2El.style.left=rx+'px';c2El.style.top=ry+'px';requestAnimationFrame(cl);})();
+document.querySelectorAll('button,a,.ideaCard,.infoCard,.macCard,.impCard,.galCard,.langBtn,.exTab,.macWin').forEach(el=>{
+  el.addEventListener('mouseenter',()=>{document.body.classList.add('hov');if(sOn&&AC)tone(480+Math.random()*180,.06,'sine',.022);});
+  el.addEventListener('mouseleave',()=>document.body.classList.remove('hov'));
 });
 
-// ═══════════════════════════════════════════
-// INTRO STAR CANVAS
-// ═══════════════════════════════════════════
-const sCv=document.getElementById('introStarCanvas');
+// ═══════════════════════════════════
+// INTRO STARS
+// ═══════════════════════════════════
+const sCv=document.getElementById('starsCanvas');
 const sx=sCv.getContext('2d');
 sCv.width=innerWidth;sCv.height=innerHeight;
-const stars=Array.from({length:220},()=>({x:Math.random()*sCv.width,y:Math.random()*sCv.height,r:Math.random()*1.4+.2,a:Math.random(),vx:(Math.random()-.5)*.12,vy:(Math.random()-.5)*.12}));
-(function sl(){sx.clearRect(0,0,sCv.width,sCv.height);stars.forEach(s=>{s.x+=s.vx;s.y+=s.vy;if(s.x<0||s.x>sCv.width)s.vx*=-1;if(s.y<0||s.y>sCv.height)s.vy*=-1;sx.beginPath();sx.arc(s.x,s.y,s.r,0,Math.PI*2);sx.fillStyle=`rgba(57,255,20,${s.a*.5})`;sx.fill();});stars.forEach((a,i)=>stars.forEach((b,j)=>{if(i>=j)return;const d=Math.hypot(a.x-b.x,a.y-b.y);if(d<85){sx.beginPath();sx.moveTo(a.x,a.y);sx.lineTo(b.x,b.y);sx.strokeStyle=`rgba(57,255,20,${(1-d/85)*.07})`;sx.stroke();}}));requestAnimationFrame(sl);})();
+const stars=Array.from({length:240},()=>({x:Math.random()*sCv.width,y:Math.random()*sCv.height,r:Math.random()*1.3+.2,a:Math.random(),vx:(Math.random()-.5)*.11,vy:(Math.random()-.5)*.11}));
+(function sl(){sx.clearRect(0,0,sCv.width,sCv.height);stars.forEach(s=>{s.x+=s.vx;s.y+=s.vy;if(s.x<0||s.x>sCv.width)s.vx*=-1;if(s.y<0||s.y>sCv.height)s.vy*=-1;sx.beginPath();sx.arc(s.x,s.y,s.r,0,Math.PI*2);sx.fillStyle=`rgba(57,255,20,${s.a*.45})`;sx.fill();});stars.forEach((a,i)=>stars.forEach((b,j)=>{if(i>=j)return;const d=Math.hypot(a.x-b.x,a.y-b.y);if(d<80){sx.beginPath();sx.moveTo(a.x,a.y);sx.lineTo(b.x,b.y);sx.strokeStyle=`rgba(57,255,20,${(1-d/80)*.06})`;sx.stroke();}}));requestAnimationFrame(sl);})();
 
-// ═══════════════════════════════════════════
-// THREE.JS HELPERS
-// ═══════════════════════════════════════════
-const gLoader=new THREE.GLTFLoader();
-function mkScene(canvas,w,h,cz=4){
+// ═══════════════════════════════════
+// THREE.JS
+// ═══════════════════════════════════
+const gL=new THREE.GLTFLoader();
+function mkSc(cv,w,h,cz=4){
   const sc=new THREE.Scene(),cam=new THREE.PerspectiveCamera(42,w/h,.1,200);
   cam.position.set(0,0,cz);
-  const r=new THREE.WebGLRenderer({canvas,alpha:true,antialias:true});
+  const r=new THREE.WebGLRenderer({canvas:cv,alpha:true,antialias:true});
   r.setSize(w,h);r.setPixelRatio(Math.min(devicePixelRatio,2));
   r.outputEncoding=THREE.sRGBEncoding;r.toneMapping=THREE.ACESFilmicToneMapping;r.toneMappingExposure=1.3;
   return{sc,cam,r};
 }
-function addLights(scene,c1=0x2ecc40,c2=0x39ff14,amb=.7){
-  scene.add(new THREE.AmbientLight(0xffffff,amb));
-  const d1=new THREE.DirectionalLight(c1,2.5);d1.position.set(3,5,5);scene.add(d1);
-  const d2=new THREE.DirectionalLight(c2,1.5);d2.position.set(-3,-2,3);scene.add(d2);
-  const p=new THREE.PointLight(c2,2.5,25);p.position.set(0,3,4);scene.add(p);
-  const rim=new THREE.DirectionalLight(0xa8e63d,.7);rim.position.set(0,-4,-4);scene.add(rim);
+function addL(sc,c1=0x2ecc40,c2=0x39ff14,a=.7){
+  sc.add(new THREE.AmbientLight(0xffffff,a));
+  const d1=new THREE.DirectionalLight(c1,2.6);d1.position.set(3,5,5);sc.add(d1);
+  const d2=new THREE.DirectionalLight(c2,1.5);d2.position.set(-3,-2,3);sc.add(d2);
+  const p=new THREE.PointLight(c2,2.8,26);p.position.set(0,3,4);sc.add(p);
+  const rim=new THREE.DirectionalLight(0xa8e63d,.7);rim.position.set(0,-4,-4);sc.add(rim);
 }
 function fitM(gltf,tH=2){
   const box=new THREE.Box3().setFromObject(gltf.scene);
@@ -835,336 +820,637 @@ function fitM(gltf,tH=2){
   gltf.scene.position.sub(ctr.multiplyScalar(sc));
   return gltf.scene;
 }
-function fallPhone(scene){
+function fallPh(sc){
   const g=new THREE.Group();
-  g.add(new THREE.Mesh(new THREE.BoxGeometry(.85,1.75,.1),new THREE.MeshStandardMaterial({color:0x0a2a0a,metalness:.95,roughness:.05})));
-  const sc=new THREE.Mesh(new THREE.BoxGeometry(.74,1.58,.01),new THREE.MeshStandardMaterial({color:0x000,emissive:0x071a07,emissiveIntensity:1.2}));
-  sc.position.z=.055;g.add(sc);scene.add(g);return g;
+  g.add(new THREE.Mesh(new THREE.BoxGeometry(.85,1.75,.1),new THREE.MeshStandardMaterial({color:0x0a2a0a,metalness:.95,roughness:.04})));
+  const s=new THREE.Mesh(new THREE.BoxGeometry(.74,1.58,.01),new THREE.MeshStandardMaterial({color:0x000,emissive:0x071a07,emissiveIntensity:1.1}));
+  s.position.z=.055;g.add(s);sc.add(g);return g;
 }
 
-// ═══════════════════════════════════════════
-// INTRO 3D PHONE
-// ═══════════════════════════════════════════
+// ── Intro phone ──
 let iPM=null;
-const iS=mkScene(document.getElementById('iPhCIntro'),340,680,4.2);
-addLights(iS.sc,0x2ecc40,0x39ff14,.4);
-const introRim=new THREE.PointLight(0x39ff14,5,18);introRim.position.set(0,0,2.5);iS.sc.add(introRim);
+const iS=mkSc(document.getElementById('introPhC'),340,680,4.2);
+addL(iS.sc,0x2ecc40,0x39ff14,.4);
+const iRim=new THREE.PointLight(0x39ff14,5,18);iRim.position.set(0,0,2.5);iS.sc.add(iRim);
+gL.load('iphone_16_plus_green.glb',g=>{iPM=fitM(g,3);iS.sc.add(iPM);},undefined,()=>{iPM=fallPh(iS.sc);});
+let iA=0;(function il(){requestAnimationFrame(il);iA+=.006;if(iPM){iPM.rotation.y=Math.sin(iA)*.22;iPM.rotation.x=Math.sin(iA*.7)*.04;iPM.position.y=Math.sin(iA*1.1)*.05;}iRim.intensity=3.5+Math.sin(iA*2)*2;iS.r.render(iS.sc,iS.cam);})();
 
-gLoader.load('iphone_16_plus_green.glb',gltf=>{iPM=fitM(gltf,3);iS.sc.add(iPM);},undefined,()=>{iPM=fallPhone(iS.sc);});
-let iAng=0;
-(function il(){requestAnimationFrame(il);iAng+=.006;if(iPM){iPM.rotation.y=Math.sin(iAng)*.2;iPM.rotation.x=Math.sin(iAng*.7)*.04;iPM.position.y=Math.sin(iAng*1.1)*.05;}introRim.intensity=3.5+Math.sin(iAng*2)*2;iS.r.render(iS.sc,iS.cam);})();
-
-// ═══════════════════════════════════════════
-// INTRO EXIT — LOCK SCREEN STYLE
-// ═══════════════════════════════════════════
+// ═══════════════════════════════════
+// INTRO EXIT — Lock Screen Style
+// ═══════════════════════════════════
 let exited=false;
 function doExit(){
   if(exited)return;exited=true;
   iAC();launchSnd();whoosh();
-  // Flash
   const fl=document.createElement('div');
-  fl.style.cssText='position:fixed;inset:0;z-index:9999;background:rgba(57,255,20,.3);pointer-events:none;';
+  fl.style.cssText='position:fixed;inset:0;z-index:9999;background:rgba(57,255,20,.28);pointer-events:none;animation:ff .5s ease forwards;';
+  document.head.insertAdjacentHTML('beforeend','<style>@keyframes ff{0%{opacity:1}100%{opacity:0}}</style>');
   document.body.appendChild(fl);
-  fl.style.animation='flashFade .5s ease forwards';
-  document.head.insertAdjacentHTML('beforeend','<style>@keyframes flashFade{0%{opacity:1}100%{opacity:0}}</style>');
-  document.getElementById('intro').classList.add('introExit');
-  // Lock screen transition
-  const lock=document.getElementById('lockOverlay');
-  lock.classList.add('active');
+  document.getElementById('intro').classList.add('introExiting');
+  const lock=document.getElementById('lockOv');
+  lock.classList.add('in');
   setTimeout(()=>{
-    lock.classList.add('release');
+    lock.classList.add('out');
     setTimeout(()=>{
       document.getElementById('intro').style.display='none';
-      lock.style.display='none';
-      fl.remove();
+      lock.style.display='none';fl.remove();
       document.getElementById('site').classList.add('show');
-      document.getElementById('statusBar').classList.add('show');
+      document.getElementById('topBar').classList.add('show');
       document.getElementById('dots').classList.add('show');
       setTimeout(()=>{document.getElementById('hTxt').classList.add('go');document.getElementById('h3d').classList.add('go');},150);
       mkPtcl();initHP();initMac();obsRv();
-    },600);
-  },400);
+    },550);
+  },380);
 }
 document.getElementById('intro').addEventListener('click',doExit);
 document.addEventListener('keydown',e=>{if(e.key===' '||e.key==='Enter')doExit();});
 document.getElementById('intro').addEventListener('touchend',doExit,{passive:true});
 
-// ═══════════════════════════════════════════
-// HERO PHONE
-// ═══════════════════════════════════════════
+// ── Hero phone ──
 let hM=null,hDr=false,hLX=0,hLY=0,hRX=0,hRY=0,hVX=0,hVY=0;
 function initHP(){
   const cv=document.getElementById('hPhC');
-  const{sc,cam,r}=mkScene(cv,280,560,4.2);
-  addLights(sc);
-  gLoader.load('iphone_16_plus_green.glb',g=>{hM=fitM(g,2.8);sc.add(hM);},undefined,()=>{hM=fallPhone(sc);});
+  const{sc,cam,r}=mkSc(cv,270,540,4.2);addL(sc);
+  gL.load('iphone_16_plus_green.glb',g=>{hM=fitM(g,2.8);sc.add(hM);},undefined,()=>{hM=fallPh(sc);});
   cv.addEventListener('mousedown',e=>{hDr=true;hLX=e.clientX;hLY=e.clientY;cv.style.cursor='grabbing';});
   cv.addEventListener('touchstart',e=>{hDr=true;hLX=e.touches[0].clientX;hLY=e.touches[0].clientY;},{passive:true});
-  window.addEventListener('mousemove',e=>{if(!hDr)return;hVX=(e.clientX-hLX)*.012;hVY=(e.clientY-hLY)*.009;hRY+=hVX;hRX+=hVY;hLX=e.clientX;hLY=e.clientY;if(sOn&&AC)tone(180+Math.abs(hVX)*300,.02,'sine',.01);});
+  window.addEventListener('mousemove',e=>{if(!hDr)return;hVX=(e.clientX-hLX)*.012;hVY=(e.clientY-hLY)*.009;hRY+=hVX;hRX+=hVY;hLX=e.clientX;hLY=e.clientY;if(sOn&&AC)tone(170+Math.abs(hVX)*280,.02,'sine',.01);});
   window.addEventListener('touchmove',e=>{if(!hDr)return;hVX=(e.touches[0].clientX-hLX)*.012;hVY=(e.touches[0].clientY-hLY)*.009;hRY+=hVX;hRX+=hVY;hLX=e.touches[0].clientX;hLY=e.touches[0].clientY;},{passive:true});
-  window.addEventListener('mouseup',()=>{hDr=false;cv.style.cursor='grab';});
-  window.addEventListener('touchend',()=>hDr=false);
+  window.addEventListener('mouseup',()=>{hDr=false;cv.style.cursor='grab';});window.addEventListener('touchend',()=>hDr=false);
   let ha=0;(function hl(){requestAnimationFrame(hl);if(!hDr){hVX*=.93;hVY*=.93;hRY+=hVX;hRX+=hVY;ha+=.004;hRY+=Math.sin(ha)*.002;}hRX=Math.max(-.6,Math.min(.6,hRX));if(hM){hM.rotation.y=hRY;hM.rotation.x=hRX;}r.render(sc,cam);})();
 }
 
-// ═══════════════════════════════════════════
-// MACBOOK
-// ═══════════════════════════════════════════
-let mM=null,mDr=false,mLX=0,mLY=0,mRX=0,mRY=.2,mVX=0,mVY=0,macReady=false;
+// ── MacBook ──
+let mM=null,mDr=false,mLX=0,mLY=0,mRX=0,mRY=.2,mVX=0,mVY=0,macOk=false;
 function initMac(){
-  if(macReady)return;macReady=true;
+  if(macOk)return;macOk=true;
   const cv=document.getElementById('macC');
-  const w=Math.min(cv.parentElement.clientWidth||620,700);
-  const{sc,cam,r}=mkScene(cv,w,480,5.8);
+  const w=Math.min(cv.parentElement.clientWidth||620,680);
+  const{sc,cam,r}=mkSc(cv,w,480,5.8);
   cam.position.set(0,.2,5.8);r.setSize(w,480);
-  addLights(sc,0xa8e63d,0x2ecc40,.6);
-  const spl=new THREE.SpotLight(0x39ff14,3,22,Math.PI/6,.5);spl.position.set(0,5,5);sc.add(spl);
-  const doEnter=()=>{cv.classList.add('go');document.getElementById('macInfoPanel').classList.add('go');if(sOn&&AC){setTimeout(()=>chord([196,247,294,392],.7),100);}};
-  gLoader.load('macbook_neo.glb',g=>{mM=fitM(g,3.4);sc.add(mM);setTimeout(doEnter,80);},undefined,()=>{
+  addL(sc,0xa8e63d,0x2ecc40,.6);
+  const spl=new THREE.SpotLight(0x39ff14,3.2,24,Math.PI/6,.5);spl.position.set(0,5,5);sc.add(spl);
+  const go=()=>{cv.classList.add('go');document.getElementById('macPanel').classList.add('go');if(sOn&&AC)setTimeout(()=>chord([196,247,294,392],.7),80);};
+  gL.load('macbook_neo.glb',g=>{mM=fitM(g,3.4);sc.add(mM);setTimeout(go,80);},undefined,()=>{
     const g=new THREE.Group();
     const mat=new THREE.MeshStandardMaterial({color:0x0d2a0d,metalness:.92,roughness:.08});
     g.add(new THREE.Mesh(new THREE.BoxGeometry(3,.08,2.1),mat));
     const lid=new THREE.Mesh(new THREE.BoxGeometry(3,1.9,.06),mat);lid.position.set(0,.99,-.99);lid.rotation.x=-.25;g.add(lid);
     const sm=new THREE.MeshStandardMaterial({color:0x000,emissive:0x071a07,emissiveIntensity:.8});
     const sc2=new THREE.Mesh(new THREE.BoxGeometry(2.7,1.65,.01),sm);sc2.position.set(0,.99,-.96);sc2.rotation.x=-.25;g.add(sc2);
-    mM=g;sc.add(g);setTimeout(doEnter,80);
+    mM=g;sc.add(g);setTimeout(go,80);
   });
   cv.addEventListener('mousedown',e=>{mDr=true;mLX=e.clientX;mLY=e.clientY;cv.style.cursor='grabbing';});
   cv.addEventListener('touchstart',e=>{mDr=true;mLX=e.touches[0].clientX;mLY=e.touches[0].clientY;},{passive:true});
   window.addEventListener('mousemove',e=>{if(!mDr)return;mVX=(e.clientX-mLX)*.01;mVY=(e.clientY-mLY)*.007;mRY+=mVX;mRX+=mVY;mLX=e.clientX;mLY=e.clientY;});
   window.addEventListener('touchmove',e=>{if(!mDr)return;mVX=(e.touches[0].clientX-mLX)*.01;mVY=(e.touches[0].clientY-mLY)*.007;mRY+=mVX;mRX+=mVY;mLX=e.touches[0].clientX;mLY=e.touches[0].clientY;},{passive:true});
-  window.addEventListener('mouseup',()=>{mDr=false;cv.style.cursor='grab';});
-  window.addEventListener('touchend',()=>mDr=false);
+  window.addEventListener('mouseup',()=>{mDr=false;cv.style.cursor='grab';});window.addEventListener('touchend',()=>mDr=false);
   let ma=0;(function ml(){requestAnimationFrame(ml);if(!mDr){mVX*=.93;mVY*=.93;mRY+=mVX;mRX+=mVY;ma+=.003;mRY+=Math.sin(ma)*.0015;}mRX=Math.max(-.35,Math.min(.35,mRX));if(mM){mM.rotation.y=mRY;mM.rotation.x=mRX;}r.render(sc,cam);})();
 }
 
-// ═══════════════════════════════════════════
-// PARTICLES
-// ═══════════════════════════════════════════
 function mkPtcl(){const c=document.getElementById('ptcl');for(let i=0;i<28;i++){const p=document.createElement('div');p.className='pt';const sz=Math.random()*3+1;p.style.cssText=`width:${sz}px;height:${sz}px;left:${Math.random()*100}%;animation-duration:${Math.random()*18+10}s;animation-delay:${Math.random()*18}s;`;c.appendChild(p);}}
 
-// ═══════════════════════════════════════════
-// SCROLL REVEAL + MACBOOK TRIGGER
-// ═══════════════════════════════════════════
-function obsRv(){
-  const o=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('go');if(sOn&&AC)tone(260+Math.random()*160,.1,'sine',.022);}});},{threshold:.12});
-  document.querySelectorAll('.rv').forEach(el=>o.observe(el));
-  // bench bars animation
-  const bObs=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){renderBenchBars();}});},{threshold:.3});
-  const bb=document.getElementById('benchBarsSection');if(bb)bObs.observe(bb);
-  // mac trigger
-  const mObs=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting)initMac();});},{threshold:.15});
-  const ms=document.getElementById('macbook');if(ms)mObs.observe(ms);
-}
-
-// ═══════════════════════════════════════════
-// SCROLL DOTS + NAV TABS
-// ═══════════════════════════════════════════
+// ═══════════════════════════════════
+// SCROLL
+// ═══════════════════════════════════
 const secIds=['hero','energy','macbook','info','ideas','gallery'];
+function obsRv(){
+  new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('go');if(sOn&&AC)tone(240+Math.random()*140,.1,'sine',.02);}});},{threshold:.1}).observe.call(null);
+  const ob=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('go');}});},{threshold:.1});
+  document.querySelectorAll('.rv').forEach(el=>ob.observe(el));
+  new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting)renderBars();});},{threshold:.25}).observe(document.getElementById('barsSection'));
+  new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting)initMac();});},{threshold:.12}).observe(document.getElementById('macbook'));
+}
 window.addEventListener('scroll',()=>{
   const sy=scrollY;
-  secIds.forEach((id,i)=>{
-    const el=document.getElementById(id);if(!el)return;
-    const t=el.offsetTop-280,b=t+el.offsetHeight;
-    document.querySelectorAll('.dot')[i]?.classList.toggle('on',sy>=t&&sy<b);
-  });
-  // update nav tabs
-  document.querySelectorAll('.sbTab').forEach(tab=>{
-    const href=tab.getAttribute('href')?.slice(1);
-    if(!href)return;
-    const el=document.getElementById(href);if(!el)return;
-    const t=el.offsetTop-200;const b=t+el.offsetHeight;
-    tab.classList.toggle('active',sy>=t&&sy<b);
-  });
+  secIds.forEach((id,i)=>{const el=document.getElementById(id);if(!el)return;const t=el.offsetTop-260,b=t+el.offsetHeight;document.querySelectorAll('.dot')[i]?.classList.toggle('on',sy>=t&&sy<b);});
+  document.querySelectorAll('.tbLink').forEach(l=>{const href=l.getAttribute('href')?.slice(1);if(!href)return;const el=document.getElementById(href);if(!el)return;l.classList.toggle('on',sy>=el.offsetTop-220&&sy<el.offsetTop+el.offsetHeight-220);});
 });
 document.querySelectorAll('.dot').forEach((d,i)=>{d.addEventListener('click',()=>{document.getElementById(secIds[i])?.scrollIntoView({behavior:'smooth'});pClick();});});
-function scrollTo(id){document.getElementById(id)?.scrollIntoView({behavior:'smooth'});pClick();}
+function sScroll(id){document.getElementById(id)?.scrollIntoView({behavior:'smooth'});pClick();}
 
-// ═══════════════════════════════════════════
-// CODE EXAMPLES
-// ═══════════════════════════════════════════
+// ═══════════════════════════════════
+// CODE DATA — C / C++ / C# — 5 Examples
+// ═══════════════════════════════════
 const codes={
-python:{
-slow:`<span class="cCmt"># ❌ არაოპტიმიზებული — Leibniz-ის ფორმულა</span>
-<span class="cTag">def</span> <span class="cFn">pi_slow</span>(n):
-    <span class="cVar">result</span> = <span class="cNum">0</span>
-    <span class="cTag">for</span> <span class="cVar">i</span> <span class="cTag">in</span> <span class="cFn">range</span>(n):
-        <span class="cVar">result</span> += ((-<span class="cNum">1</span>)**<span class="cVar">i</span>) / (<span class="cNum">2</span>*<span class="cVar">i</span>+<span class="cNum">1</span>)
-        <span class="cCmt"># ** ოპერატორი ძვირია! float conversion ყოველ iter-ზე</span>
-    <span class="cTag">return</span> <span class="cVar">result</span> * <span class="cNum">4</span>
+  c:{
+    slow:[
+`<span class="cm">/* ❌ Leibniz — C — არაოპტ.: pow() ყოველ iter-ში */</span>
+<span class="pp">#include</span> <span class="str">&lt;math.h&gt;</span>
+<span class="tp">double</span> <span class="fn">pi_slow</span>(<span class="tp">int</span> n) {
+    <span class="tp">double</span> <span class="vr">pi</span> = <span class="num">0.0</span>;
+    <span class="kw">for</span> (<span class="tp">int</span> <span class="vr">i</span>=<span class="num">0</span>; <span class="vr">i</span>&lt;n; <span class="vr">i</span>++) {
+        <span class="vr">pi</span> += <span class="fn">pow</span>(-<span class="num">1</span>, <span class="vr">i</span>) / (<span class="num">2.0</span>*<span class="vr">i</span> + <span class="num">1.0</span>);
+        <span class="cm">/* pow() = libm call — ძ. ძვირი! */</span>
+    }
+    <span class="kw">return</span> <span class="vr">pi</span> * <span class="num">4.0</span>;
+}
+<span class="cm">// 10M iter ≈ 950ms | 🔴 CPU 100%</span>`,
 
-<span class="cCmt"># 10,000,000 iter ≈ 2800ms | ენერგია: 🔴🔴🔴</span>
-<span class="cFn">print</span>(pi_slow(<span class="cNum">10_000_000</span>))`,
+`<span class="cm">/* ❌ Machin — C — არაოპტ.: atan() loop */</span>
+<span class="pp">#include</span> <span class="str">&lt;math.h&gt;</span>
+<span class="tp">double</span> <span class="fn">pi_machin_slow</span>(<span class="tp">int</span> n) {
+    <span class="tp">double</span> <span class="vr">s1</span>=<span class="num">0</span>, <span class="vr">s2</span>=<span class="num">0</span>;
+    <span class="kw">for</span>(<span class="tp">int</span> <span class="vr">k</span>=<span class="num">0</span>;<span class="vr">k</span>&lt;n;<span class="vr">k</span>++) {
+        <span class="tp">double</span> <span class="vr">t</span> = <span class="fn">pow</span>(-<span class="num">1</span>,<span class="vr">k</span>)/(<span class="num">2</span>*<span class="vr">k</span>+<span class="num">1</span>);
+        <span class="vr">s1</span> += <span class="vr">t</span> * <span class="fn">pow</span>(<span class="num">1.0</span>/<span class="num">5</span>, <span class="num">2</span>*<span class="vr">k</span>+<span class="num">1</span>);
+        <span class="vr">s2</span> += <span class="vr">t</span> * <span class="fn">pow</span>(<span class="num">1.0</span>/<span class="num">239</span>, <span class="num">2</span>*<span class="vr">k</span>+<span class="num">1</span>);
+    }
+    <span class="kw">return</span> <span class="num">4</span>*(<span class="num">4</span>*<span class="vr">s1</span> - <span class="vr">s2</span>);
+}
+<span class="cm">// ≈ 1800ms | ძ. ნელი</span>`,
 
-fast:`<span class="cCmt"># ✅ ოპტიმიზებული — Machin Formula + NumPy</span>
-<span class="cTag">import</span> numpy <span class="cTag">as</span> np
+`<span class="cm">/* ❌ Monte Carlo — C — rand() არ არის thread-safe */</span>
+<span class="pp">#include</span> <span class="str">&lt;stdlib.h&gt;</span>
+<span class="tp">double</span> <span class="fn">pi_monte_slow</span>(<span class="tp">int</span> n) {
+    <span class="tp">int</span> <span class="vr">hits</span> = <span class="num">0</span>;
+    <span class="kw">for</span>(<span class="tp">int</span> <span class="vr">i</span>=<span class="num">0</span>;<span class="vr">i</span>&lt;n;<span class="vr">i</span>++) {
+        <span class="tp">double</span> <span class="vr">x</span>=(<span class="tp">double</span>)<span class="fn">rand</span>()/<span class="fn">RAND_MAX</span>;
+        <span class="tp">double</span> <span class="vr">y</span>=(<span class="tp">double</span>)<span class="fn">rand</span>()/<span class="fn">RAND_MAX</span>;
+        <span class="kw">if</span>(<span class="vr">x</span>*<span class="vr">x</span>+<span class="vr">y</span>*<span class="vr">y</span>&lt;=<span class="num">1.0</span>) <span class="vr">hits</span>++;
+    }
+    <span class="kw">return</span> <span class="num">4.0</span>*<span class="vr">hits</span>/<span class="vr">n</span>;
+}
+<span class="cm">// ≈ 450ms | rand() ძ. ნელია</span>`,
 
-<span class="cTag">def</span> <span class="cFn">pi_fast</span>(n):
-    <span class="cCmt"># vectorized — CPU SIMD instructions</span>
-    <span class="cVar">k</span> = np.arange(<span class="cNum">0</span>, n, dtype=np.float64)
-    <span class="cVar">signs</span> = np.where(<span class="cVar">k</span> % <span class="cNum">2</span> == <span class="cNum">0</span>, <span class="cNum">1.0</span>, -<span class="cNum">1.0</span>)
-    <span class="cTag">return</span> <span class="cNum">4.0</span> * np.sum(<span class="cVar">signs</span> / (<span class="cNum">2</span>*<span class="cVar">k</span>+<span class="cNum">1</span>))
+`<span class="cm">/* ❌ Gauss-Legendre — C — loop + sqrt ყოველ iter */</span>
+<span class="pp">#include</span> <span class="str">&lt;math.h&gt;</span>
+<span class="tp">double</span> <span class="fn">pi_gl_slow</span>(<span class="tp">int</span> iter) {
+    <span class="tp">double</span> <span class="vr">a</span>=<span class="num">1.0</span>,<span class="vr">b</span>=<span class="num">1.0</span>/<span class="fn">sqrt</span>(<span class="num">2.0</span>),<span class="vr">t</span>=<span class="num">0.25</span>,<span class="vr">p</span>=<span class="num">1.0</span>;
+    <span class="kw">for</span>(<span class="tp">int</span> <span class="vr">i</span>=<span class="num">0</span>;<span class="vr">i</span>&lt;iter;<span class="vr">i</span>++) {
+        <span class="tp">double</span> <span class="vr">an</span>=(<span class="vr">a</span>+<span class="vr">b</span>)/<span class="num">2.0</span>;
+        <span class="vr">b</span>=<span class="fn">sqrt</span>(<span class="vr">a</span>*<span class="vr">b</span>);   <span class="cm">/* sqrt ყოველ iter! */</span>
+        <span class="vr">t</span>-=<span class="vr">p</span>*(<span class="vr">a</span>-<span class="vr">an</span>)*(<span class="vr">a</span>-<span class="vr">an</span>);
+        <span class="vr">a</span>=<span class="vr">an</span>; <span class="vr">p</span>*=<span class="num">2.0</span>;
+    }
+    <span class="kw">return</span> (<span class="vr">a</span>+<span class="vr">b</span>)*(<span class="vr">a</span>+<span class="vr">b</span>)/(<span class="num">4.0</span>*<span class="vr">t</span>);
+}
+<span class="cm">// ≈ 120ms for 100 iter | redundant sqrt</span>`,
 
-<span class="cCmt"># 10,000,000 iter ≈ 85ms | ენერგია: ✅ 33x სწრაფი</span>
-<span class="cFn">print</span>(pi_fast(<span class="cNum">10_000_000</span>))`},
+`<span class="cm">/* ❌ BBP — C — pow() ყოველ k-ზე */</span>
+<span class="pp">#include</span> <span class="str">&lt;math.h&gt;</span>
+<span class="tp">double</span> <span class="fn">pi_bbp_slow</span>(<span class="tp">int</span> n) {
+    <span class="tp">double</span> <span class="vr">pi</span>=<span class="num">0</span>;
+    <span class="kw">for</span>(<span class="tp">int</span> <span class="vr">k</span>=<span class="num">0</span>;<span class="vr">k</span>&lt;n;<span class="vr">k</span>++) {
+        <span class="tp">double</span> <span class="vr">p</span>=<span class="fn">pow</span>(<span class="num">16</span>,-<span class="vr">k</span>); <span class="cm">/* ძ. ძვირი */</span>
+        <span class="vr">pi</span>+=<span class="vr">p</span>*(<span class="num">4</span>/(<span class="num">8.0</span>*<span class="vr">k</span>+<span class="num">1</span>)
+               -<span class="num">2</span>/(<span class="num">8.0</span>*<span class="vr">k</span>+<span class="num">4</span>)
+               -<span class="num">1</span>/(<span class="num">8.0</span>*<span class="vr">k</span>+<span class="num">5</span>)
+               -<span class="num">1</span>/(<span class="num">8.0</span>*<span class="vr">k</span>+<span class="num">6</span>));
+    }
+    <span class="kw">return</span> <span class="vr">pi</span>;
+}
+<span class="cm">// ≈ 580ms | pow(16,-k) = killer</span>`
+    ],
+    fast:[
+`<span class="cm">/* ✅ Leibniz — C — ოპტ.: sign alternation, no pow */</span>
+<span class="tp">double</span> <span class="fn">pi_fast</span>(<span class="tp">int</span> n) {
+    <span class="tp">double</span> <span class="vr">pi</span>=<span class="num">0.0</span>, <span class="vr">d</span>=<span class="num">1.0</span>, <span class="vr">s</span>=<span class="num">1.0</span>;
+    <span class="kw">for</span>(<span class="tp">int</span> <span class="vr">i</span>=<span class="num">0</span>;<span class="vr">i</span>&lt;n;<span class="vr">i</span>++) {
+        <span class="vr">pi</span> += <span class="vr">s</span>/<span class="vr">d</span>;
+        <span class="vr">d</span> += <span class="num">2.0</span>;
+        <span class="vr">s</span> = -<span class="vr">s</span>; <span class="cm">/* sign flip — ძ. იაფი */</span>
+    }
+    <span class="kw">return</span> <span class="vr">pi</span>*<span class="num">4.0</span>;
+}
+<span class="cm">/* 10M iter ≈ 38ms | ✅ 25x სწრაფი!
+   ენერგია: 🟢🟢 — CPU time/iter მინ. */</span>`,
 
-js:{
-slow:`<span class="cCmt">// ❌ არაოპტიმიზებული — Math.pow ყოველ iter-ზე</span>
-<span class="cTag">function</span> <span class="cFn">piSlow</span>(n) {
-  <span class="cTag">let</span> <span class="cVar">pi</span> = <span class="cNum">0</span>;
-  <span class="cTag">for</span> (<span class="cTag">let</span> <span class="cVar">i</span> = <span class="cNum">0</span>; <span class="cVar">i</span> < n; <span class="cVar">i</span>++) {
-    <span class="cVar">pi</span> += Math.<span class="cFn">pow</span>(-<span class="cNum">1</span>, <span class="cVar">i</span>) / (<span class="cNum">2</span>*<span class="cVar">i</span> + <span class="cNum">1</span>);
-    <span class="cCmt">// Math.pow(-1,i) — ძვირი! branch mispredict</span>
+`<span class="cm">/* ✅ Machin — C — ოპტ.: loop unroll + precompute */</span>
+<span class="tp">double</span> <span class="fn">pi_machin_fast</span>(<span class="tp">int</span> n) {
+    <span class="tp">double</span> <span class="vr">s1</span>=<span class="num">0</span>,<span class="vr">s2</span>=<span class="num">0</span>,<span class="vr">sg</span>=<span class="num">1</span>;
+    <span class="tp">double</span> <span class="vr">p5</span>=<span class="num">0.2</span>, <span class="vr">p239</span>=<span class="num">1.0</span>/<span class="num">239.0</span>;
+    <span class="tp">double</span> <span class="vr">p5p</span>=<span class="vr">p5</span>,<span class="vr">p2p</span>=<span class="vr">p239</span>;
+    <span class="tp">double</span> <span class="vr">p5s</span>=<span class="vr">p5</span>*<span class="vr">p5</span>,<span class="vr">p2s</span>=<span class="vr">p239</span>*<span class="vr">p239</span>;
+    <span class="kw">for</span>(<span class="tp">int</span> <span class="vr">k</span>=<span class="num">0</span>;<span class="vr">k</span>&lt;n;<span class="vr">k</span>++) {
+        <span class="tp">double</span> <span class="vr">inv</span>=<span class="vr">sg</span>/(<span class="num">2</span>*<span class="vr">k</span>+<span class="num">1</span>);
+        <span class="vr">s1</span>+=<span class="vr">inv</span>*<span class="vr">p5p</span>; <span class="vr">s2</span>+=<span class="vr">inv</span>*<span class="vr">p2p</span>;
+        <span class="vr">p5p</span>*=<span class="vr">p5s</span>; <span class="vr">p2p</span>*=<span class="vr">p2s</span>; <span class="vr">sg</span>=-<span class="vr">sg</span>;
+    }
+    <span class="kw">return</span> <span class="num">4</span>*(<span class="num">4</span>*<span class="vr">s1</span>-<span class="vr">s2</span>);
+}
+<span class="cm">// ≈ 19ms | ✅ 95x სწრაფი!</span>`,
+
+`<span class="cm">/* ✅ Monte Carlo — C — xorshift PRNG, bit ops */</span>
+<span class="tp">unsigned</span> <span class="tp">int</span> <span class="vr">rng</span>=<span class="num">12345</span>;
+<span class="tp">double</span> <span class="fn">pi_monte_fast</span>(<span class="tp">int</span> n) {
+    <span class="tp">int</span> <span class="vr">h</span>=<span class="num">0</span>;
+    <span class="kw">for</span>(<span class="tp">int</span> <span class="vr">i</span>=<span class="num">0</span>;<span class="vr">i</span>&lt;n;<span class="vr">i</span>++) {
+        <span class="vr">rng</span>^=<span class="vr">rng</span>&lt;&lt;<span class="num">13</span>;<span class="vr">rng</span>^=<span class="vr">rng</span>&gt;&gt;<span class="num">17</span>;<span class="vr">rng</span>^=<span class="vr">rng</span>&lt;&lt;<span class="num">5</span>;
+        <span class="tp">double</span> <span class="vr">x</span>=(<span class="vr">rng</span>&amp;<span class="num">0xFFFF</span>)*(</span><span class="num">1.0</span>/<span class="num">65535</span>);
+        <span class="vr">rng</span>^=<span class="vr">rng</span>&lt;&lt;<span class="num">13</span>;<span class="vr">rng</span>^=<span class="vr">rng</span>&gt;&gt;<span class="num">17</span>;<span class="vr">rng</span>^=<span class="vr">rng</span>&lt;&lt;<span class="num">5</span>;
+        <span class="tp">double</span> <span class="vr">y</span>=(<span class="vr">rng</span>&amp;<span class="num">0xFFFF</span>)*(<span class="num">1.0</span>/<span class="num">65535</span>);
+        <span class="kw">if</span>(<span class="vr">x</span>*<span class="vr">x</span>+<span class="vr">y</span>*<span class="vr">y</span>&lt;=<span class="num">1.0</span>) <span class="vr">h</span>++;
+    }
+    <span class="kw">return</span> <span class="num">4.0</span>*<span class="vr">h</span>/<span class="vr">n</span>;
+}
+<span class="cm">// ≈ 42ms | ✅ 10x სწრაფი! xorshift ≫ rand()</span>`,
+
+`<span class="cm">/* ✅ Gauss-Legendre — C — მხოლოდ 10 iter საჭ. */</span>
+<span class="pp">#include</span> <span class="str">&lt;math.h&gt;</span>
+<span class="tp">double</span> <span class="fn">pi_gl_fast</span>() {
+    <span class="tp">double</span> <span class="vr">a</span>=<span class="num">1.0</span>, <span class="vr">b</span>=<span class="num">0.7071067811865476</span>;
+    <span class="tp">double</span> <span class="vr">t</span>=<span class="num">0.25</span>, <span class="vr">p</span>=<span class="num">1.0</span>, <span class="vr">an</span>;
+    <span class="kw">for</span>(<span class="tp">int</span> <span class="vr">i</span>=<span class="num">0</span>;<span class="vr">i</span>&lt;<span class="num">10</span>;<span class="vr">i</span>++) {
+        <span class="vr">an</span>=(<span class="vr">a</span>+<span class="vr">b</span>)*<span class="num">0.5</span>;
+        <span class="vr">b</span>=<span class="fn">sqrt</span>(<span class="vr">a</span>*<span class="vr">b</span>);
+        <span class="vr">t</span>-=<span class="vr">p</span>*(<span class="vr">a</span>-<span class="vr">an</span>)*(<span class="vr">a</span>-<span class="vr">an</span>);
+        <span class="vr">a</span>=<span class="vr">an</span>; <span class="vr">p</span>*=<span class="num">2.0</span>;
+    }
+    <span class="kw">return</span> (<span class="vr">a</span>+<span class="vr">b</span>)*(<span class="vr">a</span>+<span class="vr">b</span>)/(<span class="num">4.0</span>*<span class="vr">t</span>);
+}
+<span class="cm">/* მხოლოდ 10 iter = 30+ სიზუსტე!
+   ≈ 0.001ms | ✅ ელემენტური ეფ. */</span>`,
+
+`<span class="cm">/* ✅ BBP — C — iterative power, no pow() */</span>
+<span class="tp">double</span> <span class="fn">pi_bbp_fast</span>(<span class="tp">int</span> n) {
+    <span class="tp">double</span> <span class="vr">pi</span>=<span class="num">0</span>, <span class="vr">pow16</span>=<span class="num">1.0</span>;
+    <span class="kw">for</span>(<span class="tp">int</span> <span class="vr">k</span>=<span class="num">0</span>;<span class="vr">k</span>&lt;n;<span class="vr">k</span>++) {
+        <span class="vr">pi</span>+=<span class="vr">pow16</span>*(<span class="num">4.0</span>/(<span class="num">8</span>*<span class="vr">k</span>+<span class="num">1</span>)
+                   -<span class="num">2.0</span>/(<span class="num">8</span>*<span class="vr">k</span>+<span class="num">4</span>)
+                   -<span class="num">1.0</span>/(<span class="num">8</span>*<span class="vr">k</span>+<span class="num">5</span>)
+                   -<span class="num">1.0</span>/(<span class="num">8</span>*<span class="vr">k</span>+<span class="num">6</span>));
+        <span class="vr">pow16</span>*=<span class="num">0.0625</span>; <span class="cm">/* /16 — shift */</span>
+    }
+    <span class="kw">return</span> <span class="vr">pi</span>;
+}
+<span class="cm">// ≈ 58ms | ✅ 10x სწრაფი! *0.0625 vs pow()</span>`
+    ]
+  },
+  cpp:{
+    slow:[
+`<span class="cm">// ❌ Leibniz — C++ — std::pow, no optimization</span>
+<span class="pp">#include</span> <span class="str">&lt;cmath&gt;</span>
+<span class="tp">double</span> <span class="fn">piSlow</span>(<span class="tp">long long</span> n) {
+    <span class="tp">double</span> <span class="vr">pi</span> = <span class="num">0.0</span>;
+    <span class="kw">for</span>(<span class="tp">long long</span> <span class="vr">i</span>=<span class="num">0</span>;<span class="vr">i</span>&lt;n;<span class="vr">i</span>++) {
+        <span class="vr">pi</span> += std::<span class="fn">pow</span>(-<span class="num">1</span>,<span class="vr">i</span>)/(<span class="num">2.0</span>*<span class="vr">i</span>+<span class="num">1</span>);
+    }
+    <span class="kw">return</span> <span class="vr">pi</span>*<span class="num">4.0</span>;
+}
+<span class="cm">// 10M ≈ 920ms | 🔴 std::pow ძ. ძვ.</span>`,
+
+`<span class="cm">// ❌ Machin C++ — recomputed powers</span>
+<span class="pp">#include</span> <span class="str">&lt;cmath&gt;</span>
+<span class="tp">double</span> <span class="fn">piMachinSlow</span>(<span class="tp">int</span> n) {
+    <span class="tp">double</span> <span class="vr">s1</span>=<span class="num">0</span>,<span class="vr">s2</span>=<span class="num">0</span>;
+    <span class="kw">for</span>(<span class="tp">int</span> <span class="vr">k</span>=<span class="num">0</span>;<span class="vr">k</span>&lt;n;<span class="vr">k</span>++){
+        <span class="vr">s1</span>+=std::<span class="fn">pow</span>(-<span class="num">1</span>,<span class="vr">k</span>)
+           *std::<span class="fn">pow</span>(<span class="num">.2</span>,<span class="num">2</span>*<span class="vr">k</span>+<span class="num">1</span>)
+           /(<span class="num">2</span>*<span class="vr">k</span>+<span class="num">1</span>);
+        <span class="vr">s2</span>+=std::<span class="fn">pow</span>(-<span class="num">1</span>,<span class="vr">k</span>)
+           *std::<span class="fn">pow</span>(<span class="num">1.0</span>/<span class="num">239</span>,<span class="num">2</span>*<span class="vr">k</span>+<span class="num">1</span>)
+           /(<span class="num">2</span>*<span class="vr">k</span>+<span class="num">1</span>);
+    }
+    <span class="kw">return</span> <span class="num">4</span>*(<span class="num">4</span>*<span class="vr">s1</span>-<span class="vr">s2</span>);
+}
+<span class="cm">// ≈ 1750ms | სამი pow() ყოველ iter-ში!</span>`,
+
+`<span class="cm">// ❌ Monte Carlo C++ — rand(), no SIMD</span>
+<span class="pp">#include</span> <span class="str">&lt;cstdlib&gt;</span>
+<span class="tp">double</span> <span class="fn">piMonteSlow</span>(<span class="tp">int</span> n) {
+    <span class="tp">int</span> <span class="vr">hits</span>=<span class="num">0</span>;
+    <span class="kw">for</span>(<span class="tp">int</span> <span class="vr">i</span>=<span class="num">0</span>;<span class="vr">i</span>&lt;n;<span class="vr">i</span>++){
+        <span class="tp">double</span> <span class="vr">x</span>=(<span class="tp">double</span>)<span class="fn">rand</span>()/<span class="fn">RAND_MAX</span>;
+        <span class="tp">double</span> <span class="vr">y</span>=(<span class="tp">double</span>)<span class="fn">rand</span>()/<span class="fn">RAND_MAX</span>;
+        <span class="kw">if</span>(<span class="vr">x</span>*<span class="vr">x</span>+<span class="vr">y</span>*<span class="vr">y</span>&lt;=<span class="num">1.0</span>) <span class="vr">hits</span>++;
+    }
+    <span class="kw">return</span> <span class="num">4.0</span>*<span class="vr">hits</span>/<span class="vr">n</span>;
+}
+<span class="cm">// ≈ 430ms | rand() + serial only</span>`,
+
+`<span class="cm">// ❌ G-Legendre C++ — verbose, sqrt every iter</span>
+<span class="pp">#include</span> <span class="str">&lt;cmath&gt;</span>
+<span class="tp">double</span> <span class="fn">piGLSlow</span>(<span class="tp">int</span> n) {
+    <span class="tp">double</span> <span class="vr">a</span>=<span class="num">1</span>,<span class="vr">b</span>=<span class="num">1</span>/std::<span class="fn">sqrt</span>(<span class="num">2.0</span>);
+    <span class="tp">double</span> <span class="vr">t</span>=<span class="num">0.25</span>,<span class="vr">p</span>=<span class="num">1</span>;
+    <span class="kw">for</span>(<span class="tp">int</span> <span class="vr">i</span>=<span class="num">0</span>;<span class="vr">i</span>&lt;n;<span class="vr">i</span>++){
+        <span class="tp">double</span> <span class="vr">an</span>=(<span class="vr">a</span>+<span class="vr">b</span>)/<span class="num">2</span>;
+        <span class="vr">b</span>=std::<span class="fn">sqrt</span>(<span class="vr">a</span>*<span class="vr">b</span>); <span class="cm">// expensive</span>
+        <span class="vr">t</span>-=<span class="vr">p</span>*(<span class="vr">a</span>-<span class="vr">an</span>)*(<span class="vr">a</span>-<span class="vr">an</span>);
+        <span class="vr">a</span>=<span class="vr">an</span>;<span class="vr">p</span>*=<span class="num">2</span>;
+    }
+    <span class="kw">return</span> (<span class="vr">a</span>+<span class="vr">b</span>)*(<span class="vr">a</span>+<span class="vr">b</span>)/(<span class="num">4</span>*<span class="vr">t</span>);
+}`,
+
+`<span class="cm">// ❌ BBP C++ — std::pow ყოველ k</span>
+<span class="pp">#include</span> <span class="str">&lt;cmath&gt;</span>
+<span class="tp">double</span> <span class="fn">piBBPslow</span>(<span class="tp">int</span> n){
+    <span class="tp">double</span> <span class="vr">pi</span>=<span class="num">0</span>;
+    <span class="kw">for</span>(<span class="tp">int</span> <span class="vr">k</span>=<span class="num">0</span>;<span class="vr">k</span>&lt;n;<span class="vr">k</span>++){
+        <span class="vr">pi</span>+=std::<span class="fn">pow</span>(<span class="num">1.0</span>/<span class="num">16</span>,<span class="vr">k</span>)
+           *(<span class="num">4.0</span>/(<span class="num">8</span>*<span class="vr">k</span>+<span class="num">1</span>)
+            -<span class="num">2.0</span>/(<span class="num">8</span>*<span class="vr">k</span>+<span class="num">4</span>)
+            -<span class="num">1.0</span>/(<span class="num">8</span>*<span class="vr">k</span>+<span class="num">5</span>)
+            -<span class="num">1.0</span>/(<span class="num">8</span>*<span class="vr">k</span>+<span class="num">6</span>));
+    }
+    <span class="kw">return</span> <span class="vr">pi</span>;
+}
+<span class="cm">// ≈ 560ms | std::pow kills perf</span>`
+    ],
+    fast:[
+`<span class="cm">// ✅ Leibniz C++ — #pragma O3 + AVX2, unroll</span>
+<span class="pp">#pragma</span> GCC optimize(<span class="str">"O3,unroll-loops"</span>)
+<span class="pp">#pragma</span> GCC target(<span class="str">"avx2"</span>)
+<span class="tp">double</span> <span class="fn">piFast</span>(<span class="tp">long long</span> n) {
+    <span class="tp">double</span> <span class="vr">pi</span>=<span class="num">0</span>,<span class="vr">d</span>=<span class="num">1</span>,<span class="vr">s</span>=<span class="num">1</span>;
+    <span class="kw">for</span>(<span class="tp">long long</span> <span class="vr">i</span>=<span class="num">0</span>;<span class="vr">i</span>&lt;n;<span class="vr">i</span>++){
+        <span class="vr">pi</span>+=<span class="vr">s</span>/<span class="vr">d</span>; <span class="vr">d</span>+=<span class="num">2</span>; <span class="vr">s</span>=-<span class="vr">s</span>;
+    }
+    <span class="kw">return</span> <span class="vr">pi</span>*<span class="num">4</span>;
+}
+<span class="cm">// 10M ≈ 29ms | ✅ 32x სწრაფი! SIMD auto-vec</span>`,
+
+`<span class="cm">// ✅ Machin C++ — precomputed, Horner scheme</span>
+<span class="pp">#pragma</span> GCC optimize(<span class="str">"O3"</span>)
+<span class="tp">double</span> <span class="fn">piMachinFast</span>(<span class="tp">int</span> n){
+    <span class="kw">constexpr</span> <span class="tp">double</span> <span class="vr">r5</span>=<span class="num">0.04</span>,<span class="vr">r2</span>=<span class="num">1.0</span>/(<span class="num">239.0</span>*<span class="num">239.0</span>);
+    <span class="tp">double</span> <span class="vr">s1</span>=<span class="num">0</span>,<span class="vr">s2</span>=<span class="num">0</span>,<span class="vr">sg</span>=<span class="num">1</span>;
+    <span class="tp">double</span> <span class="vr">p5</span>=<span class="num">0.2</span>,<span class="vr">p2</span>=<span class="num">1.0</span>/<span class="num">239.0</span>;
+    <span class="kw">for</span>(<span class="tp">int</span> <span class="vr">k</span>=<span class="num">0</span>;<span class="vr">k</span>&lt;n;<span class="vr">k</span>++){
+        <span class="tp">double</span> <span class="vr">inv</span>=<span class="vr">sg</span>/(<span class="num">2</span>*<span class="vr">k</span>+<span class="num">1</span>);
+        <span class="vr">s1</span>+=<span class="vr">inv</span>*<span class="vr">p5</span>; <span class="vr">s2</span>+=<span class="vr">inv</span>*<span class="vr">p2</span>;
+        <span class="vr">p5</span>*=<span class="vr">r5</span>; <span class="vr">p2</span>*=<span class="vr">r2</span>; <span class="vr">sg</span>=-<span class="vr">sg</span>;
+    }
+    <span class="kw">return</span> <span class="num">4</span>*(<span class="num">4</span>*<span class="vr">s1</span>-<span class="vr">s2</span>);
+}
+<span class="cm">// ≈ 14ms | ✅ constexpr + no pow()</span>`,
+
+`<span class="cm">// ✅ Monte Carlo C++ — MT19937 + parallel</span>
+<span class="pp">#include</span> <span class="str">&lt;random&gt;</span>
+<span class="pp">#include</span> <span class="str">&lt;execution&gt;</span>
+<span class="tp">double</span> <span class="fn">piMonteFast</span>(<span class="tp">int</span> n){
+    std::mt19937_64 <span class="vr">rng</span>(<span class="num">42</span>);
+    std::uniform_real_distribution&lt;<span class="tp">double</span>&gt; <span class="vr">d</span>(<span class="num">0</span>,<span class="num">1</span>);
+    std::<span class="fn">atomic</span>&lt;<span class="tp">int</span>&gt; <span class="vr">h</span>{<span class="num">0</span>};
+    <span class="cm">// C++17 parallel execution</span>
+    std::<span class="fn">for_each</span>(std::execution::par,
+        <span class="fn">iota_iter</span>(<span class="num">0</span>),<span class="fn">iota_iter</span>(n),
+        [&](<span class="tp">int</span>){
+            <span class="tp">double</span> <span class="vr">x</span>=<span class="fn">d</span>(<span class="vr">rng</span>),<span class="vr">y</span>=<span class="fn">d</span>(<span class="vr">rng</span>);
+            <span class="kw">if</span>(<span class="vr">x</span>*<span class="vr">x</span>+<span class="vr">y</span>*<span class="vr">y</span>&lt;=<span class="num">1</span>) <span class="vr">h</span>++;
+        });
+    <span class="kw">return</span> <span class="num">4.0</span>*<span class="vr">h</span>/<span class="vr">n</span>;
+}
+<span class="cm">// ≈ 45ms → ~8ms parallel | ✅ 54x!</span>`,
+
+`<span class="cm">// ✅ Gauss-Legendre C++ — template + consteval</span>
+<span class="pp">#include</span> <span class="str">&lt;cmath&gt;</span>
+<span class="kw">template</span>&lt;<span class="tp">int</span> ITER=<span class="num">12</span>&gt;
+<span class="kw">constexpr</span> <span class="tp">double</span> <span class="fn">piGL</span>() {
+    <span class="tp">double</span> <span class="vr">a</span>=<span class="num">1</span>,<span class="vr">b</span>=<span class="num">0.70710678118655</span>;
+    <span class="tp">double</span> <span class="vr">t</span>=<span class="num">0.25</span>,<span class="vr">p</span>=<span class="num">1</span>,<span class="vr">an</span>;
+    <span class="kw">for</span>(<span class="tp">int</span> <span class="vr">i</span>=<span class="num">0</span>;<span class="vr">i</span>&lt;ITER;<span class="vr">i</span>++){
+        <span class="vr">an</span>=(<span class="vr">a</span>+<span class="vr">b</span>)*<span class="num">.5</span>;
+        <span class="vr">b</span>=std::<span class="fn">sqrt</span>(<span class="vr">a</span>*<span class="vr">b</span>);
+        <span class="vr">t</span>-=<span class="vr">p</span>*(<span class="vr">a</span>-<span class="vr">an</span>)*(<span class="vr">a</span>-<span class="vr">an</span>);
+        <span class="vr">a</span>=<span class="vr">an</span>;<span class="vr">p</span>*=<span class="num">2</span>;
+    }
+    <span class="kw">return</span> (<span class="vr">a</span>+<span class="vr">b</span>)*(<span class="vr">a</span>+<span class="vr">b</span>)/(<span class="num">4</span>*<span class="vr">t</span>);
+}
+<span class="cm">// compile-time! ≈ 0ms runtime | ✅ perfect</span>`,
+
+`<span class="cm">// ✅ BBP C++ — multiply by 0.0625, vectorized</span>
+<span class="pp">#pragma</span> GCC optimize(<span class="str">"O3,unroll-loops"</span>)
+<span class="pp">#pragma</span> GCC target(<span class="str">"avx2,fma"</span>)
+<span class="tp">double</span> <span class="fn">piBBPfast</span>(<span class="tp">int</span> n){
+    <span class="tp">double</span> <span class="vr">pi</span>=<span class="num">0</span>,<span class="vr">pw</span>=<span class="num">1.0</span>;
+    <span class="kw">for</span>(<span class="tp">int</span> <span class="vr">k</span>=<span class="num">0</span>;<span class="vr">k</span>&lt;n;<span class="vr">k</span>++){
+        <span class="vr">pi</span>+=<span class="vr">pw</span>*(<span class="num">4.0</span>/(<span class="num">8</span>*<span class="vr">k</span>+<span class="num">1</span>)
+               -<span class="num">2.0</span>/(<span class="num">8</span>*<span class="vr">k</span>+<span class="num">4</span>)
+               -<span class="num">1.0</span>/(<span class="num">8</span>*<span class="vr">k</span>+<span class="num">5</span>)
+               -<span class="num">1.0</span>/(<span class="num">8</span>*<span class="vr">k</span>+<span class="num">6</span>));
+        <span class="vr">pw</span>*=<span class="num">0.0625</span>; <span class="cm">// FMA-friendly</span>
+    }
+    <span class="kw">return</span> <span class="vr">pi</span>;
+}
+<span class="cm">// ≈ 3ms | ✅ FMA + AVX2 auto-vectorize</span>`
+    ]
+  },
+  cs:{
+    slow:[
+`<span class="cm">// ❌ Leibniz C# — Math.Pow, no Span/SIMD</span>
+<span class="kw">using</span> System;
+<span class="kw">double</span> <span class="fn">PiSlow</span>(<span class="tp">int</span> n) {
+    <span class="tp">double</span> <span class="vr">pi</span> = <span class="num">0</span>;
+    <span class="kw">for</span>(<span class="tp">int</span> <span class="vr">i</span>=<span class="num">0</span>;<span class="vr">i</span>&lt;n;<span class="vr">i</span>++){
+        <span class="vr">pi</span> += Math.<span class="fn">Pow</span>(-<span class="num">1</span>,<span class="vr">i</span>)/(<span class="num">2.0</span>*<span class="vr">i</span>+<span class="num">1</span>);
+        <span class="cm">// Math.Pow: heap alloc path!</span>
+    }
+    <span class="kw">return</span> <span class="vr">pi</span>*<span class="num">4</span>;
+}
+<span class="cm">// 10M ≈ 1750ms | 🔴 boxed doubles!</span>`,
+
+`<span class="cm">// ❌ Machin C# — LINQ sum, allocation</span>
+<span class="kw">using</span> System.Linq;
+<span class="tp">double</span> <span class="fn">PiMachinSlow</span>(<span class="tp">int</span> n) {
+    <span class="kw">var</span> <span class="vr">s1</span>=Enumerable.<span class="fn">Range</span>(<span class="num">0</span>,n).<span class="fn">Sum</span>(k=>
+        Math.<span class="fn">Pow</span>(-<span class="num">1</span>,k)*Math.<span class="fn">Pow</span>(<span class="num">.2</span>,<span class="num">2</span>*k+<span class="num">1</span>)/(<span class="num">2</span>*k+<span class="num">1</span>));
+    <span class="kw">var</span> <span class="vr">s2</span>=Enumerable.<span class="fn">Range</span>(<span class="num">0</span>,n).<span class="fn">Sum</span>(k=>
+        Math.<span class="fn">Pow</span>(-<span class="num">1</span>,k)*Math.<span class="fn">Pow</span>(<span class="num">1.0</span>/<span class="num">239</span>,<span class="num">2</span>*k+<span class="num">1</span>)/(<span class="num">2</span>*k+<span class="num">1</span>));
+    <span class="kw">return</span> <span class="num">4</span>*(<span class="num">4</span>*<span class="vr">s1</span>-<span class="vr">s2</span>);
+}
+<span class="cm">// LINQ = GC pressure! ≈ 4000ms</span>`,
+
+`<span class="cm">// ❌ Monte Carlo C# — Random + boxing</span>
+<span class="kw">var</span> <span class="vr">rnd</span> = <span class="kw">new</span> Random();
+<span class="tp">double</span> <span class="fn">PiMonteSlow</span>(<span class="tp">int</span> n){
+    <span class="tp">int</span> <span class="vr">hits</span>=<span class="num">0</span>;
+    <span class="kw">for</span>(<span class="tp">int</span> <span class="vr">i</span>=<span class="num">0</span>;<span class="vr">i</span>&lt;n;<span class="vr">i</span>++){
+        <span class="tp">double</span> <span class="vr">x</span>=<span class="vr">rnd</span>.<span class="fn">NextDouble</span>();
+        <span class="tp">double</span> <span class="vr">y</span>=<span class="vr">rnd</span>.<span class="fn">NextDouble</span>();
+        <span class="kw">if</span>(<span class="vr">x</span>*<span class="vr">x</span>+<span class="vr">y</span>*<span class="vr">y</span>&lt;=<span class="num">1</span>) <span class="vr">hits</span>++;
+    }
+    <span class="kw">return</span> <span class="num">4.0</span>*<span class="vr">hits</span>/<span class="vr">n</span>;
+}
+<span class="cm">// Random() = thread-unsafe + slow ≈ 600ms</span>`,
+
+`<span class="cm">// ❌ G-Legendre C# — virtual dispatch overhead</span>
+<span class="kw">using</span> System;
+<span class="tp">double</span> <span class="fn">PiGLSlow</span>(<span class="tp">int</span> n){
+    <span class="tp">double</span> <span class="vr">a</span>=<span class="num">1</span>,<span class="vr">b</span>=<span class="num">1</span>/Math.<span class="fn">Sqrt</span>(<span class="num">2.0</span>);
+    <span class="tp">double</span> <span class="vr">t</span>=<span class="num">0.25</span>,<span class="vr">p</span>=<span class="num">1</span>;
+    <span class="kw">for</span>(<span class="tp">int</span> <span class="vr">i</span>=<span class="num">0</span>;<span class="vr">i</span>&lt;n;<span class="vr">i</span>++){
+        <span class="tp">double</span> <span class="vr">an</span>=(<span class="vr">a</span>+<span class="vr">b</span>)/<span class="num">2</span>;
+        <span class="vr">b</span>=Math.<span class="fn">Sqrt</span>(<span class="vr">a</span>*<span class="vr">b</span>);
+        <span class="vr">t</span>-=<span class="vr">p</span>*(<span class="vr">a</span>-<span class="vr">an</span>)*(<span class="vr">a</span>-<span class="vr">an</span>);
+        <span class="vr">a</span>=<span class="vr">an</span>;<span class="vr">p</span>*=<span class="num">2</span>;
+    }
+    <span class="kw">return</span> (<span class="vr">a</span>+<span class="vr">b</span>)*(<span class="vr">a</span>+<span class="vr">b</span>)/(<span class="num">4</span>*<span class="vr">t</span>);
+}
+<span class="cm">// no [MethodImpl] = JIT not inlined ≈ 90ms</span>`,
+
+`<span class="cm">// ❌ BBP C# — Math.Pow ყოველ k-ზე</span>
+<span class="tp">double</span> <span class="fn">PiBBPSlow</span>(<span class="tp">int</span> n){
+    <span class="tp">double</span> <span class="vr">pi</span>=<span class="num">0</span>;
+    <span class="kw">for</span>(<span class="tp">int</span> <span class="vr">k</span>=<span class="num">0</span>;<span class="vr">k</span>&lt;n;<span class="vr">k</span>++){
+        <span class="vr">pi</span>+=Math.<span class="fn">Pow</span>(<span class="num">1.0</span>/<span class="num">16</span>,<span class="vr">k</span>)*(
+            <span class="num">4.0</span>/(<span class="num">8</span>*<span class="vr">k</span>+<span class="num">1</span>)-<span class="num">2.0</span>/(<span class="num">8</span>*<span class="vr">k</span>+<span class="num">4</span>)
+            -<span class="num">1.0</span>/(<span class="num">8</span>*<span class="vr">k</span>+<span class="num">5</span>)-<span class="num">1.0</span>/(<span class="num">8</span>*<span class="vr">k</span>+<span class="num">6</span>));
+    }
+    <span class="kw">return</span> <span class="vr">pi</span>;
+}
+<span class="cm">// ≈ 540ms | Math.Pow() == overhead</span>`
+    ],
+    fast:[
+`<span class="cm">// ✅ Leibniz C# — unsafe + Span&lt;T&gt; + AggressiveInlining</span>
+<span class="kw">using</span> System.Runtime.CompilerServices;
+[MethodImpl(MethodImplOptions.AggressiveInlining)]
+<span class="kw">static</span> <span class="tp">double</span> <span class="fn">PiFast</span>(<span class="tp">int</span> n){
+    <span class="tp">double</span> <span class="vr">pi</span>=<span class="num">0</span>,<span class="vr">d</span>=<span class="num">1</span>,<span class="vr">s</span>=<span class="num">1</span>;
+    <span class="kw">for</span>(<span class="tp">int</span> <span class="vr">i</span>=<span class="num">0</span>;<span class="vr">i</span>&lt;n;<span class="vr">i</span>++){
+        <span class="vr">pi</span>+=<span class="vr">s</span>/<span class="vr">d</span>;<span class="vr">d</span>+=<span class="num">2</span>;<span class="vr">s</span>=-<span class="vr">s</span>;
+        <span class="cm">// JIT: register-only, no alloc</span>
+    }
+    <span class="kw">return</span> <span class="vr">pi</span>*<span class="num">4</span>;
+}
+<span class="cm">// 10M ≈ 175ms | ✅ 10x სწრაფი JIT-ზე!</span>`,
+
+`<span class="cm">// ✅ Machin C# — no LINQ, precomputed constants</span>
+[MethodImpl(MethodImplOptions.AggressiveOptimization)]
+<span class="kw">static</span> <span class="tp">double</span> <span class="fn">PiMachinFast</span>(<span class="tp">int</span> n){
+    <span class="kw">const</span> <span class="tp">double</span> <span class="vr">r5</span>=<span class="num">0.04</span>, <span class="vr">r2</span>=<span class="num">1.0</span>/(<span class="num">239.0</span>*<span class="num">239.0</span>);
+    <span class="tp">double</span> <span class="vr">s1</span>=<span class="num">0</span>,<span class="vr">s2</span>=<span class="num">0</span>,<span class="vr">sg</span>=<span class="num">1</span>;
+    <span class="tp">double</span> <span class="vr">p5</span>=<span class="num">0.2</span>,<span class="vr">p2</span>=<span class="num">1.0</span>/<span class="num">239.0</span>;
+    <span class="kw">for</span>(<span class="tp">int</span> <span class="vr">k</span>=<span class="num">0</span>;<span class="vr">k</span>&lt;n;<span class="vr">k</span>++){
+        <span class="tp">double</span> <span class="vr">inv</span>=<span class="vr">sg</span>/(<span class="num">2</span>*<span class="vr">k</span>+<span class="num">1</span>);
+        <span class="vr">s1</span>+=<span class="vr">inv</span>*<span class="vr">p5</span>;<span class="vr">s2</span>+=<span class="vr">inv</span>*<span class="vr">p2</span>;
+        <span class="vr">p5</span>*=<span class="vr">r5</span>;<span class="vr">p2</span>*=<span class="vr">r2</span>;<span class="vr">sg</span>=-<span class="vr">sg</span>;
+    }
+    <span class="kw">return</span> <span class="num">4</span>*(<span class="num">4</span>*<span class="vr">s1</span>-<span class="vr">s2</span>);
+}
+<span class="cm">// ≈ 38ms | ✅ no GC, const folding</span>`,
+
+`<span class="cm">// ✅ Monte Carlo C# — Parallel.For + Random.Shared</span>
+<span class="kw">using</span> System.Threading;
+<span class="kw">static</span> <span class="tp">double</span> <span class="fn">PiMonteFast</span>(<span class="tp">int</span> n){
+    <span class="tp">long</span> <span class="vr">hits</span>=<span class="num">0</span>;
+    Parallel.<span class="fn">For</span>(<span class="num">0</span>,n,()=><span class="num">0</span>,
+        (i,_,local)=>{
+            <span class="kw">var</span> <span class="vr">rng</span>=Random.Shared;
+            <span class="tp">double</span> <span class="vr">x</span>=<span class="vr">rng</span>.<span class="fn">NextDouble</span>();
+            <span class="tp">double</span> <span class="vr">y</span>=<span class="vr">rng</span>.<span class="fn">NextDouble</span>();
+            <span class="kw">return</span> <span class="vr">x</span>*<span class="vr">x</span>+<span class="vr">y</span>*<span class="vr">y</span>&lt;=<span class="num">1</span>?local+<span class="num">1</span>:local;
+        },
+        l=>Interlocked.<span class="fn">Add</span>(<span class="kw">ref</span> <span class="vr">hits</span>,l));
+    <span class="kw">return</span> <span class="num">4.0</span>*<span class="vr">hits</span>/<span class="vr">n</span>;
+}
+<span class="cm">// ≈ 55ms | ✅ thread-local + Parallel!</span>`,
+
+`<span class="cm">// ✅ G-Legendre C# — AggressiveOptimization</span>
+[MethodImpl(MethodImplOptions.AggressiveOptimization)]
+<span class="kw">static</span> <span class="tp">double</span> <span class="fn">PiGLFast</span>(){
+    <span class="tp">double</span> <span class="vr">a</span>=<span class="num">1</span>,<span class="vr">b</span>=<span class="num">0.70710678118655</span>;
+    <span class="tp">double</span> <span class="vr">t</span>=<span class="num">0.25</span>,<span class="vr">p</span>=<span class="num">1</span>,<span class="vr">an</span>;
+    <span class="kw">for</span>(<span class="tp">int</span> <span class="vr">i</span>=<span class="num">0</span>;<span class="vr">i</span>&lt;<span class="num">12</span>;<span class="vr">i</span>++){
+        <span class="vr">an</span>=(<span class="vr">a</span>+<span class="vr">b</span>)*<span class="num">.5</span>;
+        <span class="vr">b</span>=Math.<span class="fn">Sqrt</span>(<span class="vr">a</span>*<span class="vr">b</span>);
+        <span class="vr">t</span>-=<span class="vr">p</span>*(<span class="vr">a</span>-<span class="vr">an</span>)*(<span class="vr">a</span>-<span class="vr">an</span>);
+        <span class="vr">a</span>=<span class="vr">an</span>;<span class="vr">p</span>*=<span class="num">2</span>;
+    }
+    <span class="kw">return</span> (<span class="vr">a</span>+<span class="vr">b</span>)*(<span class="vr">a</span>+<span class="vr">b</span>)/(<span class="num">4</span>*<span class="vr">t</span>);
+}
+<span class="cm">// ≈ 0.5ms | ✅ 12 iter = full precision!</span>`,
+
+`<span class="cm">// ✅ BBP C# — incremental multiply, SIMD hint</span>
+[MethodImpl(MethodImplOptions.AggressiveOptimization)]
+<span class="kw">static</span> <span class="tp">double</span> <span class="fn">PiBBPFast</span>(<span class="tp">int</span> n){
+    <span class="tp">double</span> <span class="vr">pi</span>=<span class="num">0</span>,<span class="vr">pw</span>=<span class="num">1.0</span>;
+    <span class="kw">const</span> <span class="tp">double</span> <span class="vr">inv16</span>=<span class="num">0.0625</span>;
+    <span class="kw">for</span>(<span class="tp">int</span> <span class="vr">k</span>=<span class="num">0</span>;<span class="vr">k</span>&lt;n;<span class="vr">k</span>++){
+        <span class="vr">pi</span>+=<span class="vr">pw</span>*(
+            <span class="num">4.0</span>/(<span class="num">8</span>*<span class="vr">k</span>+<span class="num">1</span>)-<span class="num">2.0</span>/(<span class="num">8</span>*<span class="vr">k</span>+<span class="num">4</span>)
+            -<span class="num">1.0</span>/(<span class="num">8</span>*<span class="vr">k</span>+<span class="num">5</span>)-<span class="num">1.0</span>/(<span class="num">8</span>*<span class="vr">k</span>+<span class="num">6</span>));
+        <span class="vr">pw</span>*=<span class="vr">inv16</span>;
+    }
+    <span class="kw">return</span> <span class="vr">pi</span>;
+}
+<span class="cm">// ≈ 4ms | ✅ const mul + JIT vectorize</span>`
+    ]
   }
-  <span class="cTag">return</span> <span class="cVar">pi</span> * <span class="cNum">4</span>;
-}
-<span class="cCmt">// 10M iter ≈ 180ms | ❌ inefficient</span>`,
-
-fast:`<span class="cCmt">// ✅ ოპტიმიზებული — bit trick + unrolled</span>
-<span class="cTag">function</span> <span class="cFn">piFast</span>(n) {
-  <span class="cTag">let</span> <span class="cVar">pi</span> = <span class="cNum">0</span>, <span class="cVar">d</span> = <span class="cNum">1</span>;
-  <span class="cTag">for</span> (<span class="cTag">let</span> <span class="cVar">i</span> = <span class="cNum">0</span>; <span class="cVar">i</span> < n; <span class="cVar">i</span> += <span class="cNum">2</span>) {
-    <span class="cVar">pi</span> += <span class="cNum">1</span>/<span class="cVar">d</span> - <span class="cNum">1</span>/(<span class="cVar">d</span>+<span class="cNum">2</span>); <span class="cVar">d</span> += <span class="cNum">4</span>;
-    <span class="cCmt">// loop unrolling: 2 iter per step</span>
-    <span class="cCmt">// no Math.pow — direct arithmetic only</span>
-  }
-  <span class="cTag">return</span> <span class="cVar">pi</span> * <span class="cNum">4</span>;
-}
-<span class="cCmt">// 10M iter ≈ 22ms | ✅ 8x სწრაფი!</span>`},
-
-rust:{
-slow:`<span class="cCmt">// ❌ ნაივური — f64 pow, no optimization hints</span>
-<span class="cTag">fn</span> <span class="cFn">pi_slow</span>(n: <span class="cType">u64</span>) -> <span class="cType">f64</span> {
-    <span class="cTag">let mut</span> <span class="cVar">pi</span> = <span class="cNum">0.0f64</span>;
-    <span class="cTag">for</span> <span class="cVar">i</span> <span class="cTag">in</span> <span class="cNum">0</span>..n {
-        <span class="cVar">pi</span> += (<span class="cVar">i</span> <span class="cTag">as</span> <span class="cType">f64</span>).<span class="cFn">powf</span>(<span class="cNum">-1.0</span>) <span class="cCmt">/* wrong, demo */</span>
-             / (<span class="cNum">2.0</span> * <span class="cVar">i</span> <span class="cTag">as</span> <span class="cType">f64</span> + <span class="cNum">1.0</span>);
-    }
-    <span class="cVar">pi</span> * <span class="cNum">4.0</span>
-}
-<span class="cCmt">// ~12ms | პოტენციალი გამოუყენებელია</span>`,
-
-fast:`<span class="cCmt">// ✅ SIMD + rayon parallel — max performance</span>
-<span class="cTag">use</span> rayon::prelude::*;
-
-<span class="cTag">fn</span> <span class="cFn">pi_fast</span>(n: <span class="cType">u64</span>) -> <span class="cType">f64</span> {
-    (<span class="cNum">0</span>..n)
-        .<span class="cFn">into_par_iter</span>() <span class="cCmt">// parallel threads!</span>
-        .<span class="cFn">map</span>(|<span class="cVar">i</span>| {
-            <span class="cTag">let</span> <span class="cVar">sign</span> = <span class="cTag">if</span> <span class="cVar">i</span> % <span class="cNum">2</span> == <span class="cNum">0</span> { <span class="cNum">1.0</span> } <span class="cTag">else</span> { -<span class="cNum">1.0</span> };
-            <span class="cVar">sign</span> / (<span class="cNum">2.0</span> * <span class="cVar">i</span> <span class="cTag">as</span> <span class="cType">f64</span> + <span class="cNum">1.0</span>)
-        })
-        .<span class="cFn">sum::<span class="cType">&lt;f64&gt;</span></span>() * <span class="cNum">4.0</span>
-}
-<span class="cCmt">// ~0.8ms | ✅ 15x+ სწრაფი! CPU-ს სრულად იყენებს</span>`},
-
-cpp:{
-slow:`<span class="cCmt">// ❌ unoptimized — pow() call per iter</span>
-<span class="cTag">#include</span> <span class="cStr">&lt;cmath&gt;</span>
-<span class="cType">double</span> <span class="cFn">piSlow</span>(<span class="cType">int</span> n) {
-    <span class="cType">double</span> <span class="cVar">pi</span> = <span class="cNum">0.0</span>;
-    <span class="cTag">for</span> (<span class="cType">int</span> <span class="cVar">i</span>=<span class="cNum">0</span>; <span class="cVar">i</span><n; <span class="cVar">i</span>++) {
-        <span class="cVar">pi</span> += std::<span class="cFn">pow</span>(-<span class="cNum">1</span>,<span class="cVar">i</span>) / (<span class="cNum">2</span>*<span class="cVar">i</span>+<span class="cNum">1</span>);
-        <span class="cCmt">// pow() = very expensive libm call</span>
-    }
-    <span class="cTag">return</span> <span class="cVar">pi</span> * <span class="cNum">4</span>;
-}
-<span class="cCmt">// 10M iter ≈ 95ms without -O2</span>`,
-
-fast:`<span class="cCmt">// ✅ O3 + OpenMP parallelism</span>
-<span class="cTag">#pragma</span> GCC optimize(<span class="cStr">"O3,unroll-loops"</span>)
-<span class="cTag">#pragma</span> GCC target(<span class="cStr">"avx2"</span>)  <span class="cCmt">// SIMD!</span>
-<span class="cType">double</span> <span class="cFn">piFast</span>(<span class="cTag">long long</span> n) {
-    <span class="cType">double</span> <span class="cVar">pi</span> = <span class="cNum">0.0</span>;
-    <span class="cTag">#pragma</span> omp parallel <span class="cTag">for</span> reduction(+:<span class="cVar">pi</span>)
-    <span class="cTag">for</span> (<span class="cTag">long long</span> <span class="cVar">i</span>=<span class="cNum">0</span>; <span class="cVar">i</span><n; <span class="cVar">i</span>++) {
-        <span class="cVar">pi</span> += (<span class="cVar">i</span>%<span class="cNum">2</span>?-<span class="cNum">1.0</span>:<span class="cNum">1.0</span>) / (<span class="cNum">2</span>*<span class="cVar">i</span>+<span class="cNum">1</span>);
-    }
-    <span class="cTag">return</span> <span class="cVar">pi</span> * <span class="cNum">4</span>;
-}
-<span class="cCmt">// ≈ 3ms | ✅ AVX2 SIMD + OpenMP threads</span>`}
 };
 
-let activeLang='python';
-function switchLang(lang){
-  activeLang=lang;
-  document.querySelectorAll('.langTab').forEach((t,i)=>{const ls=['python','js','rust','cpp'];t.classList.toggle('active',ls[i]===lang);});
-  document.getElementById('slowCode').innerHTML=codes[lang].slow;
-  document.getElementById('fastCode').innerHTML=codes[lang].fast;
-  if(sOn&&AC)tone(500,.06,'sine',.04);
+let curLang='c', curEx=0;
+function setLang(l){
+  curLang=l;
+  document.querySelectorAll('.langBtn').forEach((b,i)=>{b.classList.toggle('on',['c','cpp','cs'][i]===l);});
+  renderCode();
+  if(sOn&&AC)tone(500+Math.random()*180,.06,'sine',.035);
 }
-switchLang('python');
-
-// ═══════════════════════════════════════════
-// BENCHMARK BARS
-// ═══════════════════════════════════════════
-const benchData=[
-  {lang:'🦀 Rust (rayon)',slow:12,fast:0.8,unit:'ms'},
-  {lang:'⚙️ C++ (AVX2+OMP)',slow:95,fast:3,unit:'ms'},
-  {lang:'🔵 Swift',slow:45,fast:5,unit:'ms'},
-  {lang:'🔷 Go',slow:60,fast:8,unit:'ms'},
-  {lang:'☕ Java (JVM)',slow:110,fast:18,unit:'ms'},
-  {lang:'🌐 JS (V8)',slow:180,fast:22,unit:'ms'},
-  {lang:'🐍 Python (NumPy)',slow:2800,fast:85,unit:'ms'},
-  {lang:'💎 Ruby',slow:3500,fast:220,unit:'ms'},
-];
-let barsRendered=false;
-function renderBenchBars(){
-  if(barsRendered)return;barsRendered=true;
-  const cont=document.getElementById('benchBars');
-  const maxSlow=Math.max(...benchData.map(d=>d.slow));
-  benchData.forEach(d=>{
-    const speedup=Math.round(d.slow/d.fast*10)/10;
-    cont.innerHTML+=`
-      <div class="benchBar">
-        <div class="benchBarLabel"><span>${d.lang}</span><span style="color:var(--muted)">✅ ${d.fast}ms vs ❌ ${d.slow}ms · <strong style="color:var(--gn)">${speedup}x</strong> სწრაფი</span></div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">
-          <div class="benchBarTrack"><div class="benchBarFill fillSlow" data-w="${(d.slow/maxSlow*100).toFixed(1)}%"></div></div>
-          <div class="benchBarTrack"><div class="benchBarFill fillFast" data-w="${(d.fast/maxSlow*100).toFixed(1)}%"></div></div>
-        </div>
-      </div>`;
-  });
-  setTimeout(()=>{
-    document.querySelectorAll('.benchBarFill').forEach(b=>{b.style.width=b.dataset.w;});
-  },100);
+function setEx(i){
+  curEx=i;
+  document.querySelectorAll('.exTab').forEach((t,j)=>{t.classList.toggle('on',j===i);});
+  renderCode();
+  if(sOn&&AC)tone(450+i*40,.05,'sine',.025);
 }
+function renderCode(){
+  const d=codes[curLang];
+  document.getElementById('slowCodeEl').innerHTML=d.slow[curEx]||'';
+  document.getElementById('fastCodeEl').innerHTML=d.fast[curEx]||'';
+}
+renderCode();
 
-// ═══════════════════════════════════════════
-// LIVE BENCHMARK RUNNER (real JS measurement)
-// ═══════════════════════════════════════════
-function piSlow(n){let r=0;for(let i=0;i<n;i++)r+=Math.pow(-1,i)/(2*i+1);return r*4;}
-function piFast(n){let r=0,d=1;for(let i=0;i<n;i+=2){r+=1/d-1/(d+2);d+=4;}return r*4;}
-
-async function runBenchmark(){
-  const btn=document.getElementById('runBenchBtn');
+// ═══════════════════════════════════
+// LIVE BENCHMARK (real JS timing)
+// ═══════════════════════════════════
+function pSlow(n){let r=0;for(let i=0;i<n;i++)r+=Math.pow(-1,i)/(2*i+1);return r*4;}
+function pFast(n){let r=0,d=1,s=1;for(let i=0;i<n;i++){r+=s/d;d+=2;s=-s;}return r*4;}
+async function runBench(){
   const N=5_000_000;
-  btn.disabled=true;btn.textContent='⏳ მიმდინარეობს...';
-  iAC();if(sOn)tone(300,.1,'sine',.05);
-  const prog=document.getElementById('benchProgress');
-  const fill=document.getElementById('benchFill');
-  prog.style.display='block';
-  // animate progress
-  let p=0;const pInt=setInterval(()=>{p=Math.min(p+2,95);fill.style.width=p+'%';},30);
-  await new Promise(r=>setTimeout(r,50));
-  // run slow
-  const t1=performance.now();piSlow(N);const slowMs=Math.round(performance.now()-t1);
-  await new Promise(r=>setTimeout(r,20));
-  // run fast
-  const t2=performance.now();piFast(N);const fastMs=Math.max(1,Math.round(performance.now()-t2));
-  clearInterval(pInt);fill.style.width='100%';
-  await new Promise(r=>setTimeout(r,200));
-  prog.style.display='none';
-  const speedup=(slowMs/fastMs).toFixed(1);
-  const energySave=Math.round((1-fastMs/slowMs)*100);
-  document.getElementById('benchResults').style.display='grid';
-  document.getElementById('slowTime').textContent=slowMs+'ms';
-  document.getElementById('fastTime').textContent=fastMs+'ms';
-  document.getElementById('slowEnergy').textContent=(slowMs/fastMs).toFixed(1)+'x მეტი';
-  document.getElementById('speedup').textContent=speedup+'x';
-  document.getElementById('savingMsg').style.display='block';
-  document.getElementById('savingMsg').innerHTML=`⚡ ოპტიმიზებული კოდი <strong>${speedup}x</strong> სწრაფია და <strong>~${energySave}%</strong> ნაკლებ ენერგიას მოიხმარს!`;
+  const btn=document.getElementById('runBtn');
+  btn.disabled=true;btn.textContent='⏳ იტვირთება...';
+  iAC();if(sOn)tone(280,.12,'sine',.04);
+  const pb=document.getElementById('pBar'),pf=document.getElementById('pFill');
+  pb.style.display='block';
+  let p=0;const pi=setInterval(()=>{p=Math.min(p+1.8,95);pf.style.width=p+'%';},25);
+  await new Promise(r=>setTimeout(r,40));
+  const t1=performance.now();pSlow(N);const sm=Math.round(performance.now()-t1);
+  await new Promise(r=>setTimeout(r,15));
+  const t2=performance.now();pFast(N);const fm=Math.max(1,Math.round(performance.now()-t2));
+  clearInterval(pi);pf.style.width='100%';
+  await new Promise(r=>setTimeout(r,180));
+  pb.style.display='none';
+  const sp=(sm/fm).toFixed(1),es=Math.round((1-fm/sm)*100);
+  document.getElementById('resGrid').style.display='grid';
+  document.getElementById('rSlow').textContent=sm+'ms';
+  document.getElementById('rFast').textContent=fm+'ms';
+  document.getElementById('rEnergy').textContent=(sm/fm).toFixed(1)+'x მეტი';
+  document.getElementById('rSpeedup').textContent=sp+'x';
+  document.getElementById('rSaveMsg').style.display='block';
+  document.getElementById('rSaveMsg').innerHTML=`⚡ ოპტიმიზებული კოდი <strong>${sp}x</strong> სწრაფია · <strong>~${es}%</strong> ნაკლები ენერგია · π ≈ ${pFast(1000000).toFixed(8)}`;
   btn.disabled=false;btn.textContent='▶ ხელახლა';
-  if(sOn&&AC){chord([523,659,784],.5);setTimeout(()=>tone(1046,.8,'sine',.08),300);}
+  if(sOn&&AC){chord([523,659,784],.5);setTimeout(()=>tone(1046,.8,'sine',.08),280);}
+}
+
+// ═══════════════════════════════════
+// BAR CHART
+// ═══════════════════════════════════
+const barData=[
+  {label:'C — Leibniz',slow:950,fast:38},
+  {label:'C++ — Leibniz',slow:920,fast:29},
+  {label:'C# — Leibniz',slow:1750,fast:175},
+  {label:'C — Machin',slow:1800,fast:19},
+  {label:'C++ — Machin',slow:1750,fast:14},
+  {label:'C — Monte Carlo',slow:450,fast:42},
+  {label:'C++ — Monte Carlo',slow:430,fast:45},
+  {label:'C# — Monte Carlo',slow:600,fast:55},
+  {label:'C — Gauss-Leg.',slow:120,fast:1},
+  {label:'C++ — BBP',slow:560,fast:3},
+];
+let barsOk=false;
+function renderBars(){
+  if(barsOk)return;barsOk=true;
+  const c=document.getElementById('barsContainer');
+  const mx=Math.max(...barData.map(d=>d.slow));
+  barData.forEach(d=>{
+    const sp=Math.round(d.slow/d.fast*10)/10;
+    c.innerHTML+=`<div class="barRow">
+      <div class="barMeta"><span>${d.label}</span><span>✅ ${d.fast}ms vs ❌ ${d.slow}ms · <strong style="color:var(--gn)">${sp}x</strong></span></div>
+      <div class="barTrack"><div class="barFill fSlow" data-w="${(d.slow/mx*100).toFixed(1)}%"></div></div>
+      <div class="barTrack"><div class="barFill fFast" data-w="${(d.fast/mx*100).toFixed(1)}%"></div></div>
+    </div>`;
+  });
+  setTimeout(()=>document.querySelectorAll('.barFill').forEach(b=>{b.style.width=b.dataset.w;}),80);
 }
 </script>
 </body>
